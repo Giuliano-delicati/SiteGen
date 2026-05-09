@@ -41,7 +41,7 @@ export function generateWebsite(formData) {
     hours: formData.hours || '',
     darkMode: formData.darkMode ?? niche.defaultDark,
     logoDataUrl: formData.logoDataUrl || null,
-    photos: formData.photos || [],
+    photos: formData.photos?.length ? formData.photos : (niche.defaultPhotos || []),
     services: formData.services || [],
     team: formData.team || [],
     showTeam: formData.showTeam && formData.team?.length > 0,
