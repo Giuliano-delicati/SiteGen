@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiteGen — Website Generator</title>
+<link rel="stylesheet" href="tool.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ── Toolbar ─────────────────────────────── -->
+  <header class="toolbar">
+    <div class="toolbar__logo">Site<span>Gen</span></div>
+    <div class="toolbar__divider"></div>
+    <div class="toolbar__niche-badge" id="niche-badge">✂️ Frisör / Barber</div>
+    <div class="toolbar__spacer"></div>
+    <div class="toolbar__actions">
+      <button class="btn-tool btn-tool-secondary" id="btn-reset" title="Alle Daten zurücksetzen">↺ Reset</button>
+      <button class="btn-tool btn-tool-secondary" id="btn-fullscreen" title="Vorschau für Kunden (Fullscreen)">⛶ Kundenmodus</button>
+      <button class="btn-tool btn-tool-primary" id="btn-export">↓ Website exportieren</button>
+    </div>
+  </header>
+
+  <!-- ── Sidebar Stepper ──────────────────────── -->
+  <aside class="sidebar">
+    <nav class="stepper" id="stepper">
+      <!-- steps injected by JS -->
+    </nav>
+    <div class="sidebar__footer">
+      <div style="margin-bottom:10px">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tool-text-muted);margin-bottom:6px">Pixabay API-Key</div>
+        <div style="display:flex;gap:6px">
+          <input type="password" id="pixabay-key" placeholder="Key eingeben…"
+            style="flex:1;padding:7px 10px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:6px;color:var(--tool-text);font-size:0.78rem;outline:none;font-family:inherit">
+          <button id="btn-save-key" class="btn-tool btn-tool-secondary" style="padding:6px 10px;font-size:0.78rem">✓</button>
+        </div>
+        <div style="font-size:0.68rem;color:var(--tool-text-muted);margin-top:5px;line-height:1.5">
+          Kostenlos: <a href="https://pixabay.com/api/docs/" target="_blank" style="color:var(--tool-accent);text-decoration:none">pixabay.com/api</a>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--tool-text-muted);line-height:1.6;border-top:1px solid var(--tool-border);padding-top:10px">
+        Tipp: Fülle Schritt 1–3 für eine beeindruckende Live-Vorschau.
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Form Panel + Preview ─────────────────── -->
+  <main style="display:grid;grid-template-columns:420px 1fr;overflow:hidden">
+
+    <!-- Form Panel -->
+    <div class="form-panel" id="form-panel">
+
+      <!-- Step 1: Nische & Template -->
+      <div class="form-step active" data-step="0">
+        <div class="step-header">
+          <h2>Branche & Stil</h2>
+          <p>Wähle die Branche des Kunden und den gewünschten Design-Stil.</p>
+        </div>
+
+        <div class="field">
+          <label>Branche</label>
+          <div class="niche-grid" id="niche-grid">
+            <div class="niche-card selected" data-niche="friser">
+              <div class="niche-card__icon">✂️</div>
+              <div class="niche-card__label">Frisör / Barber</div>
+            </div>
+            <div class="niche-card" data-niche="fastfood">
+              <div class="niche-card__icon">🍔</div>
+              <div class="niche-card__label">Fastfood</div>
+            </div>
+            <div class="niche-card" data-niche="cafe">
+              <div class="niche-card__icon">☕</div>
+              <div class="niche-card__label">Café</div>
+            </div>
+            <div class="niche-card" data-niche="handwerk">
+              <div class="niche-card__icon">🔧</div>
+              <div class="niche-card__label">Handwerk</div>
+            </div>
+            <div class="niche-card" data-niche="beauty">
+              <div class="niche-card__icon">💅</div>
+              <div class="niche-card__label">Beauty & Wellness</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Design-Stil</label>
+          <div class="template-grid" id="template-grid">
+            <div class="template-card selected" data-template="a">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-a">
+                  <div class="tmpl-hero"></div>
+                  <div class="tmpl-cards"><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">A — Minimal</div>
+            </div>
+            <div class="template-card" data-template="b">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-b">
+                  <div class="tmpl-hero-b"><div></div><div></div></div>
+                  <div class="tmpl-rows"><div class="tmpl-row"></div><div class="tmpl-row"></div><div class="tmpl-row"></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">B — Bold</div>
+            </div>
+            <div class="template-card" data-template="c">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-c">
+                  <div class="tmpl-hero-c"></div>
+                  <div class="tmpl-bento"><div></div><div></div><div></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">C — Editorial</div>
+            </div>
+            <div class="template-card" data-template="d">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-d">
+                  <div class="tmpl-hero-d"></div>
+                  <div class="tmpl-round-cards"><div></div><div></div><div></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">D — Warm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <span></span>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(1)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Business-Infos -->
+      <div class="form-step" data-step="1">
+        <div class="step-header">
+          <h2>Business-Infos</h2>
+          <p>Die grundlegenden Informationen über das Unternehmen.</p>
+        </div>
+
+        <div class="field">
+          <label>Unternehmensname *</label>
+          <input type="text" id="businessName" placeholder="z.B. Barber King" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label>Slogan / Tagline</label>
+          <input type="text" id="tagline" placeholder="z.B. Wo Stil auf Handwerk trifft">
+        </div>
+
+        <div class="field">
+          <label>Kurzbeschreibung</label>
+          <textarea id="about" rows="3" placeholder="Über das Unternehmen…"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Telefon</label>
+            <input type="tel" id="phone" placeholder="+49 123 456789">
+          </div>
+          <div class="field">
+            <label>E-Mail</label>
+            <input type="email" id="email" placeholder="info@beispiel.de">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Adresse</label>
+          <input type="text" id="address" placeholder="Musterstraße 1, 12345 Stadt">
+        </div>
+
+        <div class="field">
+          <label>Terminbuchungs-Link</label>
+          <input type="url" id="bookingUrl" placeholder="https://calendly.com/...">
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(0)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(2)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Branding -->
+      <div class="form-step" data-step="2">
+        <div class="step-header">
+          <h2>Branding & Farben</h2>
+          <p>Logo und Farben — optional auch automatisch aus bestehendem Auftritt.</p>
+        </div>
+
+        <!-- Logo Upload -->
+        <div class="field">
+          <label>Logo</label>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="logo-preview" id="logo-preview">
+              <span style="font-size:1.5rem;color:var(--tool-text-muted)">+</span>
+            </div>
+            <div style="flex:1">
+              <label class="upload-area" style="padding:14px;cursor:pointer">
+                <div class="upload-area__text">Logo hochladen (PNG/SVG)</div>
+                <div class="upload-area__sub">Farben werden automatisch extrahiert</div>
+                <input type="file" id="logoUpload" accept="image/*" style="opacity:0;position:absolute;inset:0;width:100%;cursor:pointer">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Extraction mode tabs -->
+        <div class="field">
+          <label>Marken-Erkennung</label>
+          <div class="extract-tabs">
+            <button class="extract-tab active" data-mode="manual">🎨 Manuell</button>
+            <button class="extract-tab" data-mode="logo">🖼 Aus Logo</button>
+            <button class="extract-tab" data-mode="url">🔗 Von Website</button>
+          </div>
+
+          <!-- Manual -->
+          <div class="extract-panel active" id="panel-manual">
+            <div class="color-section">
+              <div class="color-row">
+                <div class="color-picker-wrap">
+                  <input type="color" id="primaryColor" value="#1a1a1a" title="Primärfarbe">
+                </div>
+                <div>
+                  <div style="font-size:0.8rem;font-weight:600">Primärfarbe</div>
+                  <div class="color-hex" id="primaryHex">#1a1a1a</div>
+                </div>
+              </div>
+              <div class="color-row">
+                <div class="color-picker-wrap">
+                  <input type="color" id="accentColor" value="#c9a84c" title="Akzentfarbe">
+                </div>
+                <div>
+                  <div style="font-size:0.8rem;font-weight:600">Akzentfarbe</div>
+                  <div class="color-hex" id="accentHex">#c9a84c</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- From Logo -->
+          <div class="extract-panel" id="panel-logo">
+            <div class="info-box">Logo erst oben hochladen, dann werden hier die erkannten Farben angezeigt.</div>
+            <div class="swatches" id="logo-swatches" style="margin-top:12px"></div>
+          </div>
+
+          <!-- From URL -->
+          <div class="extract-panel" id="panel-url">
+            <div class="field">
+              <label>Bestehende Website-URL</label>
+              <div style="display:flex;gap:8px">
+                <input type="url" id="scanUrl" placeholder="https://kundenwebsite.de" style="flex:1">
+                <button class="btn-tool btn-tool-secondary" id="btn-scan">Scannen</button>
+              </div>
+              <div id="scan-status" style="font-size:0.78rem;color:var(--tool-text-muted);margin-top:6px"></div>
+            </div>
+            <div class="swatches" id="url-swatches"></div>
+          </div>
+        </div>
+
+        <!-- Font & Dark/Light -->
+        <div class="field">
+          <label>Schriftkombination</label>
+          <select id="fontCombo">
+            <option value="">— Automatisch (Nischen-Standard) —</option>
+            <option value="classic">Classic — Playfair Display + Inter</option>
+            <option value="bold">Bold — Bebas Neue + Roboto</option>
+            <option value="editorial">Editorial — Lora + Source Sans</option>
+            <option value="strong">Strong — Oswald + Open Sans</option>
+            <option value="elegant">Elegant — Cormorant Garamond + Nunito</option>
+            <option value="modern">Modern — Syne + DM Sans</option>
+          </select>
+        </div>
+
+        <div class="toggle-row">
+          <label>Dunkles Design (Dark Mode)</label>
+          <label class="toggle">
+            <input type="checkbox" id="darkMode" checked>
+            <span class="toggle__track"></span>
+          </label>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(1)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(3)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Leistungen -->
+      <div class="form-step" data-step="3">
+        <div class="step-header">
+          <h2>Leistungen / Angebot</h2>
+          <p>Die wichtigsten Angebote des Kunden. Name, Beschreibung und optionaler Preis.</p>
+        </div>
+
+        <div class="services-list" id="services-list">
+          <!-- populated by JS -->
+        </div>
+
+        <button class="btn-tool btn-tool-ghost" id="btn-add-service" style="margin-top:4px">+ Leistung hinzufügen</button>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(2)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(4)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Galerie -->
+      <div class="form-step" data-step="4">
+        <div class="step-header">
+          <h2>Galerie & Fotos</h2>
+          <p>Das erste Bild wird als Hero-Hintergrund verwendet. Bis zu 10 Fotos möglich.</p>
+        </div>
+
+        <label class="upload-area" id="photo-upload-area">
+          <div class="upload-area__icon">🖼</div>
+          <div class="upload-area__text">Fotos hochladen</div>
+          <div class="upload-area__sub">JPG, PNG — bis zu 10 Bilder</div>
+          <input type="file" id="photoUpload" accept="image/*" multiple>
+        </label>
+
+        <button class="btn-tool btn-tool-ghost" id="btn-demo-photos" style="width:100%;justify-content:center;gap:8px">
+          <span id="demo-photos-icon">🌄</span>
+          <span id="demo-photos-label">Demo-Fotos von Pixabay laden</span>
+        </button>
+        <div id="demo-photos-status" style="font-size:0.75rem;color:var(--tool-text-muted);text-align:center;display:none"></div>
+
+        <div class="photo-grid" id="photo-grid"></div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(3)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(5)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 6: Team -->
+      <div class="form-step" data-step="5">
+        <div class="step-header">
+          <h2>Team</h2>
+          <p>Optional: Team-Mitglieder mit Foto und Rolle.</p>
+        </div>
+
+        <div class="toggle-row">
+          <label>Team-Sektion anzeigen</label>
+          <label class="toggle">
+            <input type="checkbox" id="showTeam">
+            <span class="toggle__track"></span>
+          </label>
+        </div>
+
+        <div id="team-section" style="display:none;flex-direction:column;gap:12px;margin-top:8px">
+          <div class="team-grid" id="team-grid"></div>
+          <button class="btn-tool btn-tool-ghost" id="btn-add-team">+ Mitglied hinzufügen</button>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(4)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(6)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 7: Extras -->
+      <div class="form-step" data-step="6">
+        <div class="step-header">
+          <h2>Extras</h2>
+          <p>Öffnungszeiten und zusätzliche Aktionsmöglichkeiten.</p>
+        </div>
+
+        <div class="field">
+          <label>Öffnungszeiten</label>
+          <textarea id="hours" rows="5" placeholder="Mo–Fr: 09:00–18:00&#10;Sa: 09:00–15:00&#10;So: Geschlossen"></textarea>
+          <div style="font-size:0.75rem;color:var(--tool-text-muted);margin-top:4px">Jede Zeile: Tag: Uhrzeit</div>
+        </div>
+
+        <div class="field">
+          <label>Website / Social Media</label>
+          <input type="url" id="website" placeholder="https://instagram.com/kundenhandle">
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(5)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(7)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 8: Kontakt / Formular -->
+      <div class="form-step" data-step="7">
+        <div class="step-header">
+          <h2>Kontaktformular</h2>
+          <p>Mit Formspree können Kunden sofort echte Nachrichten erhalten.</p>
+        </div>
+
+        <div class="info-box">
+          Formspree ist kostenlos nutzbar. Konto unter <strong>formspree.io</strong> erstellen, neues Formular anlegen → die Form-ID (z.B. "xdkopqwr") hier eintragen.
+        </div>
+
+        <div class="field" style="margin-top:4px">
+          <label>Formspree Form-ID</label>
+          <input type="text" id="formspreeId" placeholder="xdkopqwr">
+          <div style="font-size:0.75rem;color:var(--tool-text-muted);margin-top:4px">Leer lassen → Formular öffnet E-Mail-Client</div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(6)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(8)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 9: Export -->
+      <div class="form-step" data-step="8">
+        <div class="step-header">
+          <h2>Fertig! 🎉</h2>
+          <p>Die Website ist bereit. Exportiere sie als standalone HTML-Datei oder zeige sie dem Kunden im Vollbild.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <button class="btn-tool btn-tool-primary" id="btn-export-step" style="padding:14px 24px;font-size:1rem">
+            ↓ Website als HTML exportieren
+          </button>
+          <button class="btn-tool btn-tool-secondary" id="btn-fullscreen-step" style="padding:14px 24px;font-size:1rem">
+            ⛶ Vollbild-Vorschau für Kunden
+          </button>
+        </div>
+
+        <div class="section-divider" style="margin:16px 0"></div>
+
+        <div class="field">
+          <label>Dateiname (optional)</label>
+          <input type="text" id="exportName" placeholder="kundenname-website">
+        </div>
+
+        <div class="info-box" style="margin-top:8px">
+          Die exportierte HTML-Datei ist vollständig eigenständig (alle Bilder eingebettet) und kann direkt per E-Mail verschickt oder auf jedem Webserver deployed werden.
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(7)">← Zurück</button>
+          <span></span>
+        </div>
+      </div>
+
+    </div><!-- /form-panel -->
+
+    <!-- ── Preview Pane ──────────────────────── -->
+    <div class="preview-pane" id="preview-pane">
+      <div class="preview-toolbar">
+        <span class="preview-toolbar__label">Vorschau</span>
+        <div class="preview-toolbar__spacer"></div>
+        <div class="preview-device-toggle">
+          <button class="preview-device-btn active" data-device="desktop" title="Desktop">🖥</button>
+          <button class="preview-device-btn" data-device="tablet" title="Tablet">📱</button>
+          <button class="preview-device-btn" data-device="mobile" title="Mobil">📱</button>
+        </div>
+        <button class="btn-tool btn-tool-secondary" id="btn-refresh-preview" style="margin-left:8px;padding:5px 10px">↺</button>
+      </div>
+      <div class="preview-frame-wrap" id="preview-frame-wrap">
+        <iframe id="preview-iframe" title="Website-Vorschau" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Fullscreen exit button (shown only in fullscreen) -->
+<button id="btn-exit-fullscreen" style="display:none;position:fixed;top:16px;right:16px;z-index:1001;background:rgba(0,0,0,0.7);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px 14px;font-size:0.85rem;font-weight:600;cursor:pointer;backdrop-filter:blur(8px)">
+  ✕ Vorschau schließen
+</button>
+
+<script type="module">
+import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';
+import { generateWebsite, downloadWebsite } from './generator.js';
+import { extractColorsFromLogo, extractFromUrl } from './brand-extractor.js';
+import { fetchNichePhotos, saveApiKey, loadApiKey } from './pixabay-loader.js';
+
+// ── State ────────────────────────────────────────
+const state = {
+  niche: 'friser',
+  template: 'a',
+  businessName: '',
+  tagline: '',
+  about: '',
+  phone: '',
+  email: '',
+  address: '',
+  bookingUrl: '',
+  primaryColor: '#1a1a1a',
+  accentColor: '#c9a84c',
+  darkMode: true,
+  fontCombo: '',
+  logoDataUrl: null,
+  photos: [],
+  services: [],
+  team: [],
+  showTeam: false,
+  hours: '',
+  website: '',
+  formspreeId: '',
+};
+
+let currentStep = 0;
+let previewDebounce = null;
+
+// ── Step definitions ────────────────────────────
+const STEPS = [
+  { label: 'Branche & Stil' },
+  { label: 'Business-Infos' },
+  { label: 'Branding' },
+  { label: 'Leistungen' },
+  { label: 'Galerie' },
+  { label: 'Team' },
+  { label: 'Extras' },
+  { label: 'Kontakt' },
+  { label: 'Export' },
+];
+
+// ── Init stepper ────────────────────────────────
+function initStepper() {
+  const nav = document.getElementById('stepper');
+  nav.innerHTML = STEPS.map((s, i) => `
+    <div class="step-item ${i === 0 ? 'active' : ''}" data-step="${i}" onclick="goStep(${i})">
+      <div class="step-num">${i + 1}</div>
+      <div class="step-label">${s.label}</div>
+    </div>`).join('');
+}
+
+window.goStep = function(idx) {
+  currentStep = idx;
+  document.querySelectorAll('.form-step').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.step-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+    el.classList.toggle('done', i < idx);
+  });
+  document.getElementById('form-panel').scrollTop = 0;
+};
+
+// ── Niche selection ─────────────────────────────
+document.getElementById('niche-grid').addEventListener('click', e => {
+  const card = e.target.closest('[data-niche]');
+  if (!card) return;
+  document.querySelectorAll('.niche-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.niche = card.dataset.niche;
+  const niche = NICHES[state.niche];
+  document.getElementById('niche-badge').textContent = `${niche.icon} ${niche.label}`;
+  // Apply niche defaults to colors
+  document.getElementById('primaryColor').value = niche.primaryColor;
+  document.getElementById('accentColor').value = niche.accentColor;
+  state.primaryColor = niche.primaryColor;
+  state.accentColor = niche.accentColor;
+  document.getElementById('primaryHex').textContent = niche.primaryColor;
+  document.getElementById('accentHex').textContent = niche.accentColor;
+  // Apply niche dark default
+  document.getElementById('darkMode').checked = niche.defaultDark;
+  state.darkMode = niche.defaultDark;
+  // Load niche default services if none set
+  if (!state.services.length) {
+    state.services = niche.servicesDefault.map(s => ({ ...s }));
+    renderServicesList();
+  }
+  triggerPreview();
+  autoFetchIfEmpty();
+});
+
+// ── Template selection ──────────────────────────
+document.getElementById('template-grid').addEventListener('click', e => {
+  const card = e.target.closest('[data-template]');
+  if (!card) return;
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.template = card.dataset.template;
+  triggerPreview();
+});
+
+// ── Text inputs live binding ────────────────────
+function bindInput(id, key) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    state[key] = el.value;
+    triggerPreview();
+  });
+}
+
+bindInput('businessName', 'businessName');
+bindInput('tagline', 'tagline');
+bindInput('about', 'about');
+bindInput('phone', 'phone');
+bindInput('email', 'email');
+bindInput('address', 'address');
+bindInput('bookingUrl', 'bookingUrl');
+bindInput('hours', 'hours');
+bindInput('website', 'website');
+bindInput('formspreeId', 'formspreeId');
+
+// ── Color pickers ────────────────────────────────
+document.getElementById('primaryColor').addEventListener('input', e => {
+  state.primaryColor = e.target.value;
+  document.getElementById('primaryHex').textContent = e.target.value;
+  triggerPreview();
+});
+document.getElementById('accentColor').addEventListener('input', e => {
+  state.accentColor = e.target.value;
+  document.getElementById('accentHex').textContent = e.target.value;
+  triggerPreview();
+});
+
+// Dark mode toggle
+document.getElementById('darkMode').addEventListener('change', e => {
+  state.darkMode = e.target.checked;
+  triggerPreview();
+});
+
+// Font combo
+document.getElementById('fontCombo').addEventListener('change', e => {
+  state.fontCombo = e.target.value;
+  triggerPreview();
+});
+
+// ── Show Team toggle ─────────────────────────────
+document.getElementById('showTeam').addEventListener('change', e => {
+  state.showTeam = e.target.checked;
+  document.getElementById('team-section').style.display = e.target.checked ? 'flex' : 'none';
+  triggerPreview();
+});
+
+// ── Logo upload ──────────────────────────────────
+document.getElementById('logoUpload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    state.logoDataUrl = ev.target.result;
+    const previewEl = document.getElementById('logo-preview');
+    previewEl.innerHTML = `<img src="${state.logoDataUrl}" alt="Logo">`;
+
+    // Auto-extract colors
+    const img = new Image();
+    img.onload = async () => {
+      const colors = await extractColorsFromLogo(img);
+      const swatchEl = document.getElementById('logo-swatches');
+      swatchEl.innerHTML = colors.map(c =>
+        `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
+      ).join('');
+      swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          if (i === 0) {
+            state.primaryColor = btn.dataset.color;
+            document.getElementById('primaryColor').value = btn.dataset.color;
+            document.getElementById('primaryHex').textContent = btn.dataset.color;
+          } else {
+            state.accentColor = btn.dataset.color;
+            document.getElementById('accentColor').value = btn.dataset.color;
+            document.getElementById('accentHex').textContent = btn.dataset.color;
+          }
+          triggerPreview();
+        });
+      });
+    };
+    img.src = state.logoDataUrl;
+    triggerPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+// ── Extraction mode tabs ─────────────────────────
+document.querySelectorAll('.extract-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`panel-${tab.dataset.mode}`).classList.add('active');
+  });
+});
+
+// ── URL scan ─────────────────────────────────────
+document.getElementById('btn-scan').addEventListener('click', async () => {
+  const url = document.getElementById('scanUrl').value.trim();
+  if (!url) return;
+  const status = document.getElementById('scan-status');
+  status.innerHTML = '<span class="spinner"></span> Scanne Website…';
+  try {
+    const result = await extractFromUrl(url);
+    if (result && result.colors.length) {
+      const swatchEl = document.getElementById('url-swatches');
+      swatchEl.innerHTML = result.colors.map(c =>
+        `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
+      ).join('');
+      swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          if (i === 0) {
+            state.primaryColor = btn.dataset.color;
+            document.getElementById('primaryColor').value = btn.dataset.color;
+            document.getElementById('primaryHex').textContent = btn.dataset.color;
+          } else {
+            state.accentColor = btn.dataset.color;
+            document.getElementById('accentColor').value = btn.dataset.color;
+            document.getElementById('accentHex').textContent = btn.dataset.color;
+          }
+          triggerPreview();
+        });
+      });
+      status.textContent = `✓ ${result.colors.length} Farben gefunden${result.fonts.length ? `, Fonts: ${result.fonts.slice(0,2).join(', ')}` : ''}`;
+    } else {
+      status.textContent = '⚠ Keine Farben gefunden (CORS oder keine öffentliche URL)';
+    }
+  } catch {
+    status.textContent = '✗ Fehler beim Scannen';
+  }
+});
+
+// ── Photos ───────────────────────────────────────
+document.getElementById('photoUpload').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  const remaining = 10 - state.photos.length;
+  files.slice(0, remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state.photos.push(ev.target.result);
+      renderPhotoGrid();
+      triggerPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+});
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = state.photos.map((src, i) => `
+    <div class="photo-thumb">
+      <img src="${src}" alt="Foto ${i + 1}">
+      <button class="photo-thumb__remove" data-index="${i}" title="Entfernen">✕</button>
+    </div>`).join('');
+  grid.querySelectorAll('.photo-thumb__remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.photos.splice(Number(btn.dataset.index), 1);
+      renderPhotoGrid();
+      triggerPreview();
+    });
+  });
+}
+
+// Drag & drop photos
+const photoArea = document.getElementById('photo-upload-area');
+photoArea.addEventListener('dragover', e => { e.preventDefault(); photoArea.classList.add('drag-over'); });
+photoArea.addEventListener('dragleave', () => photoArea.classList.remove('drag-over'));
+photoArea.addEventListener('drop', e => {
+  e.preventDefault();
+  photoArea.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  const remaining = 10 - state.photos.length;
+  files.slice(0, remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => { state.photos.push(ev.target.result); renderPhotoGrid(); triggerPreview(); };
+    reader.readAsDataURL(file);
+  });
+});
+
+// ── Services ─────────────────────────────────────
+function renderServicesList() {
+  const list = document.getElementById('services-list');
+  list.innerHTML = state.services.map((s, i) => `
+    <div class="service-row" data-index="${i}">
+      <input class="svc-name" type="text" placeholder="Leistungsname" value="${s.name || ''}">
+      <input class="svc-price" type="text" placeholder="Preis" value="${s.price || ''}" style="width:90px;text-align:right;color:var(--tool-accent)">
+      <button class="service-row__remove" data-index="${i}" title="Entfernen">✕</button>
+    </div>
+    <div style="padding:0 10px 4px;margin-top:-4px">
+      <input class="svc-desc" type="text" placeholder="Kurzbeschreibung (optional)" value="${s.desc || ''}"
+        style="width:100%;background:none;border:none;border-bottom:1px solid var(--tool-border);color:var(--tool-text-muted);font-size:0.8rem;padding:4px 0;outline:none;font-family:inherit">
+    </div>`).join('');
+
+  list.querySelectorAll('.svc-name').forEach((el, i) => {
+    el.addEventListener('input', () => { state.services[i].name = el.value; triggerPreview(); });
+  });
+  list.querySelectorAll('.svc-price').forEach((el, i) => {
+    el.addEventListener('input', () => { state.services[i].price = el.value; triggerPreview(); });
+  });
+  list.querySelectorAll('.svc-desc').forEach((el, i) => {
+    el.addEventListener('input', () => { state.services[i].desc = el.value; triggerPreview(); });
+  });
+  list.querySelectorAll('.service-row__remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.services.splice(Number(btn.dataset.index), 1);
+      renderServicesList();
+      triggerPreview();
+    });
+  });
+}
+
+document.getElementById('btn-add-service').addEventListener('click', () => {
+  state.services.push({ name: '', price: '', desc: '' });
+  renderServicesList();
+});
+
+// ── Team ──────────────────────────────────────────
+function renderTeamGrid() {
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = state.team.map((m, i) => `
+    <div class="team-card">
+      <button class="team-card__remove" data-index="${i}">✕</button>
+      <div class="team-card__avatar">
+        ${m.photoUrl ? `<img src="${m.photoUrl}" alt="${m.name}">` : '<span style="font-size:1.5rem">👤</span>'}
+        <input type="file" accept="image/*" class="team-photo-input" data-index="${i}">
+      </div>
+      <input class="team-name" type="text" placeholder="Name" value="${m.name || ''}">
+      <input class="team-role" type="text" placeholder="Rolle / Position" value="${m.role || ''}">
+    </div>`).join('');
+
+  grid.querySelectorAll('.team-card__remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.team.splice(Number(btn.dataset.index), 1);
+      renderTeamGrid();
+      triggerPreview();
+    });
+  });
+  grid.querySelectorAll('.team-name').forEach((el, i) => {
+    el.addEventListener('input', () => { state.team[i].name = el.value; triggerPreview(); });
+  });
+  grid.querySelectorAll('.team-role').forEach((el, i) => {
+    el.addEventListener('input', () => { state.team[i].role = el.value; triggerPreview(); });
+  });
+  grid.querySelectorAll('.team-photo-input').forEach((el, i) => {
+    el.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => { state.team[i].photoUrl = ev.target.result; renderTeamGrid(); triggerPreview(); };
+      r.readAsDataURL(file);
+    });
+  });
+}
+
+document.getElementById('btn-add-team').addEventListener('click', () => {
+  state.team.push({ name: '', role: '', photoUrl: null });
+  renderTeamGrid();
+});
+
+// ── Pixabay API-Key ──────────────────────────────
+let pixabayKey = loadApiKey();
+
+// Restore saved key into input
+const pixabayKeyInput = document.getElementById('pixabay-key');
+if (pixabayKey) pixabayKeyInput.value = pixabayKey;
+
+document.getElementById('btn-save-key').addEventListener('click', () => {
+  pixabayKey = pixabayKeyInput.value.trim();
+  saveApiKey(pixabayKey);
+  showToast(pixabayKey ? '✓ API-Key gespeichert' : 'API-Key entfernt');
+});
+
+pixabayKeyInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-save-key').click();
+});
+
+// ── Demo-Fotos laden ─────────────────────────────
+document.getElementById('btn-demo-photos').addEventListener('click', async () => {
+  if (!pixabayKey) {
+    showToast('⚠ Bitte erst Pixabay API-Key in der Sidebar eingeben');
+    return;
+  }
+
+  const btn = document.getElementById('btn-demo-photos');
+  const label = document.getElementById('demo-photos-label');
+  const icon = document.getElementById('demo-photos-icon');
+  const status = document.getElementById('demo-photos-status');
+
+  btn.disabled = true;
+  icon.textContent = '';
+  icon.innerHTML = '<span class="spinner"></span>';
+  label.textContent = 'Lade Fotos…';
+  status.style.display = 'block';
+  status.textContent = `Suche Bilder für „${NICHES[state.niche]?.label}"…`;
+
+  try {
+    const urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
+    if (!urls.length) throw new Error('Keine Bilder gefunden');
+
+    // Only add up to 10 total
+    const remaining = 10 - state.photos.length;
+    const toAdd = urls.slice(0, remaining);
+    state.photos.push(...toAdd);
+    renderPhotoGrid();
+    triggerPreview();
+
+    status.textContent = `✓ ${toAdd.length} Demo-Foto${toAdd.length !== 1 ? 's' : ''} geladen (via Pixabay)`;
+    showToast(`${toAdd.length} Fotos geladen`);
+  } catch (err) {
+    status.textContent = `✗ ${err.message === 'Kein Pixabay API-Key angegeben' ? 'Kein API-Key' : 'Fehler beim Laden — API-Key korrekt?'}`;
+    showToast('✗ Fotos konnten nicht geladen werden');
+  } finally {
+    btn.disabled = false;
+    icon.innerHTML = '🌄';
+    label.textContent = 'Demo-Fotos von Pixabay laden';
+  }
+});
+
+// Auto-fetch on niche change when no custom photos exist
+async function autoFetchIfEmpty() {
+  if (state.photos.length > 0 || !pixabayKey) return;
+  const status = document.getElementById('demo-photos-status');
+  status.style.display = 'block';
+  status.textContent = `Lade Demo-Fotos für ${NICHES[state.niche]?.label}…`;
+  try {
+    const urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
+    if (urls.length) {
+      state.photos = urls;
+      renderPhotoGrid();
+      triggerPreview();
+      status.textContent = `✓ ${urls.length} Demo-Fotos geladen`;
+    } else {
+      status.style.display = 'none';
+    }
+  } catch {
+    status.style.display = 'none';
+  }
+}
+
+// ── Preview ───────────────────────────────────────
+function triggerPreview() {
+  clearTimeout(previewDebounce);
+  previewDebounce = setTimeout(updatePreview, 350);
+}
+
+function updatePreview() {
+  try {
+    const html = generateWebsite(state);
+    const iframe = document.getElementById('preview-iframe');
+    iframe.srcdoc = html;
+  } catch (e) {
+    console.error('Preview error:', e);
+  }
+}
+
+document.getElementById('btn-refresh-preview').addEventListener('click', updatePreview);
+
+// ── Device preview ────────────────────────────────
+document.querySelectorAll('.preview-device-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.preview-device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const wrap = document.getElementById('preview-frame-wrap');
+    const iframe = document.getElementById('preview-iframe');
+    if (btn.dataset.device === 'desktop') {
+      iframe.style.width = '100%';
+      iframe.style.margin = '0';
+      wrap.style.background = '#000';
+    } else if (btn.dataset.device === 'tablet') {
+      iframe.style.width = '768px';
+      iframe.style.margin = '0 auto';
+      iframe.style.display = 'block';
+      wrap.style.background = '#333';
+    } else {
+      iframe.style.width = '390px';
+      iframe.style.margin = '0 auto';
+      iframe.style.display = 'block';
+      wrap.style.background = '#555';
+    }
+  });
+});
+
+// ── Fullscreen (Kundenmodus) ──────────────────────
+function enterFullscreen() {
+  const pane = document.getElementById('preview-pane');
+  pane.classList.add('fullscreen');
+  document.getElementById('btn-exit-fullscreen').style.display = 'block';
+}
+
+function exitFullscreen() {
+  document.getElementById('preview-pane').classList.remove('fullscreen');
+  document.getElementById('btn-exit-fullscreen').style.display = 'none';
+}
+
+document.getElementById('btn-fullscreen').addEventListener('click', enterFullscreen);
+document.getElementById('btn-fullscreen-step').addEventListener('click', enterFullscreen);
+document.getElementById('btn-exit-fullscreen').addEventListener('click', exitFullscreen);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') exitFullscreen(); });
+
+// ── Export ────────────────────────────────────────
+function doExport() {
+  const name = document.getElementById('exportName').value || state.businessName || 'website';
+  downloadWebsite({ ...state, exportName: name });
+  showToast('Website erfolgreich exportiert!');
+}
+
+document.getElementById('btn-export').addEventListener('click', doExport);
+document.getElementById('btn-export-step').addEventListener('click', doExport);
+
+// ── Reset ─────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('Alle Eingaben zurücksetzen?')) return;
+  location.reload();
+});
+
+// ── Toast ─────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Init ──────────────────────────────────────────
+initStepper();
+
+// Load niche defaults
+const defaultNiche = NICHES['friser'];
+state.services = defaultNiche.servicesDefault.map(s => ({ ...s }));
+renderServicesList();
+renderTeamGrid();
+
+// Set initial color hex labels
+document.getElementById('primaryHex').textContent = state.primaryColor;
+document.getElementById('accentHex').textContent = state.accentColor;
+
+// Initial preview after short delay (fonts need to load)
+setTimeout(updatePreview, 300);
+
+// Auto-load demo photos for default niche if key already saved
+setTimeout(autoFetchIfEmpty, 500);
+</script>
+
+</body>
+</html>
