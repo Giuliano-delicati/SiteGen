@@ -1,5 +1,11 @@
 // Brand Extractor — 3 modes: Logo→Canvas, URL-Scan, Manual
 
+const FALLBACK_COLORS = ['#1a1a1a', '#c9a84c', '#f5f0e8'];
+
+function isNeutralColor(r, g, b) {
+  return (r > 220 && g > 220 && b > 220) || (r < 20 && g < 20 && b < 20);
+}
+
 // --- Mode 1: Logo → dominant colors via Canvas ---
 export function extractColorsFromLogo(imgElement) {
   return new Promise((resolve) => {
@@ -8,39 +14,35 @@ export function extractColorsFromLogo(imgElement) {
     canvas.width = SIZE;
     canvas.height = SIZE;
     const ctx = canvas.getContext('2d');
-
     try {
       ctx.drawImage(imgElement, 0, 0, SIZE, SIZE);
       const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
       const colorMap = new Map();
-
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
-        if (a < 30) continue; // skip transparent pixels
-        // Quantize to reduce noise
+        if (a < 30) continue;
         const qr = Math.round(r / 32) * 32;
         const qg = Math.round(g / 32) * 32;
         const qb = Math.round(b / 32) * 32;
-        // Skip near-white and near-black
-        if (qr > 220 && qg > 220 && qb > 220) continue;
-        if (qr < 20 && qg < 20 && qb < 20) continue;
+        if (isNeutralColor(qr, qg, qb)) continue;
         const key = `${qr},${qg},${qb}`;
         colorMap.set(key, (colorMap.get(key) || 0) + 1);
       }
-
-      const sorted = [...colorMap.entries()].sort((a, b) => b[1] - a[1]);
-      const top = sorted.slice(0, 3).map(([key]) => {
-        const [r, g, b] = key.split(',').map(Number);
-        return rgbToHex(r, g, b);
-      });
-
-      resolve(top.length > 0 ? top : ['#1a1a1a', '#c9a84c', '#f5f0e8']);
+      const top = [...colorMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([key]) => {
+          const [r, g, b] = key.split(',').map(Number);
+          return rgbToHex(r, g, b);
+        });
+      resolve(top.length > 0 ? top : FALLBACK_COLORS);
     } catch {
-      resolve(['#1a1a1a', '#c9a84c', '#f5f0e8']);
+      resolve(FALLBACK_COLORS);
     }
   });
 }
 
+// --- Color utilities ---
 export function rgbToHex(r, g, b) {
   return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 }
@@ -50,7 +52,6 @@ export function hexToRgb(hex) {
   return m ? m.map(x => parseInt(x, 16)) : [0, 0, 0];
 }
 
-// Contrast ratio (WCAG) between two hex colors
 export function contrastRatio(hex1, hex2) {
   const lum = (hex) => {
     const [r, g, b] = hexToRgb(hex).map(v => {
@@ -63,72 +64,87 @@ export function contrastRatio(hex1, hex2) {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
-// Auto-pick black or white for text on a background
 export function autoTextColor(bgHex) {
   return contrastRatio(bgHex, '#ffffff') >= 4.5 ? '#ffffff' : '#000000';
 }
 
 // --- Mode 2: URL → brand colors ---
-export async function extractFromUrl(url) {
-  // Use allorigins.win as CORS proxy
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  try {
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) throw new Error('fetch failed');
-    const json = await res.json();
-    const html = json.contents || '';
-    return parseHtmlForColors(html, url);
-  } catch {
-    return null;
+// Try multiple CORS proxies in sequence — stops at the first that returns HTML.
+const CORS_PROXIES = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+async function fetchViaProxy(url) {
+  for (const buildUrl of CORS_PROXIES) {
+    try {
+      const res = await fetch(buildUrl(url), { signal: AbortSignal.timeout(7000) });
+      if (!res.ok) continue;
+      const text = await res.text();
+      // allorigins wraps in JSON; the others return raw HTML
+      try {
+        const json = JSON.parse(text);
+        if (json.contents) return json.contents;
+      } catch {
+        // raw HTML response
+      }
+      if (text.includes('<')) return text;
+    } catch {
+      // try next proxy
+    }
   }
+  return null;
 }
 
-function parseHtmlForColors(html, _url) {
-  const result = { colors: [], fonts: [] };
+export async function extractFromUrl(url) {
+  const html = await fetchViaProxy(url);
+  if (!html) return { colors: [], fonts: [], error: 'CORS-Proxy nicht erreichbar' };
+  return parseHtmlForColors(html);
+}
+
+function parseHtmlForColors(html) {
+  const colors = [];
+  const fonts = [];
 
   // meta theme-color
   const themeMatch = html.match(/name=["']theme-color["'][^>]*content=["']([^"']+)["']/i)
     || html.match(/content=["']([#\w()%, ]+)["'][^>]*name=["']theme-color["']/i);
-  if (themeMatch) result.colors.push(themeMatch[1].trim());
+  if (themeMatch) colors.push(themeMatch[1].trim());
 
-  // CSS hex colors in style tags
-  const hexMatches = html.matchAll(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g);
+  // Hex colors: #rrggbb and #rgb
   const freq = new Map();
-  for (const m of hexMatches) {
+  for (const m of html.matchAll(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g)) {
     const hex = m[1].length === 3
       ? '#' + m[1].split('').map(c => c + c).join('')
       : '#' + m[1];
-    freq.set(hex.toLowerCase(), (freq.get(hex.toLowerCase()) || 0) + 1);
+    const key = hex.toLowerCase();
+    freq.set(key, (freq.get(key) || 0) + 1);
   }
-  const sorted = [...freq.entries()]
-    .filter(([h]) => {
-      const [r, g, b] = hexToRgb(h);
-      return !(r > 220 && g > 220 && b > 220) && !(r < 20 && g < 20 && b < 20);
-    })
+
+  // rgb(r, g, b) colors
+  for (const m of html.matchAll(/rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/g)) {
+    const [r, g, b] = [Number(m[1]), Number(m[2]), Number(m[3])];
+    if (isNeutralColor(r, g, b)) continue;
+    const key = rgbToHex(r, g, b);
+    freq.set(key, (freq.get(key) || 0) + 1);
+  }
+
+  const topHex = [...freq.entries()]
+    .filter(([h]) => !isNeutralColor(...hexToRgb(h)))
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(([hex]) => hex);
-  result.colors.push(...sorted);
+  colors.push(...topHex);
 
   // Font families
-  const fontMatches = html.matchAll(/font-family\s*:\s*['"]?([^;'"}{]+)/gi);
-  for (const m of fontMatches) {
+  for (const m of html.matchAll(/font-family\s*:\s*['"]?([^;'"}{]+)/gi)) {
     const f = m[1].split(',')[0].trim().replace(/['"]/g, '');
-    if (f && !result.fonts.includes(f)) result.fonts.push(f);
+    if (f && !fonts.includes(f)) fonts.push(f);
   }
 
   return {
-    colors: [...new Set(result.colors)].slice(0, 5),
-    fonts: result.fonts.slice(0, 3),
+    colors: [...new Set(colors)].slice(0, 5),
+    fonts: fonts.slice(0, 3),
   };
-}
-
-// --- Color swatch renderer ---
-export function renderSwatches(colors, containerId, onSelect) {
-  const el = document.getElementById(containerId);
-  if (!el || !colors.length) return;
-  el.innerHTML = colors.map(c => `
-    <button class="color-swatch" style="background:${c}" title="${c}"
-      data-color="${c}" onclick="(${onSelect.toString()})(this.dataset.color)">
-    </button>`).join('');
 }

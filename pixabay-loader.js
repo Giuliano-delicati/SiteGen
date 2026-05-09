@@ -21,33 +21,29 @@ const PIXABAY_BASE = 'https://pixabay.com/api/';
 export async function fetchNichePhotos(niche, apiKey, count = 5) {
   if (!apiKey) throw new Error('Kein Pixabay API-Key angegeben');
 
-  const queries = NICHE_QUERIES[niche] || NICHE_QUERIES.friser;
-  const results = [];
+  const queries = (NICHE_QUERIES[niche] || NICHE_QUERIES.friser).slice(0, count);
 
-  for (let i = 0; i < Math.min(count, queries.length); i++) {
+  const fetchOne = async (q) => {
     const url = new URL(PIXABAY_BASE);
     url.searchParams.set('key', apiKey);
-    url.searchParams.set('q', queries[i]);
+    url.searchParams.set('q', q);
     url.searchParams.set('image_type', 'photo');
     url.searchParams.set('orientation', 'horizontal');
     url.searchParams.set('per_page', '3');
     url.searchParams.set('safesearch', 'true');
     url.searchParams.set('min_width', '800');
-
     try {
       const res = await fetch(url.toString(), { signal: AbortSignal.timeout(6000) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) return null;
       const data = await res.json();
-      if (data.hits?.length) {
-        // Prefer webformatURL (fast load) over fullHDURL
-        results.push(data.hits[0].webformatURL);
-      }
-    } catch (err) {
-      console.warn(`Pixabay fetch failed for "${queries[i]}":`, err.message);
+      return data.hits?.[0]?.webformatURL ?? null;
+    } catch {
+      return null;
     }
-  }
+  };
 
-  return results;
+  const results = await Promise.all(queries.map(fetchOne));
+  return results.filter(Boolean);
 }
 
 /**

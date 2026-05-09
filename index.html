@@ -683,34 +683,32 @@ document.getElementById('btn-scan').addEventListener('click', async () => {
   const url = document.getElementById('scanUrl').value.trim();
   if (!url) return;
   const status = document.getElementById('scan-status');
-  status.innerHTML = '<span class="spinner"></span> Scanne Website…';
-  try {
-    const result = await extractFromUrl(url);
-    if (result && result.colors.length) {
-      const swatchEl = document.getElementById('url-swatches');
-      swatchEl.innerHTML = result.colors.map(c =>
-        `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
-      ).join('');
-      swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-          if (i === 0) {
-            state.primaryColor = btn.dataset.color;
-            document.getElementById('primaryColor').value = btn.dataset.color;
-            document.getElementById('primaryHex').textContent = btn.dataset.color;
-          } else {
-            state.accentColor = btn.dataset.color;
-            document.getElementById('accentColor').value = btn.dataset.color;
-            document.getElementById('accentHex').textContent = btn.dataset.color;
-          }
-          triggerPreview();
-        });
+  status.innerHTML = '<span class="spinner"></span> Scanne Website (bis zu 3 Proxies)…';
+
+  const result = await extractFromUrl(url);
+
+  if (result.colors.length) {
+    const swatchEl = document.getElementById('url-swatches');
+    swatchEl.innerHTML = result.colors.map(c =>
+      `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
+    ).join('');
+    swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        if (i === 0) {
+          state.primaryColor = btn.dataset.color;
+          document.getElementById('primaryColor').value = btn.dataset.color;
+          document.getElementById('primaryHex').textContent = btn.dataset.color;
+        } else {
+          state.accentColor = btn.dataset.color;
+          document.getElementById('accentColor').value = btn.dataset.color;
+          document.getElementById('accentHex').textContent = btn.dataset.color;
+        }
+        triggerPreview();
       });
-      status.textContent = `✓ ${result.colors.length} Farben gefunden${result.fonts.length ? `, Fonts: ${result.fonts.slice(0,2).join(', ')}` : ''}`;
-    } else {
-      status.textContent = '⚠ Keine Farben gefunden (CORS oder keine öffentliche URL)';
-    }
-  } catch {
-    status.textContent = '✗ Fehler beim Scannen';
+    });
+    status.textContent = `✓ ${result.colors.length} Farben gefunden${result.fonts.length ? ` · Fonts: ${result.fonts.slice(0, 2).join(', ')}` : ''}`;
+  } else {
+    status.textContent = `⚠ ${result.error || 'Keine Farben gefunden — versuche eine andere URL'}`;
   }
 });
 
