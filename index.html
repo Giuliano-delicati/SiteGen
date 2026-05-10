@@ -14,7 +14,7 @@
   <header class="toolbar">
     <div class="toolbar__logo">Site<span>Gen</span></div>
     <div class="toolbar__divider"></div>
-    <div class="toolbar__niche-badge" id="niche-badge">✂️ Frisör / Barber</div>
+    <div class="toolbar__niche-badge" id="niche-badge">✂️ Frisör</div>
     <div class="toolbar__spacer"></div>
     <div class="toolbar__actions">
       <button class="btn-tool btn-tool-secondary" id="btn-reset" title="Alle Daten zurücksetzen">↺ Reset</button>
@@ -64,7 +64,11 @@
           <div class="niche-grid" id="niche-grid">
             <div class="niche-card selected" data-niche="friser">
               <div class="niche-card__icon">✂️</div>
-              <div class="niche-card__label">Frisör / Barber</div>
+              <div class="niche-card__label">Frisör</div>
+            </div>
+            <div class="niche-card" data-niche="barber">
+              <div class="niche-card__icon">💈</div>
+              <div class="niche-card__label">Barber</div>
             </div>
             <div class="niche-card" data-niche="fastfood">
               <div class="niche-card__icon">🍔</div>
@@ -639,13 +643,32 @@ document.getElementById('logoUpload').addEventListener('change', e => {
     const previewEl = document.getElementById('logo-preview');
     previewEl.innerHTML = `<img src="${state.logoDataUrl}" alt="Logo">`;
 
-    // Auto-extract colors
+    // Auto-extract colors and switch to "Aus Logo" tab
     const img = new Image();
     img.onload = async () => {
       const colors = await extractColorsFromLogo(img);
+
+      // Switch to logo tab so swatches are visible
+      document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-mode="logo"]').classList.add('active');
+      document.getElementById('panel-logo').classList.add('active');
+
+      // Auto-apply first two colors immediately
+      if (colors[0]) {
+        state.primaryColor = colors[0];
+        document.getElementById('primaryColor').value = colors[0];
+        document.getElementById('primaryHex').textContent = colors[0];
+      }
+      if (colors[1]) {
+        state.accentColor = colors[1];
+        document.getElementById('accentColor').value = colors[1];
+        document.getElementById('accentHex').textContent = colors[1];
+      }
+
       const swatchEl = document.getElementById('logo-swatches');
-      swatchEl.innerHTML = colors.map(c =>
-        `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
+      swatchEl.innerHTML = colors.map((c, i) =>
+        `<button class="color-swatch${i < 2 ? ' active-swatch' : ''}" style="background:${c};${i < 2 ? 'outline:2px solid #fff;outline-offset:2px' : ''}" title="${c}" data-color="${c}"></button>`
       ).join('');
       swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
         btn.addEventListener('click', () => {
@@ -661,6 +684,8 @@ document.getElementById('logoUpload').addEventListener('change', e => {
           triggerPreview();
         });
       });
+
+      triggerPreview();
     };
     img.src = state.logoDataUrl;
     triggerPreview();
