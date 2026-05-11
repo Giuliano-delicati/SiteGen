@@ -12,7 +12,7 @@
 
   <!-- ── Toolbar ─────────────────────────────── -->
   <header class="toolbar">
-    <div class="toolbar__logo">Site<span>Gen</span></div>
+    <div class="toolbar__logo" id="toolbar-logo" title="Neu starten" style="cursor:pointer">Site<span>Gen</span></div>
     <div class="toolbar__divider"></div>
     <div class="toolbar__niche-badge" id="niche-badge">✂️ Frisör</div>
     <div class="toolbar__spacer"></div>
@@ -139,9 +139,14 @@
 
       <!-- Step 2: Business-Infos -->
       <div class="form-step" data-step="1">
-        <div class="step-header">
-          <h2>Business-Infos</h2>
-          <p>Die grundlegenden Informationen über das Unternehmen.</p>
+        <div class="step-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+          <div>
+            <h2>Business-Infos</h2>
+            <p>Die grundlegenden Informationen über das Unternehmen.</p>
+          </div>
+          <button class="btn-tool btn-tool-secondary" id="btn-autofill" style="flex-shrink:0;white-space:nowrap;margin-top:4px" title="Leere Felder automatisch mit Demo-Daten befüllen">
+            ✦ Demo-Daten einfügen
+          </button>
         </div>
 
         <div class="field">
@@ -1026,10 +1031,105 @@ function doExport() {
 document.getElementById('btn-export').addEventListener('click', doExport);
 document.getElementById('btn-export-step').addEventListener('click', doExport);
 
+// ── Logo → Neustart ───────────────────────────────
+document.getElementById('toolbar-logo').addEventListener('click', () => {
+  if (!confirm('Neu starten? Alle Eingaben gehen verloren.')) return;
+  location.reload();
+});
+
 // ── Reset ─────────────────────────────────────────
 document.getElementById('btn-reset').addEventListener('click', () => {
   if (!confirm('Alle Eingaben zurücksetzen?')) return;
   location.reload();
+});
+
+// ── Auto-fill Demo-Daten ───────────────────────────
+const DEMO_DATA = {
+  friser: {
+    businessName: 'Salon Belle Époque',
+    tagline: 'Wo jeder Schnitt ein Kunstwerk ist',
+    about: 'Seit über 15 Jahren bringen wir im Herzen der Stadt Schönheit und Stil zum Leben. Unser erfahrenes Team steht für handwerkliche Perfektion, persönliche Beratung und ein Ambiente, in dem Sie sich rundum wohlfühlen.',
+    phone: '+49 30 1234 5678',
+    email: 'hallo@salon-belle-epoque.de',
+    address: 'Kurfürstendamm 42, 10707 Berlin',
+    hours: 'Mo–Fr: 09:00–19:00\nSa: 09:00–16:00\nSo: Geschlossen',
+    website: 'https://instagram.com/salon.belle.epoque',
+  },
+  barber: {
+    businessName: "King's Barber Shop",
+    tagline: 'Präzision ist unser Handwerk',
+    about: 'Premium Barbering im klassischen Stil. Seit 2015 ist unser Shop ein Rückzugsort für den modernen Mann — hier wird nicht nur geschnitten, sondern zelebriert. Handwerk mit Leidenschaft, Stil mit Geschichte.',
+    phone: '+49 30 9876 5432',
+    email: 'info@kings-barbershop.de',
+    address: 'Torstraße 17, 10119 Berlin',
+    hours: 'Di–Fr: 10:00–20:00\nSa: 09:00–17:00\nSo–Mo: Geschlossen',
+    website: 'https://instagram.com/kingsbarbershop',
+  },
+  fastfood: {
+    businessName: 'Burger Brothers',
+    tagline: 'Handcrafted. Fresh. Always.',
+    about: 'Hausgemachte Burger, frische Zutaten, schneller Service. Bei uns wird jeder Burger mit Leidenschaft zubereitet — für den Geschmack, der bleibt.',
+    phone: '+49 89 4567 8901',
+    email: 'info@burger-brothers.de',
+    address: 'Sendlinger Str. 8, 80331 München',
+    hours: 'Mo–Sa: 11:00–22:00\nSo: 12:00–21:00',
+    website: 'https://instagram.com/burger.brothers',
+  },
+  cafe: {
+    businessName: 'Café Morgenrot',
+    tagline: 'Der beste Start in den Tag',
+    about: 'Unser Café ist ein Ort zum Verweilen, Treffen und Genießen. Mit hausgemachten Backwaren, ausgesuchtem Kaffee und einem herzlichen Team laden wir dich ein, die Langsamkeit des Morgens zu genießen.',
+    phone: '+49 40 1234 5678',
+    email: 'hallo@cafe-morgenrot.de',
+    address: 'Eppendorfer Baum 44, 20249 Hamburg',
+    hours: 'Mo–Fr: 07:30–18:00\nSa–So: 09:00–17:00',
+    website: 'https://instagram.com/cafe.morgenrot',
+  },
+  handwerk: {
+    businessName: 'Müller Handwerksservice',
+    tagline: 'Zuverlässig. Pünktlich. Sauber.',
+    about: 'Als familiärer Handwerksbetrieb stehen wir für Qualität, Verlässlichkeit und faire Preise. Ob Renovierung, Reparatur oder Neubau — wir sind Ihr Ansprechpartner vor Ort.',
+    phone: '+49 711 2345 6789',
+    email: 'info@mueller-handwerk.de',
+    address: 'Industriestraße 12, 70376 Stuttgart',
+    hours: 'Mo–Fr: 07:00–17:00\nSa: 07:00–13:00\nSo: Geschlossen',
+    website: 'https://instagram.com/mueller_handwerk',
+  },
+  beauty: {
+    businessName: 'Studio Bloom',
+    tagline: 'Deine Schönheit, unser Auftrag',
+    about: 'Im Studio Bloom verschmelzen Wellnessoasen und professionelle Schönheitspflege zu einem einzigartigen Erlebnis. Wir begleiten dich auf dem Weg zu deiner schönsten Version.',
+    phone: '+49 221 3456 7890',
+    email: 'info@studio-bloom.de',
+    address: 'Ehrenstraße 7, 50672 Köln',
+    hours: 'Mo–Fr: 10:00–20:00\nSa: 09:00–17:00\nSo: Geschlossen',
+    website: 'https://instagram.com/studio.bloom',
+  },
+};
+
+document.getElementById('btn-autofill').addEventListener('click', () => {
+  const demo = DEMO_DATA[state.niche];
+  if (!demo) return;
+  const FIELD_MAP = {
+    businessName: 'businessName', tagline: 'tagline', about: 'about',
+    phone: 'phone', email: 'email', address: 'address',
+    hours: 'hours', website: 'website',
+  };
+  let filled = 0;
+  Object.entries(FIELD_MAP).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isEmpty = el.tagName === 'TEXTAREA' ? !el.value.trim() : !el.value.trim();
+    if (isEmpty && demo[key]) {
+      el.value = demo[key];
+      el.dispatchEvent(new Event('input'));
+      // sync state
+      if (key in state) state[key] = demo[key];
+      filled++;
+    }
+  });
+  showToast(filled > 0 ? `✦ ${filled} Felder automatisch ausgefüllt` : 'Alle Felder bereits ausgefüllt');
+  triggerPreview();
 });
 
 // ── Toast ─────────────────────────────────────────

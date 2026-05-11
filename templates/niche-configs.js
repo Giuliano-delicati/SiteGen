@@ -38,6 +38,11 @@ export const NICHES = {
     teamLabel: 'Unser Team',
     aboutLabel: 'Über uns',
     aboutDefault: 'Dein Haar liegt uns am Herzen. Mit viel Erfahrung, hochwertigen Produkten und einem Gespür für aktuelle Trends bringen wir deine Wunschfrisur zum Leben.',
+    teamDefault: [
+      { name: 'Sophie Müller', role: 'Senior Stylistin', photoUrl: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Anna Weber', role: 'Color-Expertin', photoUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Lisa Koch', role: 'Styling & Beratung', photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces' },
+    ],
   },
 
   barber: {
@@ -79,6 +84,11 @@ export const NICHES = {
     teamLabel: 'Unser Team',
     aboutLabel: 'Über uns',
     aboutDefault: 'Wir stehen für erstklassige Handwerkskunst und individuelle Beratung. Jeder Besuch ist ein Erlebnis — von der ersten Beratung bis zum perfekten Finish.',
+    teamDefault: [
+      { name: 'Marco Rossi', role: 'Head Barber', photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Kai Fischer', role: 'Bart-Spezialist', photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Tom Klein', role: 'Classic Cuts', photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces' },
+    ],
   },
 
   fastfood: {

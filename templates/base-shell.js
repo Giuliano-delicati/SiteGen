@@ -348,15 +348,61 @@ export function buildGallery(photos, niche) {
 }
 
 export function buildTeam(data, niche) {
-  if (!data.showTeam || !data.team?.length) return '';
+  const isHairNiche = ['friser', 'barber'].includes(niche.id);
+  // Hair niches always show team (with defaults if none entered); others only when toggled
+  const team = data.team?.length ? data.team : (isHairNiche ? (niche.teamDefault || []) : []);
+  if (!team.length) return '';
+  if (!isHairNiche && !data.showTeam) return '';
+
   return `
-<section class="sg-team section" id="team">
+<!-- TEAM SECTION — standalone CSS so it works in custom barber templates too -->
+<style>
+  .sg-team {
+    padding: 80px 0;
+    background: var(--c-surface, inherit);
+  }
+  .sg-team .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .sg-team__headline {
+    font-family: var(--f-heading, var(--ff-serif, var(--ff-display, serif)));
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 700; margin-bottom: 48px;
+    color: var(--c-text, inherit);
+    letter-spacing: -0.02em;
+  }
+  .sg-team__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 36px;
+  }
+  .sg-team__card { text-align: center; }
+  .sg-team__avatar {
+    width: 130px; height: 130px; border-radius: 50%;
+    overflow: hidden; margin: 0 auto 18px;
+    background: var(--c-border, #ddd);
+    border: 3px solid var(--c-accent, #c9a84c);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .sg-team__avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .sg-team__name {
+    font-family: var(--f-heading, var(--ff-serif, serif));
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--c-text, inherit);
+  }
+  .sg-team__role {
+    font-size: 0.82rem; margin-top: 5px;
+    color: var(--c-accent, #c9a84c);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+</style>
+<section class="sg-team" id="team">
   <div class="container">
-    <h2 class="section-title" data-animate>${niche.teamLabel}</h2>
+    <h2 class="sg-team__headline" data-animate>${niche.teamLabel}</h2>
     <div class="sg-team__grid">
-      ${data.team.map((m, i) => `
-      <div class="sg-team__card" data-animate data-animate-delay="${i+1}">
-        <div class="sg-team__avatar">${m.photoUrl ? `<img src="${m.photoUrl}" alt="${m.name}">` : ''}</div>
+      ${team.map((m, i) => `
+      <div class="sg-team__card" data-animate data-animate-delay="${Math.min(i + 1, 5)}">
+        <div class="sg-team__avatar">
+          ${m.photoUrl ? `<img src="${m.photoUrl}" alt="${m.name}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--c-accent,#c9a84c)">${m.name.charAt(0)}</div>`}
+        </div>
         <div class="sg-team__name">${m.name}</div>
         <div class="sg-team__role">${m.role}</div>
       </div>`).join('')}
