@@ -52,11 +52,11 @@
     <!-- Form Panel -->
     <div class="form-panel" id="form-panel">
 
-      <!-- Step 1: Nische & Template -->
+      <!-- Step 1: Branche -->
       <div class="form-step active" data-step="0">
         <div class="step-header">
-          <h2>Branche & Stil</h2>
-          <p>Wähle die Branche des Kunden und den gewünschten Design-Stil.</p>
+          <h2>Branche</h2>
+          <p>Wähle die Branche des Kunden — das Design wählst du am Ende.</p>
         </div>
 
         <div class="field">
@@ -73,48 +73,6 @@
             <div class="niche-card" data-niche="beauty">
               <div class="niche-card__icon">💅</div>
               <div class="niche-card__label">Beauty & Wellness</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Design-Stil</label>
-          <div class="template-grid" id="template-grid">
-            <div class="template-card selected" data-template="a">
-              <div class="template-card__thumb">
-                <div class="tmpl-preview tmpl-preview-a">
-                  <div class="tmpl-hero"></div>
-                  <div class="tmpl-cards"><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div></div>
-                </div>
-              </div>
-              <div class="template-card__label">A — Minimal</div>
-            </div>
-            <div class="template-card" data-template="b">
-              <div class="template-card__thumb">
-                <div class="tmpl-preview tmpl-preview-b">
-                  <div class="tmpl-hero-b"><div></div><div></div></div>
-                  <div class="tmpl-rows"><div class="tmpl-row"></div><div class="tmpl-row"></div><div class="tmpl-row"></div></div>
-                </div>
-              </div>
-              <div class="template-card__label">B — Bold</div>
-            </div>
-            <div class="template-card" data-template="c">
-              <div class="template-card__thumb">
-                <div class="tmpl-preview tmpl-preview-c">
-                  <div class="tmpl-hero-c"></div>
-                  <div class="tmpl-bento"><div></div><div></div><div></div></div>
-                </div>
-              </div>
-              <div class="template-card__label">C — Editorial</div>
-            </div>
-            <div class="template-card" data-template="d">
-              <div class="template-card__thumb">
-                <div class="tmpl-preview tmpl-preview-d">
-                  <div class="tmpl-hero-d"></div>
-                  <div class="tmpl-round-cards"><div></div><div></div><div></div></div>
-                </div>
-              </div>
-              <div class="template-card__label">D — Warm</div>
             </div>
           </div>
         </div>
@@ -439,6 +397,9 @@
         </div>
 
         <div id="team-section" style="display:none;flex-direction:column;gap:12px;margin-top:8px">
+          <button class="btn-tool btn-tool-secondary" id="btn-demo-team" style="width:100%;justify-content:center;gap:8px">
+            👥 4 Beispiel-Mitglieder laden
+          </button>
           <div class="team-grid" id="team-grid"></div>
           <button class="btn-tool btn-tool-ghost" id="btn-add-team">+ Mitglied hinzufügen</button>
         </div>
@@ -496,8 +457,63 @@
         </div>
       </div>
 
-      <!-- Step 9: Export -->
+      <!-- Step 9: Design-Stil -->
       <div class="form-step" data-step="8">
+        <div class="step-header">
+          <h2>Design-Stil wählen</h2>
+          <p>Alle Inhalte sind eingetragen — wähle jetzt den Stil. Die Vorschau rechts zeigt deine echten Daten.</p>
+        </div>
+
+        <div class="field">
+          <label>Design-Stil</label>
+          <div class="template-grid" id="template-grid">
+            <div class="template-card selected" data-template="a">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-a">
+                  <div class="tmpl-hero"></div>
+                  <div class="tmpl-cards"><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div><div class="tmpl-card"></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">A — Minimal</div>
+            </div>
+            <div class="template-card" data-template="b">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-b">
+                  <div class="tmpl-hero-b"><div></div><div></div></div>
+                  <div class="tmpl-rows"><div class="tmpl-row"></div><div class="tmpl-row"></div><div class="tmpl-row"></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">B — Bold</div>
+            </div>
+            <div class="template-card" data-template="c">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-c">
+                  <div class="tmpl-hero-c"></div>
+                  <div class="tmpl-bento"><div></div><div></div><div></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">C — Editorial</div>
+            </div>
+            <div class="template-card" data-template="d">
+              <div class="template-card__thumb">
+                <div class="tmpl-preview tmpl-preview-d">
+                  <div class="tmpl-hero-d"></div>
+                  <div class="tmpl-round-cards"><div></div><div></div><div></div></div>
+                </div>
+              </div>
+              <div class="template-card__label">D — Warm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(7)">← Zurück</button>
+          <button class="btn-tool btn-tool-primary" onclick="goStep(9)">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Step 10: Export -->
+      <div class="form-step" data-step="9">
         <div class="step-header">
           <h2>Fertig! 🎉</h2>
           <p>Die Website ist bereit. Exportiere sie als standalone HTML-Datei oder zeige sie dem Kunden im Vollbild.</p>
@@ -524,7 +540,7 @@
         </div>
 
         <div class="step-nav">
-          <button class="btn-tool btn-tool-secondary" onclick="goStep(7)">← Zurück</button>
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(8)">← Zurück</button>
           <span></span>
         </div>
       </div>
@@ -594,7 +610,7 @@ let previewDebounce = null;
 
 // ── Step definitions ────────────────────────────
 const STEPS = [
-  { label: 'Branche & Stil' },
+  { label: 'Branche' },
   { label: 'Business-Infos' },
   { label: 'Branding' },
   { label: 'Leistungen' },
@@ -602,6 +618,7 @@ const STEPS = [
   { label: 'Team' },
   { label: 'Extras' },
   { label: 'Kontakt' },
+  { label: 'Design-Stil' },
   { label: 'Export' },
 ];
 
@@ -1263,6 +1280,22 @@ function renderTeamGrid() {
 document.getElementById('btn-add-team').addEventListener('click', () => {
   state.team.push({ name: '', role: '', photoUrl: null });
   renderTeamGrid();
+});
+
+// ── Demo-Team laden ───────────────────────────────
+document.getElementById('btn-demo-team').addEventListener('click', () => {
+  const niche = NICHES[state.niche];
+  const defaults = niche?.teamDefault;
+  if (!defaults?.length) { showToast('⚠ Keine Beispiel-Mitglieder für diese Branche'); return; }
+  state.team = defaults.map(m => ({ ...m }));
+  state.showTeam = true;
+  const toggle = document.getElementById('showTeam');
+  if (toggle) toggle.checked = true;
+  const section = document.getElementById('team-section');
+  if (section) section.style.display = 'flex';
+  renderTeamGrid();
+  triggerPreview();
+  showToast(`✓ ${state.team.length} Beispiel-Mitglieder geladen`);
 });
 
 // ── Pixabay API-Key ──────────────────────────────
