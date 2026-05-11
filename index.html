@@ -233,10 +233,34 @@
       <div class="form-step" data-step="2">
         <div class="step-header">
           <h2>Branding & Farben</h2>
-          <p>Logo und Farben — optional auch automatisch aus bestehendem Auftritt.</p>
+          <p>Links einfügen — Farben werden automatisch erkannt. Oder manuell wählen.</p>
         </div>
 
-        <!-- Logo Preview (hochgeladen in Schritt 2) -->
+        <!-- Quellen: Instagram + Website -->
+        <div class="field">
+          <label>Bestehende Auftritte</label>
+          <div class="brand-sources">
+            <div class="brand-source-row">
+              <span class="brand-source-icon">📸</span>
+              <input type="url" id="brandInstagram" placeholder="https://instagram.com/kundenhandle" autocomplete="off">
+              <button class="btn-tool btn-tool-secondary btn-sm" id="btn-scan-instagram">
+                <span class="spinner" id="spin-ig" style="display:none;width:12px;height:12px;border-width:2px"></span>
+                <span id="icon-ig">Farben laden</span>
+              </button>
+            </div>
+            <div class="brand-source-row">
+              <span class="brand-source-icon">🌐</span>
+              <input type="url" id="brandWebsite" placeholder="https://kundenwebsite.de" autocomplete="off">
+              <button class="btn-tool btn-tool-secondary btn-sm" id="btn-scan-website">
+                <span class="spinner" id="spin-web" style="display:none;width:12px;height:12px;border-width:2px"></span>
+                <span id="icon-web">Farben laden</span>
+              </button>
+            </div>
+          </div>
+          <div class="scan-status" id="brand-scan-status"></div>
+        </div>
+
+        <!-- Logo -->
         <div class="field">
           <label>Logo</label>
           <div style="display:flex;gap:12px;align-items:center">
@@ -244,69 +268,41 @@
               <span style="font-size:1.5rem;color:var(--tool-text-muted)">+</span>
             </div>
             <div style="flex:1">
-              <div id="logo-step3-hint" style="font-size:0.8rem;color:var(--tool-text-muted);margin-bottom:8px;line-height:1.5">
-                In Schritt 2 hochladen — Farben werden automatisch erkannt.
-              </div>
               <label class="upload-area" style="padding:12px;cursor:pointer">
-                <div class="upload-area__text" style="font-size:0.82rem">Anderes Logo hochladen</div>
-                <div class="upload-area__sub">Erkennt Farben aus dem Logo</div>
+                <div class="upload-area__text" style="font-size:0.82rem">Logo hochladen / ersetzen</div>
+                <div class="upload-area__sub">Farben werden automatisch erkannt</div>
                 <input type="file" id="logoUploadAlt" accept="image/*" style="opacity:0;position:absolute;inset:0;width:100%;cursor:pointer">
               </label>
             </div>
           </div>
+          <div class="swatches" id="logo-swatches" style="margin-top:10px"></div>
         </div>
 
-        <!-- Extraction mode tabs -->
+        <!-- Farben (immer sichtbar) -->
         <div class="field">
-          <label>Marken-Erkennung</label>
-          <div class="extract-tabs">
-            <button class="extract-tab active" data-mode="manual">🎨 Manuell</button>
-            <button class="extract-tab" data-mode="logo">🖼 Aus Logo</button>
-            <button class="extract-tab" data-mode="url">🔗 Von Website</button>
-          </div>
-
-          <!-- Manual -->
-          <div class="extract-panel active" id="panel-manual">
-            <div class="color-section">
-              <div class="color-row">
-                <div class="color-picker-wrap">
-                  <input type="color" id="primaryColor" value="#1a1a1a" title="Primärfarbe">
-                </div>
-                <div>
-                  <div style="font-size:0.8rem;font-weight:600">Primärfarbe</div>
-                  <div class="color-hex" id="primaryHex">#1a1a1a</div>
-                </div>
+          <label>Farben</label>
+          <div class="color-section">
+            <div class="color-row">
+              <div class="color-picker-wrap">
+                <input type="color" id="primaryColor" value="#1a1a1a" title="Primärfarbe">
               </div>
-              <div class="color-row">
-                <div class="color-picker-wrap">
-                  <input type="color" id="accentColor" value="#c9a84c" title="Akzentfarbe">
-                </div>
-                <div>
-                  <div style="font-size:0.8rem;font-weight:600">Akzentfarbe</div>
-                  <div class="color-hex" id="accentHex">#c9a84c</div>
-                </div>
+              <div style="flex:1">
+                <div style="font-size:0.8rem;font-weight:600">Primärfarbe</div>
+                <div class="color-hex" id="primaryHex">#1a1a1a</div>
+              </div>
+            </div>
+            <div class="color-row">
+              <div class="color-picker-wrap">
+                <input type="color" id="accentColor" value="#c9a84c" title="Akzentfarbe">
+              </div>
+              <div style="flex:1">
+                <div style="font-size:0.8rem;font-weight:600">Akzentfarbe</div>
+                <div class="color-hex" id="accentHex">#c9a84c</div>
               </div>
             </div>
           </div>
-
-          <!-- From Logo -->
-          <div class="extract-panel" id="panel-logo">
-            <div class="info-box">Logo erst oben hochladen, dann werden hier die erkannten Farben angezeigt.</div>
-            <div class="swatches" id="logo-swatches" style="margin-top:12px"></div>
-          </div>
-
-          <!-- From URL -->
-          <div class="extract-panel" id="panel-url">
-            <div class="field">
-              <label>Bestehende Website-URL</label>
-              <div style="display:flex;gap:8px">
-                <input type="url" id="scanUrl" placeholder="https://kundenwebsite.de" style="flex:1">
-                <button class="btn-tool btn-tool-secondary" id="btn-scan">Scannen</button>
-              </div>
-              <div id="scan-status" style="font-size:0.78rem;color:var(--tool-text-muted);margin-top:6px"></div>
-            </div>
-            <div class="swatches" id="url-swatches"></div>
-          </div>
+          <!-- Farb-Swatches aus URL-Scan -->
+          <div class="swatches" id="url-swatches" style="margin-top:10px"></div>
         </div>
 
         <!-- Font & Dark/Light -->
@@ -749,12 +745,6 @@ async function applyLogoFile(file) {
         });
       }
 
-      // Switch Step 3 to "Aus Logo" tab
-      document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
-      document.querySelector('[data-mode="logo"]').classList.add('active');
-      document.getElementById('panel-logo').classList.add('active');
-
       triggerPreview();
     };
     img.src = state.logoDataUrl;
@@ -890,48 +880,84 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
   }
 });
 
-// ── Extraction mode tabs ─────────────────────────
-document.querySelectorAll('.extract-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(`panel-${tab.dataset.mode}`).classList.add('active');
+// ── Brand color scan helper ───────────────────────
+function renderColorSwatches(colors, targetElId) {
+  const swatchEl = document.getElementById(targetElId);
+  if (!swatchEl || !colors.length) return;
+  swatchEl.innerHTML = colors.map((c, i) =>
+    `<button class="color-swatch${i < 2 ? ' active-swatch' : ''}" style="background:${c};${i < 2 ? 'outline:2px solid rgba(255,255,255,0.5);outline-offset:2px' : ''}" title="${c}" data-color="${c}" data-idx="${i}"></button>`
+  ).join('');
+  swatchEl.querySelectorAll('.color-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.idx);
+      if (idx === 0) {
+        state.primaryColor = btn.dataset.color;
+        document.getElementById('primaryColor').value = btn.dataset.color;
+        document.getElementById('primaryHex').textContent = btn.dataset.color;
+      } else {
+        state.accentColor = btn.dataset.color;
+        document.getElementById('accentColor').value = btn.dataset.color;
+        document.getElementById('accentHex').textContent = btn.dataset.color;
+      }
+      triggerPreview();
+    });
   });
+}
+
+async function runBrandScan(url, spinEl, iconEl) {
+  const status = document.getElementById('brand-scan-status');
+  const ensured = /^https?:\/\//.test(url) ? url : 'https://' + url;
+  spinEl.style.display = 'inline-block';
+  iconEl.style.display = 'none';
+  status.innerHTML = `<span style="color:var(--tool-text-muted);font-size:0.78rem">Scanne Farben…</span>`;
+
+  try {
+    const result = await extractFromUrl(ensured);
+    if (result.colors.length) {
+      // Auto-apply first two colors
+      if (result.colors[0]) {
+        state.primaryColor = result.colors[0];
+        document.getElementById('primaryColor').value = result.colors[0];
+        document.getElementById('primaryHex').textContent = result.colors[0];
+      }
+      if (result.colors[1]) {
+        state.accentColor = result.colors[1];
+        document.getElementById('accentColor').value = result.colors[1];
+        document.getElementById('accentHex').textContent = result.colors[1];
+      }
+      renderColorSwatches(result.colors, 'url-swatches');
+      status.innerHTML = `<span class="scan-badge">✓ ${result.colors.length} Farben</span>`
+        + (result.fonts.length ? `<span class="scan-badge">✓ Font: ${result.fonts[0]}</span>` : '');
+      triggerPreview();
+    } else {
+      status.innerHTML = `<span class="scan-badge warn">⚠ ${result.error || 'Keine Farben gefunden'}</span>`;
+    }
+  } catch (err) {
+    status.innerHTML = `<span class="scan-badge warn">✗ ${err.message}</span>`;
+  } finally {
+    spinEl.style.display = 'none';
+    iconEl.style.display = 'inline';
+  }
+}
+
+// ── Scan: Instagram ──────────────────────────────
+document.getElementById('btn-scan-instagram').addEventListener('click', async () => {
+  const url = document.getElementById('brandInstagram').value.trim();
+  if (!url) { showToast('⚠ Instagram-URL eingeben'); return; }
+  const btn = document.getElementById('btn-scan-instagram');
+  btn.disabled = true;
+  await runBrandScan(url, document.getElementById('spin-ig'), document.getElementById('icon-ig'));
+  btn.disabled = false;
 });
 
-// ── URL scan ─────────────────────────────────────
-document.getElementById('btn-scan').addEventListener('click', async () => {
-  const url = document.getElementById('scanUrl').value.trim();
-  if (!url) return;
-  const status = document.getElementById('scan-status');
-  status.innerHTML = '<span class="spinner"></span> Scanne Website (bis zu 3 Proxies)…';
-
-  const result = await extractFromUrl(url);
-
-  if (result.colors.length) {
-    const swatchEl = document.getElementById('url-swatches');
-    swatchEl.innerHTML = result.colors.map(c =>
-      `<button class="color-swatch" style="background:${c}" title="${c}" data-color="${c}"></button>`
-    ).join('');
-    swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
-      btn.addEventListener('click', () => {
-        if (i === 0) {
-          state.primaryColor = btn.dataset.color;
-          document.getElementById('primaryColor').value = btn.dataset.color;
-          document.getElementById('primaryHex').textContent = btn.dataset.color;
-        } else {
-          state.accentColor = btn.dataset.color;
-          document.getElementById('accentColor').value = btn.dataset.color;
-          document.getElementById('accentHex').textContent = btn.dataset.color;
-        }
-        triggerPreview();
-      });
-    });
-    status.textContent = `✓ ${result.colors.length} Farben gefunden${result.fonts.length ? ` · Fonts: ${result.fonts.slice(0, 2).join(', ')}` : ''}`;
-  } else {
-    status.textContent = `⚠ ${result.error || 'Keine Farben gefunden — versuche eine andere URL'}`;
-  }
+// ── Scan: Website ────────────────────────────────
+document.getElementById('btn-scan-website').addEventListener('click', async () => {
+  const url = document.getElementById('brandWebsite').value.trim();
+  if (!url) { showToast('⚠ Website-URL eingeben'); return; }
+  const btn = document.getElementById('btn-scan-website');
+  btn.disabled = true;
+  await runBrandScan(url, document.getElementById('spin-web'), document.getElementById('icon-web'));
+  btn.disabled = false;
 });
 
 // ── Photos ───────────────────────────────────────

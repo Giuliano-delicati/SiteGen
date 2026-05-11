@@ -775,6 +775,32 @@ html, body {
 }
 .logo-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
+/* ── Brand Sources (Step 3) ──────────────────────── */
+.brand-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brand-source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-source-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
 /* ── Upload Slots (Step 2 — Logo + Preisliste) ───── */
 .upload-slots {
   display: grid;
