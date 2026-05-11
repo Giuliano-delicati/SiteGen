@@ -2,7 +2,8 @@
 // API-Key kostenlos unter: https://pixabay.com/api/docs/
 
 const NICHE_QUERIES = {
-  friser:   ['barber shop interior', 'hairdresser salon', 'barbershop scissors', 'hair cutting', 'barber pole'],
+  friser:   ['hairdresser salon women', 'hair styling salon', 'women haircut stylist', 'hair color salon', 'hairdresser scissors'],
+  barber:   ['barber shop men', 'barbershop interior', 'barber pole vintage', 'mens haircut barber', 'straight razor shave'],
   fastfood: ['burger restaurant', 'fast food grill', 'street food', 'hamburger fresh', 'food truck'],
   cafe:     ['coffee shop interior', 'cafe table', 'espresso cup', 'barista coffee', 'cozy cafe'],
   handwerk: ['craftsman workshop', 'handyman tools', 'construction worker', 'carpenter wood', 'electrician work'],

@@ -1,4 +1,4 @@
-import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon } from './base-shell.js';
+import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon, buildServicesTicker, buildBookingWidget } from './base-shell.js';
 
 // Template B — Bold / High-Contrast
 // Barber variant: MASKULIN — Reines Schwarz + Gold, inspiriert von house-of-fade.de
@@ -242,6 +242,10 @@ export function generate(data, niche, colors, fonts) {
 </style>`;
 
     const words = (data.businessName || niche.label).split(' ');
+    const barberBookingVars = `<style>
+  .bk-section { --c-bg:#0d0d0d; --c-surface:#1a1a1a; --c-text:#f5f0e8; --c-accent:#C9A55A; --c-border:rgba(255,255,255,0.12); --c-text-muted:rgba(255,255,255,0.45); --f-heading:'Oswald',sans-serif; --f-body:'Inter',sans-serif; }
+</style>`;
+
     const barberBody = `
 <nav class="mk-nav" id="mk-nav">
   <a href="#hero" class="mk-nav__logo">${words[0]}<span>${words.slice(1).join(' ') || '.'}</span></a>
@@ -249,10 +253,12 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#services">Services</a></li>
     <li><a href="#about">Über uns</a></li>
     ${galleryPhotos.length > 0 ? '<li><a href="#gallery">Galerie</a></li>' : ''}
+    <li><a href="#buchen">Termin</a></li>
     <li><a href="#contact">Kontakt</a></li>
   </ul>
   ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="mk-nav__cta">${niche.heroCta} →</a>` : (data.phone ? `<a href="tel:${data.phone}" class="mk-nav__cta">${data.phone}</a>` : '')}
 </nav>
+${buildServicesTicker(services, '#C9A55A')}
 
 <section class="mk-hero" id="hero">
   ${heroPhoto
@@ -336,6 +342,8 @@ ${galleryPhotos.length > 0 ? `
 
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${barberBookingVars}
+${buildBookingWidget(data, niche)}
 ${buildContactSection(data, niche)}
 
 <footer class="mk-footer">
@@ -416,6 +424,7 @@ ${barberBody}
 
   const body = `
 ${buildNav(data, niche)}
+${niche.id === 'friser' ? buildServicesTicker(services, colors.accent) : ''}
 <section class="sg-hero-b" id="hero">
   <div class="sg-hero-b__left" data-animate="left">
     <div class="sg-hero-b__eyebrow">${niche.label}</div>
@@ -460,6 +469,7 @@ ${buildNav(data, niche)}
 ${buildGallery(galleryPhotos.length ? galleryPhotos : data.photos?.slice(1) || [], niche)}
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${niche.id === 'friser' ? buildBookingWidget(data, niche) : ''}
 ${buildContactSection(data, niche)}
 ${buildFooter(data, niche)}
 ${buildCallButton(data)}`;

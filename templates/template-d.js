@@ -1,4 +1,4 @@
-import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon } from './base-shell.js';
+import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon, buildServicesTicker, buildBookingWidget } from './base-shell.js';
 
 // Template D — Warm / Organic
 // Barber variant: OLDSCHOOL — Espresso-Braun + Messing, inspiriert von beardy-boys.de
@@ -235,6 +235,10 @@ export function generate(data, niche, colors, fonts) {
   @media (prefers-reduced-motion: reduce) { [data-animate] { opacity: 1; transform: none; transition: none; } }
 </style>`;
 
+    const barberBookingVars = `<style>
+  .bk-section { --c-bg:#1a0f08; --c-surface:#221409; --c-text:#f0e6d3; --c-accent:#c48b2a; --c-border:rgba(255,255,255,0.1); --c-text-muted:rgba(240,230,211,0.45); --f-heading:'Playfair Display',serif; --f-body:'Cardo',serif; }
+</style>`;
+
     const barberBody = `
 <nav class="os-nav" id="os-nav">
   <a href="#hero" class="os-nav__logo">
@@ -245,10 +249,12 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#services">Preise</a></li>
     <li><a href="#about">Über uns</a></li>
     ${photos.length > 2 ? '<li><a href="#gallery">Galerie</a></li>' : ''}
+    <li><a href="#buchen">Termin</a></li>
     <li><a href="#contact">Kontakt</a></li>
   </ul>
   ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="os-nav__cta">${niche.heroCta}</a>` : (data.phone ? `<a href="tel:${data.phone}" class="os-nav__cta">${data.phone}</a>` : '')}
 </nav>
+${buildServicesTicker(services, '#c48b2a')}
 
 <section class="os-hero" id="hero">
   ${photos[0] ? `<div class="os-hero__bg" style="background-image:url('${photos[0]}')"></div>` : `<div class="os-hero__no-photo"></div>`}
@@ -330,6 +336,8 @@ ${photos.length > 2 ? `
 
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${barberBookingVars}
+${buildBookingWidget(data, niche)}
 ${buildContactSection(data, niche)}
 
 <footer class="os-footer">
@@ -409,6 +417,7 @@ ${barberBody}
 
   const body = `
 ${buildNav(data, niche)}
+${niche.id === 'friser' ? buildServicesTicker(services, colors.accent) : ''}
 <section class="sg-hero-d" id="hero" style="background: ${!photos[0] ? `linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent}66 100%)` : 'var(--c-bg)'}">
   ${photos[0] ? `<div class="sg-hero-d__bg" style="${heroStyle}"></div>` : `<div class="sg-hero-d__blob"></div>`}
   <div class="sg-hero-d__content" data-animate="fade">
@@ -454,6 +463,7 @@ ${buildNav(data, niche)}
 ${buildGallery(photos.slice(2), niche)}
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${niche.id === 'friser' ? buildBookingWidget(data, niche) : ''}
 ${buildContactSection(data, niche)}
 ${buildFooter(data, niche)}
 ${buildCallButton(data)}`;

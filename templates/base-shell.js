@@ -341,3 +341,453 @@ export function buildTeam(data, niche) {
   </div>
 </section>`;
 }
+
+// ─────────────────────────────────────────────────────────
+// SERVICES TICKER — horizontaler Scrollbalken oben
+// ─────────────────────────────────────────────────────────
+export function buildServicesTicker(services, accentColor = '#c9a84c') {
+  if (!services?.length) return '';
+  // Dupliziere für nahtlosen Loop
+  const items = [...services, ...services, ...services];
+  return `
+<div class="sg-ticker" aria-hidden="true">
+  <div class="sg-ticker__track">
+    ${items.map(s => `
+    <span class="sg-ticker__item">
+      <span class="sg-ticker__name">${s.name}</span>
+      ${s.price ? `<span class="sg-ticker__price">${s.price}</span>` : ''}
+      <span class="sg-ticker__sep">◆</span>
+    </span>`).join('')}
+  </div>
+</div>
+<style>
+  .sg-ticker {
+    width: 100%; overflow: hidden;
+    background: ${accentColor};
+    color: #000;
+    padding: 10px 0;
+    position: relative; z-index: 99;
+  }
+  .sg-ticker__track {
+    display: flex; align-items: center; gap: 0;
+    width: max-content;
+    animation: tickerScroll 40s linear infinite;
+  }
+  .sg-ticker:hover .sg-ticker__track { animation-play-state: paused; }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-33.333%); }
+  }
+  .sg-ticker__item {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 0 28px; white-space: nowrap;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .sg-ticker__name { }
+  .sg-ticker__price { opacity: 0.65; font-weight: 400; }
+  .sg-ticker__sep { opacity: 0.4; font-size: 0.55rem; }
+  @media (prefers-reduced-motion: reduce) {
+    .sg-ticker__track { animation: none; }
+    .sg-ticker { overflow-x: auto; }
+  }
+</style>`;
+}
+
+// ─────────────────────────────────────────────────────────
+// BOOKING WIDGET — Terminbuchung (Frisör & Barber)
+// Service → Mitarbeiter → Datum → Uhrzeit → Kontaktdaten
+// ─────────────────────────────────────────────────────────
+export function buildBookingWidget(data, niche) {
+  const services = (data.services?.length ? data.services : niche.servicesDefault);
+  const team = (data.showTeam && data.team?.length) ? data.team : [];
+  const formAction = data.formspreeId
+    ? `https://formspree.io/f/${data.formspreeId}`
+    : `mailto:${data.email || ''}`;
+
+  const teamItems = team.length
+    ? team.map((m, i) => `
+      <div class="bk-member" data-member="${i}" data-name="${m.name}">
+        <div class="bk-member__avatar">${m.name.charAt(0).toUpperCase()}</div>
+        <div class="bk-member__name">${m.name}</div>
+        ${m.role ? `<div class="bk-member__role">${m.role}</div>` : ''}
+      </div>`).join('')
+    : `<p style="opacity:0.5;font-size:0.85rem">Nächster freier Mitarbeiter</p>`;
+
+  return `
+<!-- ── BOOKING WIDGET ── -->
+<section class="bk-section" id="buchen">
+<div class="bk-wrap">
+
+<div class="bk-header">
+  <h2 class="bk-title">Termin buchen</h2>
+  <p class="bk-sub">Wähle deinen Service, Mitarbeiter, Datum und Uhrzeit</p>
+</div>
+
+<div class="bk-grid">
+
+  <!-- A: SERVICE -->
+  <div class="bk-col" id="bk-col-service">
+    <div class="bk-col__label"><span class="bk-col__letter">A</span> Service</div>
+    <div class="bk-services">
+      ${services.map((s, i) => `
+      <div class="bk-svc" data-idx="${i}" data-name="${s.name}" data-price="${s.price || ''}" data-duration="${s.duration || 30}">
+        <div class="bk-svc__info">
+          <span class="bk-svc__name">${s.name}</span>
+          ${s.duration ? `<span class="bk-svc__dur">${s.duration} min</span>` : ''}
+        </div>
+        ${s.price ? `<span class="bk-svc__price">${s.price}</span>` : ''}
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <!-- B: MITARBEITER -->
+  <div class="bk-col" id="bk-col-team">
+    <div class="bk-col__label"><span class="bk-col__letter">B</span> Bei</div>
+    <div class="bk-team">
+      ${teamItems}
+    </div>
+  </div>
+
+  <!-- C: DATUM -->
+  <div class="bk-col bk-col--wide" id="bk-col-date">
+    <div class="bk-col__label"><span class="bk-col__letter">C</span> Datum</div>
+    <div class="bk-cal">
+      <div class="bk-cal__nav">
+        <button class="bk-cal__nav-btn" id="bk-prev">&#8249;</button>
+        <span class="bk-cal__month" id="bk-cal-title"></span>
+        <button class="bk-cal__nav-btn" id="bk-next">&#8250;</button>
+      </div>
+      <div class="bk-cal__grid" id="bk-cal-grid"></div>
+    </div>
+    <!-- D: UHRZEIT inline unter Datum -->
+    <div class="bk-col__label" style="margin-top:24px"><span class="bk-col__letter">D</span> Uhrzeit</div>
+    <div class="bk-times" id="bk-times">
+      <p class="bk-times__hint">Erst Datum wählen</p>
+    </div>
+  </div>
+
+  <!-- E: DEINE DATEN + Zusammenfassung -->
+  <div class="bk-col" id="bk-col-form">
+    <div class="bk-col__label"><span class="bk-col__letter">E</span> Deine Daten</div>
+    <form class="bk-form" id="bk-form" action="${formAction}" method="POST">
+      <input type="hidden" name="_subject" value="Terminanfrage — ${data.businessName || niche.label}">
+      <input type="hidden" id="bk-h-service" name="service" value="">
+      <input type="hidden" id="bk-h-member" name="mitarbeiter" value="">
+      <input type="hidden" id="bk-h-date" name="datum" value="">
+      <input type="hidden" id="bk-h-time" name="uhrzeit" value="">
+      <input class="bk-input" type="text"  name="name"   placeholder="Name *"           required>
+      <input class="bk-input" type="tel"   name="phone"  placeholder="Telefon *"         required>
+      <input class="bk-input" type="email" name="email"  placeholder="E-Mail (optional)">
+      <textarea class="bk-input bk-textarea" name="note" placeholder="Anmerkung (optional)" rows="3"></textarea>
+      <div class="bk-summary">
+        <div class="bk-summary__row"><span>Service</span><span id="bs-service">—</span></div>
+        <div class="bk-summary__row"><span>Datum</span><span id="bs-date">—</span></div>
+        <div class="bk-summary__row"><span>Uhrzeit</span><span id="bs-time">—</span></div>
+        <div class="bk-summary__row" id="bs-member-row" style="display:none"><span>Bei</span><span id="bs-member">—</span></div>
+      </div>
+      <button class="bk-submit" type="submit" id="bk-submit">Termin anfragen</button>
+    </form>
+  </div>
+
+</div><!-- /bk-grid -->
+</div><!-- /bk-wrap -->
+</section>
+
+<style>
+  /* ── BOOKING WIDGET STYLES ── */
+  .bk-section { background: var(--c-surface, #f8f8f8); padding: 80px 0; }
+  .bk-wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .bk-header { margin-bottom: 40px; }
+  .bk-title { font-family: var(--f-heading, serif); font-size: clamp(1.8rem, 3vw, 2.6rem); margin-bottom: 8px; }
+  .bk-sub { color: var(--c-text-muted, #888); font-size: 0.95rem; }
+
+  .bk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.6fr 1fr;
+    gap: 2px;
+    background: var(--c-border, #e0e0e0);
+    border: 1px solid var(--c-border, #e0e0e0);
+  }
+  .bk-col {
+    background: var(--c-bg, #fff);
+    padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .bk-col__label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--c-text-muted, #888);
+    margin-bottom: 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--c-border, #e0e0e0);
+  }
+  .bk-col__letter {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px;
+    background: var(--c-text, #111); color: var(--c-bg, #fff);
+    font-size: 0.65rem; font-weight: 700; border-radius: 2px;
+  }
+
+  /* Services */
+  .bk-services { display: flex; flex-direction: column; gap: 0; }
+  .bk-svc {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 12px; border-bottom: 1px solid var(--c-border, #eee);
+    cursor: pointer; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .bk-svc:hover { background: var(--c-surface, #f8f8f8); }
+  .bk-svc.active {
+    background: var(--c-text, #111); color: var(--c-bg, #fff);
+    border-left-color: var(--c-accent, #c9a84c);
+  }
+  .bk-svc__info { display: flex; flex-direction: column; gap: 2px; }
+  .bk-svc__name { font-size: 0.9rem; font-weight: 500; }
+  .bk-svc__dur { font-size: 0.72rem; opacity: 0.55; }
+  .bk-svc__price { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+  .bk-svc.active .bk-svc__price { color: var(--c-accent, #c9a84c); }
+
+  /* Team */
+  .bk-team { display: flex; flex-direction: column; gap: 0; }
+  .bk-member {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-bottom: 1px solid var(--c-border, #eee);
+    cursor: pointer; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .bk-member:hover { background: var(--c-surface, #f8f8f8); }
+  .bk-member.active { background: var(--c-text, #111); color: var(--c-bg, #fff); border-left-color: var(--c-accent, #c9a84c); }
+  .bk-member__avatar {
+    width: 32px; height: 32px; border-radius: 2px;
+    background: var(--c-surface, #f0f0f0); border: 1px solid var(--c-border, #ddd);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+  .bk-member.active .bk-member__avatar { background: var(--c-accent, #c9a84c); color: #000; border-color: transparent; }
+  .bk-member__name { font-size: 0.9rem; font-weight: 500; }
+  .bk-member__role { font-size: 0.72rem; opacity: 0.55; }
+
+  /* Calendar */
+  .bk-cal__nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .bk-cal__nav-btn {
+    background: none; border: 1px solid var(--c-border, #ddd); color: var(--c-text, #111);
+    width: 28px; height: 28px; cursor: pointer; font-size: 1.1rem; border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .bk-cal__nav-btn:hover { background: var(--c-surface, #f0f0f0); }
+  .bk-cal__month { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+  .bk-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .bk-cal__day-name {
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    text-align: center; color: var(--c-text-muted, #888); padding: 4px 0;
+  }
+  .bk-cal__day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; cursor: pointer; border-radius: 2px;
+    transition: background 0.15s; position: relative;
+  }
+  .bk-cal__day:hover:not(.disabled):not(.empty) { background: var(--c-surface, #f0f0f0); }
+  .bk-cal__day.today::after { content: '•'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 0.45rem; color: var(--c-accent, #c9a84c); }
+  .bk-cal__day.selected { background: var(--c-text, #111); color: var(--c-bg, #fff); }
+  .bk-cal__day.disabled, .bk-cal__day.empty { color: var(--c-border, #ccc); cursor: default; }
+  .bk-cal__day.past { color: var(--c-border, #ccc); cursor: default; }
+
+  /* Times */
+  .bk-times { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .bk-times__hint { font-size: 0.8rem; opacity: 0.45; }
+  .bk-time {
+    padding: 7px 14px; border: 1px solid var(--c-border, #ddd);
+    font-size: 0.8rem; font-weight: 500; cursor: pointer; border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .bk-time:hover { border-color: var(--c-accent, #c9a84c); color: var(--c-accent, #c9a84c); }
+  .bk-time.selected { background: var(--c-text, #111); color: var(--c-bg, #fff); border-color: var(--c-text, #111); }
+
+  /* Form */
+  .bk-form { display: flex; flex-direction: column; gap: 10px; }
+  .bk-input {
+    width: 100%; padding: 11px 12px;
+    background: var(--c-surface, #f8f8f8);
+    border: 1px solid var(--c-border, #ddd);
+    color: var(--c-text, #111); font-size: 0.88rem;
+    border-radius: 2px; outline: none; transition: border-color 0.2s;
+    font-family: var(--f-body, sans-serif);
+  }
+  .bk-input:focus { border-color: var(--c-accent, #c9a84c); }
+  .bk-textarea { resize: vertical; min-height: 72px; }
+  .bk-summary {
+    background: var(--c-surface, #f0f0f0);
+    padding: 12px; margin: 4px 0;
+    display: flex; flex-direction: column; gap: 0;
+    border: 1px solid var(--c-border, #e0e0e0);
+  }
+  .bk-summary__row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--c-border, #e8e8e8);
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--c-text-muted, #888);
+  }
+  .bk-summary__row:last-child { border-bottom: none; }
+  .bk-summary__row span:last-child { font-weight: 600; color: var(--c-text, #111); font-size: 0.8rem; }
+  .bk-submit {
+    background: var(--c-text, #111); color: var(--c-bg, #fff);
+    border: none; padding: 14px; font-size: 0.75rem;
+    font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: pointer; transition: opacity 0.2s;
+    font-family: var(--f-body, sans-serif); opacity: 0.45;
+  }
+  .bk-submit.ready { opacity: 1; background: var(--c-accent, #c9a84c); color: #000; }
+  .bk-submit.ready:hover { opacity: 0.88; }
+
+  @media (max-width: 900px) {
+    .bk-grid { grid-template-columns: 1fr 1fr; }
+    .bk-col--wide { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .bk-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+(function() {
+  // ── State ──
+  const state = { service: null, member: null, date: null, time: null };
+  let calYear, calMonth;
+  const today = new Date();
+  calYear = today.getFullYear();
+  calMonth = today.getMonth();
+
+  // ── Helpers ──
+  const $ = id => document.getElementById(id);
+  const DAYS = ['MO','DI','MI','DO','FR','SA','SO'];
+  const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+  function updateSummary() {
+    $('bs-service').textContent = state.service?.name || '—';
+    $('bs-date').textContent = state.date
+      ? state.date.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'short' })
+      : '—';
+    $('bs-time').textContent = state.time || '—';
+    if (state.member) {
+      $('bs-member-row').style.display = 'flex';
+      $('bs-member').textContent = state.member;
+    }
+    $('bk-h-service').value = state.service ? state.service.name + (state.service.price ? ' — ' + state.service.price : '') : '';
+    $('bk-h-member').value = state.member || '';
+    $('bk-h-date').value = state.date ? state.date.toLocaleDateString('de-DE') : '';
+    $('bk-h-time').value = state.time || '';
+    const ready = state.service && state.date && state.time;
+    $('bk-submit').classList.toggle('ready', !!ready);
+  }
+
+  // ── Service Selection ──
+  document.querySelectorAll('.bk-svc').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.bk-svc').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+      state.service = {
+        name: el.dataset.name,
+        price: el.dataset.price,
+        duration: parseInt(el.dataset.duration) || 30,
+      };
+      renderTimes();
+      updateSummary();
+    });
+  });
+
+  // ── Team Selection ──
+  document.querySelectorAll('.bk-member').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.bk-member').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+      state.member = el.dataset.name;
+      updateSummary();
+    });
+  });
+
+  // ── Calendar ──
+  function renderCal() {
+    const grid = $('bk-cal-grid');
+    $('bk-cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
+    const firstDay = new Date(calYear, calMonth, 1);
+    let startDow = firstDay.getDay(); // 0=Sun
+    if (startDow === 0) startDow = 7; // Mon-first
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    let html = DAYS.map(d => '<div class="bk-cal__day-name">' + d + '</div>').join('');
+    for (let i = 1; i < startDow; i++) html += '<div class="bk-cal__day empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const thisDate = new Date(calYear, calMonth, d);
+      const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const isSun  = thisDate.getDay() === 0;
+      const isToday = thisDate.toDateString() === today.toDateString();
+      const isSel   = state.date && thisDate.toDateString() === state.date.toDateString();
+      const cls = [
+        'bk-cal__day',
+        isPast || isSun ? 'past' : '',
+        isToday ? 'today' : '',
+        isSel ? 'selected' : '',
+      ].filter(Boolean).join(' ');
+      html += '<div class="' + cls + '" data-d="' + d + '">' + d + '</div>';
+    }
+    grid.innerHTML = html;
+    grid.querySelectorAll('.bk-cal__day:not(.past):not(.empty):not(.disabled)').forEach(el => {
+      el.addEventListener('click', () => {
+        const d = parseInt(el.dataset.d);
+        if (!d) return;
+        const day = new Date(calYear, calMonth, d);
+        if (day.getDay() === 0) return; // Sunday closed
+        state.date = day;
+        state.time = null;
+        renderCal();
+        renderTimes();
+        updateSummary();
+      });
+    });
+  }
+
+  $('bk-prev').addEventListener('click', () => {
+    calMonth--;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    renderCal();
+  });
+  $('bk-next').addEventListener('click', () => {
+    calMonth++;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderCal();
+  });
+
+  // ── Time Slots ──
+  function renderTimes() {
+    const container = $('bk-times');
+    if (!state.date) { container.innerHTML = '<p class="bk-times__hint">Erst Datum wählen</p>'; return; }
+    const duration = state.service?.duration || 30;
+    const open  = 9 * 60;   // 09:00
+    const close = 18 * 60;  // 18:00
+    let html = '';
+    for (let m = open; m + duration <= close; m += duration) {
+      const hh = String(Math.floor(m / 60)).padStart(2, '0');
+      const mm = String(m % 60).padStart(2, '0');
+      const t = hh + ':' + mm;
+      const isSel = state.time === t;
+      html += '<div class="bk-time' + (isSel ? ' selected' : '') + '" data-t="' + t + '">' + t + '</div>';
+    }
+    container.innerHTML = html;
+    container.querySelectorAll('.bk-time').forEach(el => {
+      el.addEventListener('click', () => {
+        state.time = el.dataset.t;
+        renderTimes();
+        updateSummary();
+      });
+    });
+  }
+
+  // ── Init ──
+  renderCal();
+  updateSummary();
+})();
+</script>`;
+}

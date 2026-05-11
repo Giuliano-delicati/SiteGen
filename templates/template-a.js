@@ -1,4 +1,4 @@
-import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon } from './base-shell.js';
+import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildGallery, buildTeam, svgIcon, buildServicesTicker, buildBookingWidget } from './base-shell.js';
 
 // Template A — Minimal / Clean
 // Barber variant: ELEGANT — Hell/Creme, inspiriert von exquisitbarberlounge.com
@@ -242,6 +242,10 @@ export function generate(data, niche, colors, fonts) {
   @media (prefers-reduced-motion: reduce) { [data-animate] { opacity: 1; transform: none; transition: none; } }
 </style>`;
 
+    const barberBookingVars = `<style>
+  .bk-section { --c-bg:#f8f4ef; --c-surface:#f0ebe3; --c-text:#111111; --c-accent:#b89650; --c-border:rgba(0,0,0,0.12); --c-text-muted:rgba(0,0,0,0.5); --f-heading:'Cormorant Garamond',serif; --f-body:'Jost',sans-serif; }
+</style>`;
+
     const barberBody = `
 <!-- NAV -->
 <nav class="eg-nav" id="eg-nav">
@@ -250,10 +254,12 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#services">Preise</a></li>
     <li><a href="#about">Über uns</a></li>
     ${data.photos?.length > 2 ? '<li><a href="#gallery">Galerie</a></li>' : ''}
+    <li><a href="#buchen">Termin</a></li>
     <li><a href="#contact">Kontakt</a></li>
   </ul>
   ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="eg-nav__cta">${niche.heroCta}</a>` : (data.phone ? `<a href="tel:${data.phone}" class="eg-nav__cta">${data.phone}</a>` : '')}
 </nav>
+${buildServicesTicker(services, '#b89650')}
 
 <!-- HERO -->
 <section class="eg-hero" id="hero">
@@ -337,6 +343,8 @@ ${galleryPhotos.length > 0 ? `
 
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${barberBookingVars}
+${buildBookingWidget(data, niche)}
 ${buildContactSection(data, niche)}
 
 <!-- FOOTER -->
@@ -389,6 +397,7 @@ ${barberBody}
 
   const body = `
 ${buildNav(data, niche)}
+${niche.id === 'friser' ? buildServicesTicker(services, colors.accent) : ''}
 
 <section class="sg-hero" id="hero">
   <div class="sg-hero__bg" style="${heroStyle}"></div>
@@ -440,6 +449,7 @@ ${buildNav(data, niche)}
 ${buildGallery(galleryPhotos.length ? galleryPhotos : data.photos?.slice(1) || [], niche)}
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${niche.id === 'friser' ? buildBookingWidget(data, niche) : ''}
 ${buildContactSection(data, niche)}
 ${buildFooter(data, niche)}
 ${buildCallButton(data)}`;

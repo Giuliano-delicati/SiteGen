@@ -1,4 +1,4 @@
-import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildTeam, svgIcon } from './base-shell.js';
+import { buildShell, buildNav, buildFooter, buildContactSection, buildExtrasSection, buildCallButton, buildTeam, svgIcon, buildServicesTicker, buildBookingWidget } from './base-shell.js';
 
 // Template C — Editorial / Photo-Heavy
 // Barber variant: VERSPIELT — Navy + Signalrot, inspiriert von gentlemanbarbers.de
@@ -224,6 +224,10 @@ export function generate(data, niche, colors, fonts) {
       ? `${words[0]}<br><span class="accent">${words.slice(1).join(' ')}</span>`
       : `<span class="accent">${words[0]}</span>`;
 
+    const barberBookingVars = `<style>
+  .bk-section { --c-bg:#0e1623; --c-surface:#141c2e; --c-text:#e8edf8; --c-accent:#e63535; --c-border:rgba(255,255,255,0.1); --c-text-muted:rgba(232,237,248,0.45); --f-heading:'Barlow Condensed',sans-serif; --f-body:'Barlow',sans-serif; }
+</style>`;
+
     const barberBody = `
 <nav class="vp-nav" id="vp-nav">
   <a href="#hero" class="vp-nav__logo">${words[0]}<span>${words.length > 1 ? words.slice(1).join(' ') : '.'}</span></a>
@@ -231,10 +235,12 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#services">Services</a></li>
     <li><a href="#about">Über uns</a></li>
     ${photos.length > 2 ? '<li><a href="#gallery">Galerie</a></li>' : ''}
+    <li><a href="#buchen">Termin</a></li>
     <li><a href="#contact">Kontakt</a></li>
   </ul>
   ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="vp-nav__cta">${niche.heroCta} →</a>` : (data.phone ? `<a href="tel:${data.phone}" class="vp-nav__cta">${data.phone}</a>` : '')}
 </nav>
+${buildServicesTicker(services, '#e63535')}
 
 <section class="vp-hero" id="hero">
   ${photos[0]
@@ -310,6 +316,8 @@ ${photos.length > 2 ? `
 
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${barberBookingVars}
+${buildBookingWidget(data, niche)}
 ${buildContactSection(data, niche)}
 
 <footer class="vp-footer">
@@ -397,6 +405,7 @@ ${barberBody}
 
   const body = `
 ${buildNav(data, niche)}
+${niche.id === 'friser' ? buildServicesTicker(services, colors.accent) : ''}
 <section class="sg-hero-c" id="hero">
   <div class="sg-hero-c__bg" style="${heroStyle}"></div>
   <div class="sg-hero-c__overlay"></div>
@@ -460,6 +469,7 @@ ${photos.length > 3 ? `
 </section>` : ''}
 ${buildTeam(data, niche)}
 ${buildExtrasSection(data, niche)}
+${niche.id === 'friser' ? buildBookingWidget(data, niche) : ''}
 ${buildContactSection(data, niche)}
 ${buildFooter(data, niche)}
 ${buildCallButton(data)}`;
