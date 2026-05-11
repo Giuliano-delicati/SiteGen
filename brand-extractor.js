@@ -103,6 +103,75 @@ export async function extractFromUrl(url) {
   return parseHtmlForColors(html);
 }
 
+// --- Mode 3: URL → contact info (phone, email, address, name, description) ---
+export async function extractContactFromUrl(url) {
+  const html = await fetchViaProxy(url);
+  if (!html) return { error: 'Website nicht erreichbar (CORS)' };
+  return parseHtmlForContact(html);
+}
+
+function parseHtmlForContact(html) {
+  const result = {};
+  const stripTags = s => s.replace(/<[^>]+>/g, ' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+
+  // ── Name: og:title → title tag ──
+  const ogTitle = html.match(/property=["']og:title["'][^>]*content=["']([^"']{2,80})["']/i)
+    || html.match(/content=["']([^"']{2,80})["'][^>]*property=["']og:title["']/i);
+  if (ogTitle) {
+    result.name = ogTitle[1].trim().replace(/\s*[|–\-—·•].*$/, '').trim();
+  } else {
+    const t = html.match(/<title[^>]*>([^<]{2,80})<\/title>/i);
+    if (t) result.name = t[1].replace(/\s*[|–\-—·•].*$/, '').trim();
+  }
+
+  // ── Description: og:description → meta description ──
+  const ogDesc = html.match(/property=["']og:description["'][^>]*content=["']([^"']{5,300})["']/i)
+    || html.match(/content=["']([^"']{5,300})["'][^>]*property=["']og:description["']/i)
+    || html.match(/name=["']description["'][^>]*content=["']([^"']{5,300})["']/i)
+    || html.match(/content=["']([^"']{5,300})["'][^>]*name=["']description["']/i);
+  if (ogDesc) result.description = ogDesc[1].trim();
+
+  // ── Phone: tel: href (most reliable) → text patterns ──
+  const telHref = html.match(/href=["']tel:([+\d\s\-().]{7,22})["']/i);
+  if (telHref) {
+    result.phone = telHref[1].trim();
+  } else {
+    const phoneText = html.match(/(?:Tel\.?|Telefon|Fon|Phone|☎|📞|📱)[^\d+<\n]{0,10}([+]?(?:49|0)\d[\d\s\-\/.()]{6,18})/i);
+    if (phoneText) result.phone = phoneText[1].replace(/\s+/g,' ').trim();
+  }
+
+  // ── Email: mailto: href → plain text ──
+  const mailto = html.match(/href=["']mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,6})["']/i);
+  if (mailto) {
+    result.email = mailto[1].trim();
+  } else {
+    const emailText = html.match(/\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]{3,}\.[a-zA-Z]{2,6})\b/);
+    if (emailText && !/example|test@|noreply|no-reply|privacy|datenschutz/i.test(emailText[1])) {
+      result.email = emailText[1].trim();
+    }
+  }
+
+  // ── Address: schema.org JSON-LD → itemprop → <address> tag ──
+  const street  = html.match(/"streetAddress"\s*:\s*"([^"]{3,80})"/i)
+    || html.match(/itemprop=["']streetAddress["'][^>]*>([^<]{3,80})</i);
+  const postal  = html.match(/"postalCode"\s*:\s*"([^"]{4,10})"/i)
+    || html.match(/itemprop=["']postalCode["'][^>]*>([^<]{4,10})</i);
+  const city    = html.match(/"addressLocality"\s*:\s*"([^"]{2,60})"/i)
+    || html.match(/itemprop=["']addressLocality["'][^>]*>([^<]{2,60})</i);
+
+  if (street) {
+    const parts = [stripTags(street[1]).trim()];
+    const postalCity = [postal?.[1], city?.[1]].filter(Boolean).join(' ');
+    if (postalCity) parts.push(postalCity.trim());
+    result.address = parts.filter(Boolean).join(', ');
+  } else {
+    const addr = html.match(/<address[^>]*>([\s\S]{5,300}?)<\/address>/i);
+    if (addr) result.address = stripTags(addr[1]).slice(0, 100).trim();
+  }
+
+  return result;
+}
+
 function parseHtmlForColors(html) {
   const colors = [];
   const fonts = [];

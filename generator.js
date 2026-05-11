@@ -29,6 +29,12 @@ export function generateWebsite(formData) {
     gfonts: niche.googleFonts,
   };
 
+  // Build photos array — inject pricelist as additional gallery photo
+  let photos = formData.photos?.length ? [...formData.photos] : [...(niche.defaultPhotos || [])];
+  if (formData.pricelistDataUrl && !photos.includes(formData.pricelistDataUrl)) {
+    photos.push(formData.pricelistDataUrl);
+  }
+
   const data = {
     businessName: formData.businessName || '',
     tagline: formData.tagline || '',
@@ -41,7 +47,8 @@ export function generateWebsite(formData) {
     hours: formData.hours || '',
     darkMode: formData.darkMode ?? niche.defaultDark,
     logoDataUrl: formData.logoDataUrl || null,
-    photos: formData.photos?.length ? formData.photos : (niche.defaultPhotos || []),
+    pricelistPhoto: formData.pricelistDataUrl || null,
+    photos,
     services: formData.services || [],
     team: formData.team || [],
     showTeam: formData.showTeam && formData.team?.length > 0,

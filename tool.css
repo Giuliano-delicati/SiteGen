@@ -775,6 +775,150 @@ html, body {
 }
 .logo-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
+/* ── Upload Slots (Step 2 — Logo + Preisliste) ───── */
+.upload-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.upload-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upload-slot > label {
+  cursor: pointer;
+  display: block;
+  text-transform: none;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  letter-spacing: normal;
+}
+
+.upload-slot__zone {
+  aspect-ratio: 4 / 3;
+  border: 2px dashed var(--tool-border);
+  border-radius: var(--tool-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--tool-bg);
+  position: relative;
+}
+
+.upload-slot__zone:hover {
+  border-color: var(--tool-accent);
+  background: var(--tool-accent-dim);
+}
+
+.upload-slot__zone.has-image {
+  border-style: solid;
+  border-color: rgba(255,255,255,0.15);
+  background: #000;
+}
+
+.upload-slot__zone img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.upload-slot__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--tool-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 8px;
+  pointer-events: none;
+}
+
+.upload-slot__placeholder-icon { font-size: 1.8rem; }
+
+.upload-slot__caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tool-text-muted);
+}
+
+.upload-slot__clear {
+  background: none;
+  border: none;
+  color: var(--tool-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: none;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: color 0.15s, background 0.15s;
+}
+
+.upload-slot__clear.visible { display: block; }
+.upload-slot__clear:hover { color: #e63946; background: rgba(230,57,70,0.1); }
+
+/* ── Scan Row ─────────────────────────────────────── */
+.scan-row {
+  display: flex;
+  gap: 8px;
+}
+
+.scan-row input { flex: 1; }
+
+.scan-status {
+  min-height: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.scan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 100px;
+  background: rgba(45,106,63,0.18);
+  border: 1px solid rgba(74,222,128,0.3);
+  color: #4ade80;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.scan-badge.warn {
+  background: rgba(232,200,74,0.1);
+  border-color: rgba(232,200,74,0.3);
+  color: var(--tool-accent);
+}
+
+/* ── Auto-fill flash animation ───────────────────── */
+@keyframes autofillFlash {
+  0%   { border-color: #4ade80; box-shadow: 0 0 0 2px rgba(74,222,128,0.18); }
+  70%  { border-color: #4ade80; box-shadow: 0 0 0 2px rgba(74,222,128,0.08); }
+  100% { border-color: var(--tool-border); box-shadow: none; }
+}
+
+.field-autofilled {
+  animation: autofillFlash 1.8s ease forwards;
+}
+
 /* ── Toast notification ─────────────────────────── */
 .toast {
   position: fixed;

@@ -130,16 +130,71 @@
         <div class="step-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
           <div>
             <h2>Business-Infos</h2>
-            <p>Die grundlegenden Informationen über das Unternehmen.</p>
+            <p>Logo & Preisliste hochladen, dann Website oder Instagram scannen — Felder füllen sich automatisch.</p>
           </div>
-          <button class="btn-tool btn-tool-secondary" id="btn-autofill" style="flex-shrink:0;white-space:nowrap;margin-top:4px" title="Leere Felder automatisch mit Demo-Daten befüllen">
-            ✦ Demo-Daten einfügen
+          <button class="btn-tool btn-tool-secondary" id="btn-autofill" style="flex-shrink:0;white-space:nowrap;margin-top:4px" title="Demo-Daten einfügen">
+            ✦ Demo
           </button>
         </div>
 
+        <!-- Upload-Slots: Logo + Preisliste -->
+        <div class="field">
+          <label>Fotos hochladen</label>
+          <div class="upload-slots">
+            <!-- Logo -->
+            <div class="upload-slot">
+              <label>
+                <div class="upload-slot__zone" id="logo-zone">
+                  <div class="upload-slot__placeholder" id="logo-placeholder">
+                    <span class="upload-slot__placeholder-icon">🏷</span>
+                    <span>Logo hochladen</span>
+                    <span style="font-size:0.68rem;opacity:0.6">PNG · SVG · JPG</span>
+                  </div>
+                </div>
+                <input type="file" id="logoUpload" accept="image/*" style="display:none">
+              </label>
+              <div class="upload-slot__caption">
+                <span>Logo</span>
+                <button class="upload-slot__clear" id="logo-clear">✕ entfernen</button>
+              </div>
+            </div>
+            <!-- Preisliste -->
+            <div class="upload-slot">
+              <label>
+                <div class="upload-slot__zone" id="pricelist-zone">
+                  <div class="upload-slot__placeholder" id="pricelist-placeholder">
+                    <span class="upload-slot__placeholder-icon">📋</span>
+                    <span>Preisliste hochladen</span>
+                    <span style="font-size:0.68rem;opacity:0.6">Foto · Scan · Screenshot</span>
+                  </div>
+                </div>
+                <input type="file" id="pricelistUpload" accept="image/*" style="display:none">
+              </label>
+              <div class="upload-slot__caption">
+                <span>Preisliste</span>
+                <button class="upload-slot__clear" id="pricelist-clear">✕ entfernen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- URL / Instagram Scan -->
+        <div class="field">
+          <label>Website oder Instagram scannen</label>
+          <div class="scan-row">
+            <input type="url" id="scanUrlBiz" placeholder="https://instagram.com/name  oder  https://kundenwebsite.de">
+            <button class="btn-tool btn-tool-secondary" id="btn-scan-biz" style="white-space:nowrap;gap:6px">
+              <span class="spinner" id="scan-biz-spinner" style="display:none;width:13px;height:13px;border-width:2px"></span>
+              <span id="scan-biz-icon">⚡</span> Infos laden
+            </button>
+          </div>
+          <div class="scan-status" id="scan-biz-status"></div>
+        </div>
+
+        <!-- Business-Felder -->
         <div class="field">
           <label>Unternehmensname *</label>
-          <input type="text" id="businessName" placeholder="z.B. Barber King" autocomplete="off">
+          <input type="text" id="businessName" placeholder="z.B. Salon Belle Époque" autocomplete="off">
         </div>
 
         <div class="field">
@@ -168,11 +223,6 @@
           <input type="text" id="address" placeholder="Musterstraße 1, 12345 Stadt">
         </div>
 
-        <div class="field">
-          <label>Terminbuchungs-Link</label>
-          <input type="url" id="bookingUrl" placeholder="https://calendly.com/...">
-        </div>
-
         <div class="step-nav">
           <button class="btn-tool btn-tool-secondary" onclick="goStep(0)">← Zurück</button>
           <button class="btn-tool btn-tool-primary" onclick="goStep(2)">Weiter →</button>
@@ -186,7 +236,7 @@
           <p>Logo und Farben — optional auch automatisch aus bestehendem Auftritt.</p>
         </div>
 
-        <!-- Logo Upload -->
+        <!-- Logo Preview (hochgeladen in Schritt 2) -->
         <div class="field">
           <label>Logo</label>
           <div style="display:flex;gap:12px;align-items:center">
@@ -194,10 +244,13 @@
               <span style="font-size:1.5rem;color:var(--tool-text-muted)">+</span>
             </div>
             <div style="flex:1">
-              <label class="upload-area" style="padding:14px;cursor:pointer">
-                <div class="upload-area__text">Logo hochladen (PNG/SVG)</div>
-                <div class="upload-area__sub">Farben werden automatisch extrahiert</div>
-                <input type="file" id="logoUpload" accept="image/*" style="opacity:0;position:absolute;inset:0;width:100%;cursor:pointer">
+              <div id="logo-step3-hint" style="font-size:0.8rem;color:var(--tool-text-muted);margin-bottom:8px;line-height:1.5">
+                In Schritt 2 hochladen — Farben werden automatisch erkannt.
+              </div>
+              <label class="upload-area" style="padding:12px;cursor:pointer">
+                <div class="upload-area__text" style="font-size:0.82rem">Anderes Logo hochladen</div>
+                <div class="upload-area__sub">Erkennt Farben aus dem Logo</div>
+                <input type="file" id="logoUploadAlt" accept="image/*" style="opacity:0;position:absolute;inset:0;width:100%;cursor:pointer">
               </label>
             </div>
           </div>
@@ -467,7 +520,7 @@
 <script type="module">
 import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';
 import { generateWebsite, downloadWebsite } from './generator.js';
-import { extractColorsFromLogo, extractFromUrl } from './brand-extractor.js';
+import { extractColorsFromLogo, extractFromUrl, extractContactFromUrl } from './brand-extractor.js';
 import { fetchNichePhotos, saveApiKey, loadApiKey } from './pixabay-loader.js';
 
 // ── State ────────────────────────────────────────
@@ -481,11 +534,12 @@ const state = {
   email: '',
   address: '',
   bookingUrl: '',
+  logoDataUrl: null,
+  pricelistDataUrl: null,
   primaryColor: '#1a1a1a',
   accentColor: '#c9a84c',
   darkMode: true,
   fontCombo: '',
-  logoDataUrl: null,
   photos: [],
   services: [],
   team: [],
@@ -602,7 +656,6 @@ bindInput('about', 'about');
 bindInput('phone', 'phone');
 bindInput('email', 'email');
 bindInput('address', 'address');
-bindInput('bookingUrl', 'bookingUrl');
 bindInput('hours', 'hours');
 bindInput('website', 'website');
 bindInput('formspreeId', 'formspreeId');
@@ -638,28 +691,31 @@ document.getElementById('showTeam').addEventListener('change', e => {
   triggerPreview();
 });
 
-// ── Logo upload ──────────────────────────────────
-document.getElementById('logoUpload').addEventListener('change', e => {
-  const file = e.target.files[0];
+// ── Logo upload helper ────────────────────────────
+async function applyLogoFile(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = async (ev) => {
     state.logoDataUrl = ev.target.result;
-    const previewEl = document.getElementById('logo-preview');
-    previewEl.innerHTML = `<img src="${state.logoDataUrl}" alt="Logo">`;
 
-    // Auto-extract colors and switch to "Aus Logo" tab
+    // Update Step 2 zone
+    const zone = document.getElementById('logo-zone');
+    if (zone) {
+      zone.innerHTML = `<img src="${state.logoDataUrl}" alt="Logo">`;
+      zone.classList.add('has-image');
+      document.getElementById('logo-clear').classList.add('visible');
+    }
+
+    // Update Step 3 preview
+    const previewEl = document.getElementById('logo-preview');
+    if (previewEl) previewEl.innerHTML = `<img src="${state.logoDataUrl}" alt="Logo">`;
+
+    // Auto-extract colors
     const img = new Image();
     img.onload = async () => {
       const colors = await extractColorsFromLogo(img);
 
-      // Switch to logo tab so swatches are visible
-      document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
-      document.querySelector('[data-mode="logo"]').classList.add('active');
-      document.getElementById('panel-logo').classList.add('active');
-
-      // Auto-apply first two colors immediately
+      // Auto-apply first two colors
       if (colors[0]) {
         state.primaryColor = colors[0];
         document.getElementById('primaryColor').value = colors[0];
@@ -671,24 +727,33 @@ document.getElementById('logoUpload').addEventListener('change', e => {
         document.getElementById('accentHex').textContent = colors[1];
       }
 
+      // Update swatches in Step 3 logo tab
       const swatchEl = document.getElementById('logo-swatches');
-      swatchEl.innerHTML = colors.map((c, i) =>
-        `<button class="color-swatch${i < 2 ? ' active-swatch' : ''}" style="background:${c};${i < 2 ? 'outline:2px solid #fff;outline-offset:2px' : ''}" title="${c}" data-color="${c}"></button>`
-      ).join('');
-      swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-          if (i === 0) {
-            state.primaryColor = btn.dataset.color;
-            document.getElementById('primaryColor').value = btn.dataset.color;
-            document.getElementById('primaryHex').textContent = btn.dataset.color;
-          } else {
-            state.accentColor = btn.dataset.color;
-            document.getElementById('accentColor').value = btn.dataset.color;
-            document.getElementById('accentHex').textContent = btn.dataset.color;
-          }
-          triggerPreview();
+      if (swatchEl) {
+        swatchEl.innerHTML = colors.map((c, i) =>
+          `<button class="color-swatch${i < 2 ? ' active-swatch' : ''}" style="background:${c};${i < 2 ? 'outline:2px solid #fff;outline-offset:2px' : ''}" title="${c}" data-color="${c}"></button>`
+        ).join('');
+        swatchEl.querySelectorAll('.color-swatch').forEach((btn, i) => {
+          btn.addEventListener('click', () => {
+            if (i === 0) {
+              state.primaryColor = btn.dataset.color;
+              document.getElementById('primaryColor').value = btn.dataset.color;
+              document.getElementById('primaryHex').textContent = btn.dataset.color;
+            } else {
+              state.accentColor = btn.dataset.color;
+              document.getElementById('accentColor').value = btn.dataset.color;
+              document.getElementById('accentHex').textContent = btn.dataset.color;
+            }
+            triggerPreview();
+          });
         });
-      });
+      }
+
+      // Switch Step 3 to "Aus Logo" tab
+      document.querySelectorAll('.extract-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.extract-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-mode="logo"]').classList.add('active');
+      document.getElementById('panel-logo').classList.add('active');
 
       triggerPreview();
     };
@@ -696,6 +761,133 @@ document.getElementById('logoUpload').addEventListener('change', e => {
     triggerPreview();
   };
   reader.readAsDataURL(file);
+}
+
+// ── Logo upload — Step 2 ─────────────────────────
+document.getElementById('logoUpload').addEventListener('change', e => {
+  applyLogoFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+// ── Logo upload — Step 3 (alternative) ───────────
+document.getElementById('logoUploadAlt').addEventListener('change', e => {
+  applyLogoFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+// ── Logo clear ───────────────────────────────────
+document.getElementById('logo-clear').addEventListener('click', (e) => {
+  e.preventDefault();
+  state.logoDataUrl = null;
+  const zone = document.getElementById('logo-zone');
+  zone.classList.remove('has-image');
+  zone.innerHTML = `<div class="upload-slot__placeholder">
+    <span class="upload-slot__placeholder-icon">🏷</span>
+    <span>Logo hochladen</span>
+    <span style="font-size:0.68rem;opacity:0.6">PNG · SVG · JPG</span>
+  </div>`;
+  document.getElementById('logo-clear').classList.remove('visible');
+  document.getElementById('logo-preview').innerHTML = `<span style="font-size:1.5rem;color:var(--tool-text-muted)">+</span>`;
+  triggerPreview();
+});
+
+// ── Preisliste upload ────────────────────────────
+document.getElementById('pricelistUpload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.pricelistDataUrl = ev.target.result;
+    const zone = document.getElementById('pricelist-zone');
+    zone.innerHTML = `<img src="${state.pricelistDataUrl}" alt="Preisliste">`;
+    zone.classList.add('has-image');
+    document.getElementById('pricelist-clear').classList.add('visible');
+    triggerPreview();
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+// ── Preisliste clear ─────────────────────────────
+document.getElementById('pricelist-clear').addEventListener('click', (e) => {
+  e.preventDefault();
+  state.pricelistDataUrl = null;
+  const zone = document.getElementById('pricelist-zone');
+  zone.classList.remove('has-image');
+  zone.innerHTML = `<div class="upload-slot__placeholder">
+    <span class="upload-slot__placeholder-icon">📋</span>
+    <span>Preisliste hochladen</span>
+    <span style="font-size:0.68rem;opacity:0.6">Foto · Scan · Screenshot</span>
+  </div>`;
+  document.getElementById('pricelist-clear').classList.remove('visible');
+  triggerPreview();
+});
+
+// ── Step 2 URL / Instagram Scan ──────────────────
+document.getElementById('btn-scan-biz').addEventListener('click', async () => {
+  const rawUrl = document.getElementById('scanUrlBiz').value.trim();
+  if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
+
+  // Ensure protocol
+  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
+
+  const btn    = document.getElementById('btn-scan-biz');
+  const icon   = document.getElementById('scan-biz-icon');
+  const spinner = document.getElementById('scan-biz-spinner');
+  const status  = document.getElementById('scan-biz-status');
+
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  icon.style.display    = 'none';
+  status.innerHTML = `<span style="color:var(--tool-text-muted);font-size:0.78rem">Scanne…</span>`;
+
+  try {
+    const contact = await extractContactFromUrl(url);
+
+    if (contact.error) {
+      status.innerHTML = `<span class="scan-badge warn">⚠ ${contact.error}</span>`;
+      return;
+    }
+
+    const FIELD_MAP = [
+      { key: 'name',        id: 'businessName', stateKey: 'businessName', label: 'Name' },
+      { key: 'description', id: 'about',        stateKey: 'about',        label: 'Beschreibung' },
+      { key: 'phone',       id: 'phone',        stateKey: 'phone',        label: 'Telefon' },
+      { key: 'email',       id: 'email',        stateKey: 'email',        label: 'E-Mail' },
+      { key: 'address',     id: 'address',      stateKey: 'address',      label: 'Adresse' },
+    ];
+
+    const found = [];
+    FIELD_MAP.forEach(({ key, id, stateKey, label }) => {
+      if (!contact[key]) return;
+      const el = document.getElementById(id);
+      if (!el || el.value.trim()) return; // skip if already filled
+      el.value = contact[key];
+      state[stateKey] = contact[key];
+      el.dispatchEvent(new Event('input'));
+      // Flash animation
+      el.classList.remove('field-autofilled');
+      void el.offsetWidth;
+      el.classList.add('field-autofilled');
+      setTimeout(() => el.classList.remove('field-autofilled'), 2000);
+      found.push(label);
+    });
+
+    if (found.length) {
+      status.innerHTML = found.map(f => `<span class="scan-badge">✓ ${f}</span>`).join('');
+      showToast(`✓ ${found.length} Felder automatisch ausgefüllt`);
+    } else {
+      status.innerHTML = `<span class="scan-badge warn">ℹ Keine neuen Infos gefunden — Felder bereits gefüllt oder Website blockiert</span>`;
+    }
+
+    triggerPreview();
+  } catch (err) {
+    status.innerHTML = `<span class="scan-badge warn">✗ ${err.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    icon.style.display    = 'inline';
+  }
 });
 
 // ── Extraction mode tabs ─────────────────────────
@@ -1102,7 +1294,7 @@ document.getElementById('btn-autofill').addEventListener('click', () => {
   const FIELD_MAP = {
     businessName: 'businessName', tagline: 'tagline', about: 'about',
     phone: 'phone', email: 'email', address: 'address',
-    hours: 'hours', website: 'website',
+    hours: 'hours',
   };
   let filled = 0;
   Object.entries(FIELD_MAP).forEach(([key, id]) => {
