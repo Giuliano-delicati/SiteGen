@@ -375,6 +375,399 @@ ${barberBody}
 </html>`;
   }
 
+  // ── FRISÖR ORDINÄR — Klassisch & Professionell ──
+  // Warm Off-White #faf7f2 · Gold #b8916a · Lora + Source Sans 3
+  // Inspiriert von: schoenheitsrausch.de — klare Salon-Ästhetik
+  if (niche.id === 'friser') {
+    const ac = '#b8916a';
+    const heroPhoto  = photos[0] || '';
+    const aboutPhoto = photos[1] || '';
+    const galleryPhotos = photos.slice(2, 8);
+
+    const friserHead = `<title>${data.businessName || niche.label}</title>
+<meta name="description" content="${data.tagline || niche.heroSubline}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════
+     FRISÖR ORDINÄR — Klassisch & Professionell
+     Off-White #faf7f2 · Gold #b8916a
+  ═══════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:     #faf7f2;
+    --bg2:    #f3ede5;
+    --sur:    #ffffff;
+    --tx:     #2a2118;
+    --muted:  #7a6a5a;
+    --ac:     #b8916a;
+    --ac2:    #cca882;
+    --border: #e2d8ce;
+    --ff-ser: 'Lora', Georgia, serif;
+    --ff-san: 'Source Sans 3', system-ui, sans-serif;
+  }
+
+  body { background: var(--bg); color: var(--tx); font-family: var(--ff-san); font-weight: 400; }
+  .or-container { max-width: 1140px; margin: 0 auto; padding: 0 48px; }
+  @media (max-width: 768px) { .or-container { padding: 0 20px; } }
+
+  /* NAV */
+  .or-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 56px; transition: background 0.35s, padding 0.35s, box-shadow 0.35s;
+  }
+  .or-nav.scrolled {
+    background: rgba(250,247,242,0.97); backdrop-filter: blur(14px);
+    padding: 14px 56px; box-shadow: 0 1px 0 var(--border);
+  }
+  .or-nav__logo {
+    font-family: var(--ff-ser); font-size: 1.35rem; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--tx); text-decoration: none;
+  }
+  .or-nav__logo em { font-style: italic; color: var(--ac); }
+  .or-nav__links { display: flex; gap: 36px; list-style: none; }
+  .or-nav__links a {
+    font-family: var(--ff-san); font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .or-nav__links a:hover { color: var(--ac); }
+  .or-nav__links a[href="#buchen"] {
+    background: var(--ac); color: #fff;
+    padding: 8px 20px; letter-spacing: 0.12em;
+    animation: orBookGlow 2.8s ease-in-out infinite;
+  }
+  .or-nav__links a[href="#buchen"]:hover { background: var(--ac2); }
+  @keyframes orBookGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(184,145,106,0.5); }
+    55%       { box-shadow: 0 0 0 8px rgba(184,145,106,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .or-nav__links a[href="#buchen"] { animation: none; } }
+  @media (max-width: 768px) { .or-nav { padding: 18px 20px; } .or-nav__links { display: none; } }
+
+  /* HERO — Fullscreen Foto + warmem Overlay, zentriert */
+  .or-hero {
+    position: relative; height: 100svh; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+  }
+  .or-hero__bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    transform: scale(1.06); animation: orZoom 10s ease forwards;
+  }
+  @keyframes orZoom { to { transform: scale(1); } }
+  .or-hero__overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(42,33,24,0.32) 0%, rgba(42,33,24,0.65) 100%);
+  }
+  .or-hero__no-photo { position: absolute; inset: 0; background: var(--bg2); }
+  .or-hero__content { position: relative; z-index: 2; padding: 0 24px; }
+  .or-hero__tag {
+    display: inline-block; border: 1px solid rgba(255,255,255,0.5);
+    padding: 6px 22px; margin-bottom: 28px;
+    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.85);
+  }
+  .or-hero__title {
+    font-family: var(--ff-ser); font-size: clamp(3.2rem, 7vw, 7.5rem);
+    font-weight: 600; color: #fff; line-height: 1; margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  .or-hero__title em { font-style: italic; color: rgba(255,255,255,0.75); }
+  .or-hero__sub {
+    font-family: var(--ff-san); font-size: 1rem; color: rgba(255,255,255,0.75);
+    max-width: 480px; margin: 0 auto 44px; line-height: 1.7;
+  }
+  .or-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--ff-san); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none;
+    padding: 14px 32px; transition: all 0.22s;
+  }
+  .or-btn-gold { background: var(--ac); color: #fff; }
+  .or-btn-gold:hover { background: var(--ac2); }
+  .or-btn-ghost-w { border: 1px solid rgba(255,255,255,0.45); color: #fff; }
+  .or-btn-ghost-w:hover { border-color: #fff; }
+  .or-btn-ghost { border: 1px solid var(--border); color: var(--tx); }
+  .or-btn-ghost:hover { border-color: var(--ac); color: var(--ac); }
+
+  /* SERVICES — Klassische dotted Preisliste in 2 Spalten */
+  .or-services { background: var(--bg); padding: 100px 0; }
+  .or-divider {
+    display: flex; align-items: center; gap: 20px; margin-bottom: 16px;
+    font-family: var(--ff-san); font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ac);
+  }
+  .or-divider::before, .or-divider::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--ac); opacity: 0.4; }
+  .or-section-title {
+    font-family: var(--ff-ser); font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 600; color: var(--tx); text-align: center;
+    line-height: 1.1; margin-bottom: 64px;
+  }
+  .or-section-title em { font-style: italic; color: var(--ac); }
+  .or-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
+  .or-price-item {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 16px 0; border-bottom: 1px dotted var(--border); gap: 12px;
+    transition: background 0.18s;
+  }
+  .or-price-item:hover { padding-left: 6px; }
+  .or-price-item__info { flex: 1; }
+  .or-price-item__name {
+    font-family: var(--ff-ser); font-size: 1.02rem; font-weight: 500;
+    color: var(--tx); margin-bottom: 3px;
+  }
+  .or-price-item__desc { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+  .or-price-item__price {
+    font-family: var(--ff-san); font-size: 0.92rem; font-weight: 600;
+    color: var(--ac); white-space: nowrap; flex-shrink: 0;
+  }
+  .or-services__cta { text-align: center; margin-top: 52px; }
+  @media (max-width: 768px) { .or-price-grid { grid-template-columns: 1fr; } }
+
+  /* ABOUT — Split: Foto links, Text rechts */
+  .or-about { background: var(--bg2); padding: 100px 0; }
+  .or-about__inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .or-about__img-wrap { position: relative; }
+  .or-about__img {
+    width: 100%; aspect-ratio: 4/5; object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .or-about__img-wrap:hover .or-about__img { transform: scale(1.02); }
+  .or-about__img-wrap { overflow: hidden; }
+  .or-about__badge {
+    position: absolute; bottom: -20px; right: -20px;
+    background: var(--ac); color: #fff; padding: 24px 28px; text-align: center;
+  }
+  .or-about__badge-num {
+    font-family: var(--ff-ser); font-size: 2.2rem; font-weight: 700; display: block; line-height: 1;
+  }
+  .or-about__badge-text { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .or-about__text { }
+  .or-about__label {
+    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 600;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--ac);
+    margin-bottom: 20px;
+  }
+  .or-about__title {
+    font-family: var(--ff-ser); font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 600; color: var(--tx); line-height: 1.15; margin-bottom: 24px;
+  }
+  .or-about__title em { font-style: italic; }
+  .or-about__copy { font-size: 0.95rem; color: var(--muted); line-height: 1.9; margin-bottom: 14px; }
+  .or-about__addr { font-size: 0.82rem; color: var(--muted); margin-bottom: 36px; }
+  @media (max-width: 768px) {
+    .or-about__inner { grid-template-columns: 1fr; gap: 40px; }
+    .or-about__badge { bottom: 12px; right: 12px; }
+  }
+
+  /* GALLERY */
+  .or-gallery { background: var(--bg); padding: 80px 0; }
+  .or-gallery__grid {
+    display: grid; margin-top: 48px;
+    grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .or-gallery__grid .or-gal-item:first-child { grid-column: span 2; }
+  .or-gal-item { overflow: hidden; aspect-ratio: 1; }
+  .or-gal-item:first-child { aspect-ratio: auto; }
+  .or-gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease, filter 0.4s; filter: saturate(0.85); }
+  .or-gal-item:hover img { transform: scale(1.06); filter: saturate(1.1); }
+
+  /* FOOTER */
+  .or-footer { background: var(--tx); color: rgba(250,247,242,0.75); padding: 72px 0 40px; }
+  .or-footer__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .or-footer__logo {
+    font-family: var(--ff-ser); font-size: 1.6rem; font-weight: 600;
+    color: #faf7f2; letter-spacing: 0.03em; margin-bottom: 16px;
+  }
+  .or-footer__logo em { font-style: italic; color: var(--ac); }
+  .or-footer__tag { font-size: 0.88rem; line-height: 1.7; }
+  .or-footer__contact { font-size: 0.84rem; line-height: 2.2; }
+  .or-footer__copy { font-size: 0.7rem; color: rgba(250,247,242,0.25); border-top: 1px solid rgba(250,247,242,0.1); padding-top: 24px; }
+  @media (max-width: 768px) { .or-footer__inner { grid-template-columns: 1fr; } }
+
+  /* CONTACT UTILITIES (for buildContactSection) */
+  .section { padding: 80px 0; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 48px; }
+  @media (max-width: 768px) { .container { padding: 0 20px; } }
+  .section-title { font-family: var(--ff-ser); font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 600; color: var(--tx); margin-bottom: 12px; }
+  .section-subtitle { font-size: 1rem; color: var(--muted); margin-bottom: 48px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; font-family:var(--ff-san); font-size:0.78rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; text-decoration:none; transition:all 0.22s; }
+  .btn-primary { background: var(--ac); color: #fff; }
+  .btn-primary:hover { background: var(--ac2); }
+  .btn-outline { border: 1px solid var(--border); color: var(--tx); }
+  .btn-outline:hover { border-color: var(--ac); color: var(--ac); }
+  .sg-form { display: flex; flex-direction: column; gap: 16px; }
+  .sg-form input, .sg-form textarea { width: 100%; padding: 14px 16px; background: var(--sur); border: 1px solid var(--border); color: var(--tx); font-family: var(--ff-san); font-size: 0.9rem; outline: none; transition: border-color 0.2s; border-radius: 0; }
+  .sg-form input:focus, .sg-form textarea:focus { border-color: var(--ac); }
+  .sg-form textarea { min-height: 120px; resize: vertical; }
+  .sg-contact { background: var(--bg2); }
+  .sg-contact__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .sg-contact__item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+  .sg-contact__icon { width: 40px; height: 40px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sg-contact__label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac); margin-bottom: 4px; }
+  .sg-contact__value { font-size: 0.9rem; color: var(--muted); }
+  @media (max-width: 768px) { .sg-contact__inner { grid-template-columns: 1fr; } }
+
+  [data-animate] { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+  [data-animate="left"]  { transform: translateX(-40px); }
+  [data-animate="right"] { transform: translateX(40px); }
+  [data-animate="scale"] { transform: scale(0.95); }
+  [data-animate].visible { opacity: 1; transform: none; }
+  [data-animate-delay="1"] { transition-delay: 0.1s; } [data-animate-delay="2"] { transition-delay: 0.2s; }
+  [data-animate-delay="3"] { transition-delay: 0.3s; } [data-animate-delay="4"] { transition-delay: 0.4s; }
+  [data-animate-delay="5"] { transition-delay: 0.5s; }
+  @media (prefers-reduced-motion: reduce) { [data-animate] { opacity: 1; transform: none; transition: none; } }
+</style>`;
+
+    const friserBookingVars = `<style>
+  .bk-section { --c-bg:#faf7f2; --c-surface:#ffffff; --c-text:#2a2118; --c-accent:#b8916a; --c-border:#e2d8ce; --c-text-muted:#7a6a5a; --f-heading:'Lora',Georgia,serif; --f-body:'Source Sans 3',system-ui,sans-serif; }
+</style>`;
+
+    const nameWords = (data.businessName || niche.label).split(' ');
+    const heroTitleOr = nameWords.length > 1
+      ? `${nameWords[0]}<em> ${nameWords.slice(1).join(' ')}</em>`
+      : `<em>${nameWords[0]}</em>`;
+
+    const friserBody = `
+<nav class="or-nav" id="or-nav">
+  <a href="#hero" class="or-nav__logo">${nameWords[0]}<em>${nameWords.length > 1 ? ' ' + nameWords.slice(1).join(' ') : ''}</em></a>
+  <ul class="or-nav__links">
+    <li><a href="#services">Leistungen</a></li>
+    <li><a href="#about">Über uns</a></li>
+    ${galleryPhotos.length > 0 ? '<li><a href="#gallery">Galerie</a></li>' : ''}
+    <li><a href="#buchen">Termin</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+</nav>
+${buildServicesTicker(services, ac)}
+
+<section class="or-hero" id="hero">
+  ${heroPhoto
+    ? `<div class="or-hero__bg" style="background-image:url('${heroPhoto}')"></div><div class="or-hero__overlay"></div>`
+    : `<div class="or-hero__no-photo"></div>`}
+  <div class="or-hero__content" data-animate="fade">
+    <div class="or-hero__tag">${niche.label}</div>
+    <h1 class="or-hero__title">${heroTitleOr}</h1>
+    <p class="or-hero__sub">${data.tagline || niche.heroTagline}</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a>` : ''}
+      ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost-w">☎ ${data.phone}</a>` : ''}
+    </div>
+  </div>
+</section>
+
+<section class="or-services" id="services">
+  <div class="or-container">
+    <div data-animate="fade" style="text-align:center;margin-bottom:0">
+      <div class="or-divider">${niche.label}</div>
+      <h2 class="or-section-title">${niche.servicesLabel}<em>.</em></h2>
+    </div>
+    <div class="or-price-grid">
+      ${services.map((s, i) => `
+      <div class="or-price-item" data-animate="fade" data-animate-delay="${Math.min(i + 1, 5)}">
+        <div class="or-price-item__info">
+          <div class="or-price-item__name">${s.name}</div>
+          ${s.desc ? `<div class="or-price-item__desc">${s.desc}</div>` : ''}
+        </div>
+        ${s.price ? `<div class="or-price-item__price">${s.price}</div>` : ''}
+      </div>`).join('')}
+    </div>
+    ${data.bookingUrl ? `<div class="or-services__cta" data-animate="fade"><a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a></div>` : ''}
+  </div>
+</section>
+
+<section class="or-about" id="about">
+  <div class="or-container">
+    <div class="or-about__inner">
+      <div class="or-about__img-wrap" data-animate="left">
+        ${aboutPhoto ? `<img src="${aboutPhoto}" alt="${data.businessName}" class="or-about__img">` : `<div class="or-about__img" style="background:var(--bg2);height:500px"></div>`}
+        <div class="or-about__badge">
+          <span class="or-about__badge-num">10+</span>
+          <span class="or-about__badge-text">Jahre Erfahrung</span>
+        </div>
+      </div>
+      <div class="or-about__text" data-animate="right">
+        <p class="or-about__label">${niche.aboutLabel}</p>
+        <h2 class="or-about__title">${data.businessName || niche.label}<em>.</em></h2>
+        <p class="or-about__copy">${data.about || niche.aboutDefault}</p>
+        ${data.address ? `<p class="or-about__addr">📍 ${data.address}</p>` : ''}
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a>` : ''}
+          ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost">☎ Anrufen</a>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+${galleryPhotos.length > 0 ? `
+<section class="or-gallery" id="gallery">
+  <div class="or-container">
+    <div data-animate="fade" style="text-align:center">
+      <div class="or-divider">Einblicke</div>
+      <h2 class="or-section-title">Galerie<em>.</em></h2>
+    </div>
+    <div class="or-gallery__grid">
+      ${galleryPhotos.map((src, i) => `
+      <div class="or-gal-item" data-animate="scale" data-animate-delay="${Math.min(i + 1, 5)}">
+        <img src="${src}" alt="Galerie ${i + 1}" loading="lazy">
+      </div>`).join('')}
+    </div>
+  </div>
+</section>` : ''}
+
+${buildTeam(data, niche)}
+${buildExtrasSection(data, niche)}
+${friserBookingVars}
+${buildBookingWidget(data, niche)}
+${buildContactSection(data, niche)}
+
+<footer class="or-footer">
+  <div class="or-container">
+    <div class="or-footer__inner">
+      <div>
+        <div class="or-footer__logo">${nameWords[0]}<em>${nameWords.length > 1 ? ' ' + nameWords.slice(1).join(' ') : ''}</em></div>
+        <p class="or-footer__tag">${data.tagline || niche.heroTagline}</p>
+      </div>
+      <div class="or-footer__contact">
+        ${data.address ? `<div>📍 ${data.address}</div>` : ''}
+        ${data.phone ? `<div>☎ ${data.phone}</div>` : ''}
+        ${data.email ? `<div>✉ ${data.email}</div>` : ''}
+      </div>
+    </div>
+    <div class="or-footer__copy">© ${new Date().getFullYear()} ${data.businessName || niche.label}</div>
+  </div>
+</footer>
+
+${buildCallButton(data)}
+
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('or-nav').classList.toggle('scrolled', window.scrollY > 50);
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('[data-animate]').forEach(el => obs.observe(el));
+</script>`;
+
+    return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+${friserHead}
+</head>
+<body>
+${friserBody}
+</body>
+</html>`;
+  }
+
   // ── STANDARD TEMPLATE C ──
   const head = `<title>${data.businessName || niche.label}</title>
 <meta name="description" content="${data.tagline || niche.heroSubline}">
