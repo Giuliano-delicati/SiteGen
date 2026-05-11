@@ -552,6 +552,15 @@ document.getElementById('niche-grid').addEventListener('click', e => {
   state.niche = card.dataset.niche;
   const niche = NICHES[state.niche];
   document.getElementById('niche-badge').textContent = `${niche.icon} ${niche.label}`;
+  // Update template labels based on niche
+  const TEMPLATE_LABELS = {
+    barber: ['A — Elegant', 'B — Maskulin', 'C — Verspielt', 'D — Oldschool'],
+    default: ['A — Minimal', 'B — Bold', 'C — Editorial', 'D — Warm'],
+  };
+  const labels = TEMPLATE_LABELS[state.niche] || TEMPLATE_LABELS.default;
+  document.querySelectorAll('.template-card__label').forEach((el, i) => {
+    el.textContent = labels[i] || el.textContent;
+  });
   // Apply niche defaults to colors
   document.getElementById('primaryColor').value = niche.primaryColor;
   document.getElementById('accentColor').value = niche.accentColor;
@@ -559,6 +568,11 @@ document.getElementById('niche-grid').addEventListener('click', e => {
   state.accentColor = niche.accentColor;
   document.getElementById('primaryHex').textContent = niche.primaryColor;
   document.getElementById('accentHex').textContent = niche.accentColor;
+  // Tint template thumbnails with niche colors
+  document.querySelectorAll('.template-card__thumb').forEach(thumb => {
+    thumb.style.setProperty('--tmpl-primary', niche.primaryColor);
+    thumb.style.setProperty('--tmpl-accent', niche.accentColor);
+  });
   // Apply niche dark default
   document.getElementById('darkMode').checked = niche.defaultDark;
   state.darkMode = niche.defaultDark;
