@@ -375,11 +375,11 @@ ${barberBody}
 </html>`;
   }
 
-  // ── FRISÖR ORDINÄR — Klassisch & Professionell ──
-  // Warm Off-White #faf7f2 · Gold #b8916a · Lora + Source Sans 3
-  // Inspiriert von: schoenheitsrausch.de — klare Salon-Ästhetik
+  // ── FRISÖR ORDINÄR — Monochrome Editorial ──
+  // Reines Weiß #f8f8f6 · Schwarz #0e0e0e · DM Serif Display + DM Sans
+  // Inspiriert von: schoenheitsrausch.de — klare Salon-Ästhetik, kein Warm-Ton
   if (niche.id === 'friser') {
-    const ac = '#b8916a';
+    const ac = '#0e0e0e';
     const heroPhoto  = photos[0] || '';
     const aboutPhoto = photos[1] || '';
     const galleryPhotos = photos.slice(2, 8);
@@ -387,234 +387,228 @@ ${barberBody}
     const friserHead = `<title>${data.businessName || niche.label}</title>
 <meta name="description" content="${data.tagline || niche.heroSubline}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   /* ═══════════════════════════════════════
-     FRISÖR ORDINÄR — Klassisch & Professionell
-     Off-White #faf7f2 · Gold #b8916a
+     FRISÖR ORDINÄR — Monochrome Editorial
+     Weiß #f8f8f6 · Schwarz #0e0e0e
+     DM Serif Display + DM Sans
   ═══════════════════════════════════════ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:     #faf7f2;
-    --bg2:    #f3ede5;
+    --bg:     #f8f8f6;
+    --bg2:    #f0f0ee;
     --sur:    #ffffff;
-    --tx:     #2a2118;
-    --muted:  #7a6a5a;
-    --ac:     #b8916a;
-    --ac2:    #cca882;
-    --border: #e2d8ce;
-    --ff-ser: 'Lora', Georgia, serif;
-    --ff-san: 'Source Sans 3', system-ui, sans-serif;
+    --tx:     #0e0e0e;
+    --muted:  rgba(14,14,14,0.45);
+    --border: rgba(14,14,14,0.12);
+    --ff-ser: 'DM Serif Display', Georgia, serif;
+    --ff-san: 'DM Sans', system-ui, sans-serif;
   }
 
-  body { background: var(--bg); color: var(--tx); font-family: var(--ff-san); font-weight: 400; }
-  .or-container { max-width: 1140px; margin: 0 auto; padding: 0 48px; }
+  body { background: var(--bg); color: var(--tx); font-family: var(--ff-san); font-weight: 400; -webkit-font-smoothing: antialiased; }
+  .or-container { max-width: 1140px; margin: 0 auto; padding: 0 56px; }
   @media (max-width: 768px) { .or-container { padding: 0 20px; } }
 
-  /* NAV */
+  /* NAV — Transparente Bar, scrolled: weißer Hintergrund mit Border */
   .or-nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 56px; transition: background 0.35s, padding 0.35s, box-shadow 0.35s;
+    padding: 28px 56px; transition: background 0.35s, padding 0.35s, border-color 0.35s;
+    border-bottom: 1px solid transparent;
   }
   .or-nav.scrolled {
-    background: rgba(250,247,242,0.97); backdrop-filter: blur(14px);
-    padding: 14px 56px; box-shadow: 0 1px 0 var(--border);
+    background: rgba(248,248,246,0.97); backdrop-filter: blur(16px);
+    padding: 16px 56px; border-color: var(--border);
   }
   .or-nav__logo {
-    font-family: var(--ff-ser); font-size: 1.35rem; font-weight: 600;
-    letter-spacing: 0.04em; color: var(--tx); text-decoration: none;
+    font-family: var(--ff-ser); font-size: 1.4rem; font-weight: 400; font-style: italic;
+    color: var(--tx); text-decoration: none; letter-spacing: 0.01em;
   }
-  .or-nav__logo em { font-style: italic; color: var(--ac); }
-  .or-nav__links { display: flex; gap: 36px; list-style: none; }
+  .or-nav__links { display: flex; gap: 36px; list-style: none; align-items: center; }
   .or-nav__links a {
-    font-family: var(--ff-san); font-size: 0.72rem; font-weight: 500;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
     text-decoration: none; transition: color 0.2s;
   }
-  .or-nav__links a:hover { color: var(--ac); }
+  .or-nav__links a:hover { color: var(--tx); }
   .or-nav__links a[href="#buchen"] {
-    background: var(--ac); color: #fff;
-    padding: 8px 20px; letter-spacing: 0.12em;
-    animation: orBookGlow 2.8s ease-in-out infinite;
+    background: var(--tx); color: var(--bg);
+    padding: 9px 22px; letter-spacing: 0.14em;
+    animation: orBookGlow 3s ease-in-out infinite;
   }
-  .or-nav__links a[href="#buchen"]:hover { background: var(--ac2); }
+  .or-nav__links a[href="#buchen"]:hover { opacity: 0.8; }
   @keyframes orBookGlow {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(184,145,106,0.5); }
-    55%       { box-shadow: 0 0 0 8px rgba(184,145,106,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(14,14,14,0.35); }
+    55%       { box-shadow: 0 0 0 8px rgba(14,14,14,0); }
   }
   @media (prefers-reduced-motion: reduce) { .or-nav__links a[href="#buchen"] { animation: none; } }
   @media (max-width: 768px) { .or-nav { padding: 18px 20px; } .or-nav__links { display: none; } }
 
-  /* HERO — Fullscreen Foto + warmem Overlay, zentriert */
+  /* HERO — Fullbleed Foto, linksausgerichtet, weißer Text */
   .or-hero {
     position: relative; height: 100svh; overflow: hidden;
-    display: flex; align-items: center; justify-content: center; text-align: center;
+    display: flex; align-items: flex-end; padding-bottom: 80px;
   }
   .or-hero__bg {
     position: absolute; inset: 0; background-size: cover; background-position: center;
-    transform: scale(1.06); animation: orZoom 10s ease forwards;
+    transform: scale(1.05); animation: orZoom 11s ease forwards;
   }
   @keyframes orZoom { to { transform: scale(1); } }
   .or-hero__overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(42,33,24,0.32) 0%, rgba(42,33,24,0.65) 100%);
+    background: linear-gradient(to right, rgba(14,14,14,0.82) 0%, rgba(14,14,14,0.4) 60%, transparent 100%);
   }
-  .or-hero__no-photo { position: absolute; inset: 0; background: var(--bg2); }
-  .or-hero__content { position: relative; z-index: 2; padding: 0 24px; }
+  .or-hero__no-photo { position: absolute; inset: 0; background: #1a1a1a; }
+  .or-hero__content { position: relative; z-index: 2; max-width: 640px; }
   .or-hero__tag {
-    display: inline-block; border: 1px solid rgba(255,255,255,0.5);
-    padding: 6px 22px; margin-bottom: 28px;
-    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 500;
-    letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.85);
+    display: inline-block; border: 1px solid rgba(255,255,255,0.35);
+    padding: 5px 18px; margin-bottom: 24px;
+    font-family: var(--ff-san); font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.7);
   }
   .or-hero__title {
-    font-family: var(--ff-ser); font-size: clamp(3.2rem, 7vw, 7.5rem);
-    font-weight: 600; color: #fff; line-height: 1; margin-bottom: 20px;
-    letter-spacing: -0.01em;
+    font-family: var(--ff-ser); font-size: clamp(3rem, 7vw, 7rem);
+    font-weight: 400; font-style: italic; color: #fff;
+    line-height: 0.95; margin-bottom: 24px;
   }
-  .or-hero__title em { font-style: italic; color: rgba(255,255,255,0.75); }
   .or-hero__sub {
-    font-family: var(--ff-san); font-size: 1rem; color: rgba(255,255,255,0.75);
-    max-width: 480px; margin: 0 auto 44px; line-height: 1.7;
+    font-family: var(--ff-san); font-size: 0.95rem; color: rgba(255,255,255,0.65);
+    max-width: 420px; line-height: 1.75; margin-bottom: 44px; font-weight: 300;
   }
   .or-btn {
     display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--ff-san); font-size: 0.72rem; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none;
+    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none;
     padding: 14px 32px; transition: all 0.22s;
   }
-  .or-btn-gold { background: var(--ac); color: #fff; }
-  .or-btn-gold:hover { background: var(--ac2); }
-  .or-btn-ghost-w { border: 1px solid rgba(255,255,255,0.45); color: #fff; }
+  .or-btn-dark { background: #fff; color: #0e0e0e; }
+  .or-btn-dark:hover { background: #f0f0f0; }
+  .or-btn-ghost-w { border: 1px solid rgba(255,255,255,0.35); color: #fff; }
   .or-btn-ghost-w:hover { border-color: #fff; }
+  .or-btn-solid { background: var(--tx); color: var(--bg); }
+  .or-btn-solid:hover { opacity: 0.82; }
   .or-btn-ghost { border: 1px solid var(--border); color: var(--tx); }
-  .or-btn-ghost:hover { border-color: var(--ac); color: var(--ac); }
+  .or-btn-ghost:hover { border-color: var(--tx); }
 
-  /* SERVICES — Klassische dotted Preisliste in 2 Spalten */
-  .or-services { background: var(--bg); padding: 100px 0; }
-  .or-divider {
-    display: flex; align-items: center; gap: 20px; margin-bottom: 16px;
-    font-family: var(--ff-san); font-size: 0.65rem; font-weight: 600;
-    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ac);
+  /* SERVICES — Minimal horizontal Preisliste auf hellem Grund */
+  .or-services { background: var(--bg); padding: 120px 0; }
+  .or-services__head {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 64px;
+    align-items: start; margin-bottom: 72px;
   }
-  .or-divider::before, .or-divider::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--ac); opacity: 0.4; }
+  .or-section-eyebrow {
+    font-family: var(--ff-san); font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  }
   .or-section-title {
-    font-family: var(--ff-ser); font-size: clamp(2rem, 4vw, 3.5rem);
-    font-weight: 600; color: var(--tx); text-align: center;
-    line-height: 1.1; margin-bottom: 64px;
+    font-family: var(--ff-ser); font-size: clamp(2.2rem, 4vw, 4rem);
+    font-weight: 400; font-style: italic; color: var(--tx); line-height: 1.05;
   }
-  .or-section-title em { font-style: italic; color: var(--ac); }
-  .or-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
+  .or-price-list { }
   .or-price-item {
     display: flex; align-items: baseline; justify-content: space-between;
-    padding: 16px 0; border-bottom: 1px dotted var(--border); gap: 12px;
-    transition: background 0.18s;
+    padding: 20px 0; border-bottom: 1px solid var(--border); gap: 20px;
+    transition: padding-left 0.2s;
   }
-  .or-price-item:hover { padding-left: 6px; }
-  .or-price-item__info { flex: 1; }
+  .or-price-item:first-child { border-top: 1px solid var(--border); }
+  .or-price-item:hover { padding-left: 8px; }
   .or-price-item__name {
-    font-family: var(--ff-ser); font-size: 1.02rem; font-weight: 500;
-    color: var(--tx); margin-bottom: 3px;
+    font-family: var(--ff-ser); font-size: 1.1rem; font-weight: 400; font-style: italic;
+    color: var(--tx); flex: 1;
   }
-  .or-price-item__desc { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+  .or-price-item__desc { font-size: 0.8rem; color: var(--muted); font-style: normal; margin-left: 20px; }
   .or-price-item__price {
-    font-family: var(--ff-san); font-size: 0.92rem; font-weight: 600;
-    color: var(--ac); white-space: nowrap; flex-shrink: 0;
+    font-family: var(--ff-san); font-size: 0.82rem; font-weight: 500;
+    color: var(--muted); white-space: nowrap; letter-spacing: 0.06em;
   }
-  .or-services__cta { text-align: center; margin-top: 52px; }
-  @media (max-width: 768px) { .or-price-grid { grid-template-columns: 1fr; } }
+  .or-services__cta { margin-top: 52px; display: flex; justify-content: flex-end; }
 
-  /* ABOUT — Split: Foto links, Text rechts */
-  .or-about { background: var(--bg2); padding: 100px 0; }
-  .or-about__inner {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  /* ABOUT — Großes Foto + Schwarzes Textpanel */
+  .or-about { background: var(--bg2); }
+  .or-about__inner { display: grid; grid-template-columns: 1fr 1fr; min-height: 600px; }
+  .or-about__img { overflow: hidden; position: relative; }
+  .or-about__photo { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+  .or-about__img:hover .or-about__photo { transform: scale(1.04); }
+  .or-about__img-ph { width: 100%; height: 100%; background: #d0d0ce; min-height: 500px; }
+  .or-about__text {
+    background: var(--tx); color: rgba(248,248,246,0.8);
+    padding: 80px 56px; display: flex; flex-direction: column; justify-content: center;
   }
-  .or-about__img-wrap { position: relative; }
-  .or-about__img {
-    width: 100%; aspect-ratio: 4/5; object-fit: cover;
-    transition: transform 0.6s ease;
-  }
-  .or-about__img-wrap:hover .or-about__img { transform: scale(1.02); }
-  .or-about__img-wrap { overflow: hidden; }
-  .or-about__badge {
-    position: absolute; bottom: -20px; right: -20px;
-    background: var(--ac); color: #fff; padding: 24px 28px; text-align: center;
-  }
-  .or-about__badge-num {
-    font-family: var(--ff-ser); font-size: 2.2rem; font-weight: 700; display: block; line-height: 1;
-  }
-  .or-about__badge-text { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; }
-  .or-about__text { }
   .or-about__label {
-    font-family: var(--ff-san); font-size: 0.68rem; font-weight: 600;
-    letter-spacing: 0.28em; text-transform: uppercase; color: var(--ac);
-    margin-bottom: 20px;
+    font-family: var(--ff-san); font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: rgba(248,248,246,0.4);
+    margin-bottom: 24px;
   }
   .or-about__title {
-    font-family: var(--ff-ser); font-size: clamp(1.8rem, 3vw, 2.8rem);
-    font-weight: 600; color: var(--tx); line-height: 1.15; margin-bottom: 24px;
+    font-family: var(--ff-ser); font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+    font-weight: 400; font-style: italic; color: #f8f8f6;
+    line-height: 1.15; margin-bottom: 24px;
   }
-  .or-about__title em { font-style: italic; }
-  .or-about__copy { font-size: 0.95rem; color: var(--muted); line-height: 1.9; margin-bottom: 14px; }
-  .or-about__addr { font-size: 0.82rem; color: var(--muted); margin-bottom: 36px; }
+  .or-about__copy { font-size: 0.9rem; font-weight: 300; line-height: 1.9; margin-bottom: 14px; }
+  .or-about__addr { font-size: 0.78rem; color: rgba(248,248,246,0.3); margin-bottom: 40px; }
+  .or-about .or-btn-ghost { border-color: rgba(248,248,246,0.2); color: #f8f8f6; }
+  .or-about .or-btn-ghost:hover { border-color: #f8f8f6; }
   @media (max-width: 768px) {
-    .or-about__inner { grid-template-columns: 1fr; gap: 40px; }
-    .or-about__badge { bottom: 12px; right: 12px; }
+    .or-about__inner { grid-template-columns: 1fr; }
+    .or-about__text { padding: 56px 24px; }
+    .or-services__head { grid-template-columns: 1fr; gap: 24px; }
   }
 
-  /* GALLERY */
-  .or-gallery { background: var(--bg); padding: 80px 0; }
+  /* GALLERY — 3-Spalten eng */
+  .or-gallery { background: var(--bg); padding: 100px 0; }
   .or-gallery__grid {
-    display: grid; margin-top: 48px;
-    grid-template-columns: repeat(3, 1fr); gap: 8px;
+    display: grid; margin-top: 56px;
+    grid-template-columns: repeat(3, 1fr); gap: 4px;
   }
-  .or-gallery__grid .or-gal-item:first-child { grid-column: span 2; }
+  .or-gallery__grid .or-gal-item:first-child { grid-column: span 2; grid-row: span 2; }
   .or-gal-item { overflow: hidden; aspect-ratio: 1; }
   .or-gal-item:first-child { aspect-ratio: auto; }
-  .or-gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease, filter 0.4s; filter: saturate(0.85); }
-  .or-gal-item:hover img { transform: scale(1.06); filter: saturate(1.1); }
+  .or-gal-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(20%); transition: transform 0.6s ease, filter 0.5s;
+  }
+  .or-gal-item:hover img { transform: scale(1.05); filter: grayscale(0%); }
 
   /* FOOTER */
-  .or-footer { background: var(--tx); color: rgba(250,247,242,0.75); padding: 72px 0 40px; }
+  .or-footer { background: #0e0e0e; padding: 72px 0 40px; }
   .or-footer__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 48px; }
   .or-footer__logo {
-    font-family: var(--ff-ser); font-size: 1.6rem; font-weight: 600;
-    color: #faf7f2; letter-spacing: 0.03em; margin-bottom: 16px;
+    font-family: var(--ff-ser); font-size: 1.8rem; font-weight: 400; font-style: italic;
+    color: #f8f8f6; margin-bottom: 16px;
   }
-  .or-footer__logo em { font-style: italic; color: var(--ac); }
-  .or-footer__tag { font-size: 0.88rem; line-height: 1.7; }
-  .or-footer__contact { font-size: 0.84rem; line-height: 2.2; }
-  .or-footer__copy { font-size: 0.7rem; color: rgba(250,247,242,0.25); border-top: 1px solid rgba(250,247,242,0.1); padding-top: 24px; }
+  .or-footer__tag { font-size: 0.85rem; font-weight: 300; color: rgba(248,248,246,0.45); line-height: 1.7; }
+  .or-footer__contact { font-size: 0.82rem; color: rgba(248,248,246,0.45); line-height: 2.2; }
+  .or-footer__copy { font-size: 0.7rem; color: rgba(248,248,246,0.18); border-top: 1px solid rgba(248,248,246,0.08); padding-top: 24px; }
   @media (max-width: 768px) { .or-footer__inner { grid-template-columns: 1fr; } }
 
-  /* CONTACT UTILITIES (for buildContactSection) */
+  /* CONTACT UTILITIES */
   .section { padding: 80px 0; }
-  .container { max-width: 1140px; margin: 0 auto; padding: 0 48px; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 56px; }
   @media (max-width: 768px) { .container { padding: 0 20px; } }
-  .section-title { font-family: var(--ff-ser); font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 600; color: var(--tx); margin-bottom: 12px; }
-  .section-subtitle { font-size: 1rem; color: var(--muted); margin-bottom: 48px; }
-  .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; font-family:var(--ff-san); font-size:0.78rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; text-decoration:none; transition:all 0.22s; }
-  .btn-primary { background: var(--ac); color: #fff; }
-  .btn-primary:hover { background: var(--ac2); }
+  .section-title { font-family: var(--ff-ser); font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 400; font-style: italic; color: var(--tx); margin-bottom: 12px; }
+  .section-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 48px; font-weight: 300; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; font-family:var(--ff-san); font-size:0.68rem; font-weight:500; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; transition:all 0.22s; }
+  .btn-primary { background: var(--tx); color: var(--bg); }
+  .btn-primary:hover { opacity: 0.82; }
   .btn-outline { border: 1px solid var(--border); color: var(--tx); }
-  .btn-outline:hover { border-color: var(--ac); color: var(--ac); }
-  .sg-form { display: flex; flex-direction: column; gap: 16px; }
-  .sg-form input, .sg-form textarea { width: 100%; padding: 14px 16px; background: var(--sur); border: 1px solid var(--border); color: var(--tx); font-family: var(--ff-san); font-size: 0.9rem; outline: none; transition: border-color 0.2s; border-radius: 0; }
-  .sg-form input:focus, .sg-form textarea:focus { border-color: var(--ac); }
+  .btn-outline:hover { border-color: var(--tx); }
+  .sg-form { display: flex; flex-direction: column; gap: 0; }
+  .sg-form input, .sg-form textarea { width: 100%; padding: 16px 0; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--tx); font-family: var(--ff-san); font-size: 0.88rem; font-weight: 300; outline: none; transition: border-color 0.25s; margin-bottom: 8px; }
+  .sg-form input:focus, .sg-form textarea:focus { border-color: var(--tx); }
   .sg-form textarea { min-height: 120px; resize: vertical; }
   .sg-contact { background: var(--bg2); }
   .sg-contact__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
   .sg-contact__item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
-  .sg-contact__icon { width: 40px; height: 40px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .sg-contact__label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac); margin-bottom: 4px; }
-  .sg-contact__value { font-size: 0.9rem; color: var(--muted); }
+  .sg-contact__icon { width: 40px; height: 40px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sg-contact__label { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .sg-contact__value { font-size: 0.88rem; color: var(--muted); }
   @media (max-width: 768px) { .sg-contact__inner { grid-template-columns: 1fr; } }
 
-  [data-animate] { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
-  [data-animate="left"]  { transform: translateX(-40px); }
-  [data-animate="right"] { transform: translateX(40px); }
+  [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  [data-animate="left"]  { transform: translateX(-36px); }
+  [data-animate="right"] { transform: translateX(36px); }
   [data-animate="scale"] { transform: scale(0.95); }
   [data-animate].visible { opacity: 1; transform: none; }
   [data-animate-delay="1"] { transition-delay: 0.1s; } [data-animate-delay="2"] { transition-delay: 0.2s; }
@@ -624,17 +618,14 @@ ${barberBody}
 </style>`;
 
     const friserBookingVars = `<style>
-  .bk-section { --c-bg:#faf7f2; --c-surface:#ffffff; --c-text:#2a2118; --c-accent:#b8916a; --c-border:#e2d8ce; --c-text-muted:#7a6a5a; --f-heading:'Lora',Georgia,serif; --f-body:'Source Sans 3',system-ui,sans-serif; }
+  .bk-section { --c-bg:#f8f8f6; --c-surface:#ffffff; --c-text:#0e0e0e; --c-accent:#0e0e0e; --c-border:rgba(14,14,14,0.12); --c-text-muted:rgba(14,14,14,0.45); --f-heading:'DM Serif Display',Georgia,serif; --f-body:'DM Sans',system-ui,sans-serif; }
 </style>`;
 
     const nameWords = (data.businessName || niche.label).split(' ');
-    const heroTitleOr = nameWords.length > 1
-      ? `${nameWords[0]}<em> ${nameWords.slice(1).join(' ')}</em>`
-      : `<em>${nameWords[0]}</em>`;
 
     const friserBody = `
 <nav class="or-nav" id="or-nav">
-  <a href="#hero" class="or-nav__logo">${nameWords[0]}<em>${nameWords.length > 1 ? ' ' + nameWords.slice(1).join(' ') : ''}</em></a>
+  <a href="#hero" class="or-nav__logo">${data.businessName || niche.label}</a>
   <ul class="or-nav__links">
     <li><a href="#services">Leistungen</a></li>
     <li><a href="#about">Über uns</a></li>
@@ -643,62 +634,59 @@ ${barberBody}
     <li><a href="#contact">Kontakt</a></li>
   </ul>
 </nav>
-${buildServicesTicker(services, ac)}
+${buildServicesTicker(services, '#0e0e0e')}
 
 <section class="or-hero" id="hero">
   ${heroPhoto
     ? `<div class="or-hero__bg" style="background-image:url('${heroPhoto}')"></div><div class="or-hero__overlay"></div>`
     : `<div class="or-hero__no-photo"></div>`}
-  <div class="or-hero__content" data-animate="fade">
-    <div class="or-hero__tag">${niche.label}</div>
-    <h1 class="or-hero__title">${heroTitleOr}</h1>
-    <p class="or-hero__sub">${data.tagline || niche.heroTagline}</p>
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-      ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a>` : ''}
-      ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost-w">☎ ${data.phone}</a>` : ''}
+  <div class="or-container">
+    <div class="or-hero__content" data-animate="fade">
+      <div class="or-hero__tag">${niche.label}</div>
+      <h1 class="or-hero__title">${data.businessName || niche.label}</h1>
+      <p class="or-hero__sub">${data.tagline || niche.heroTagline}</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-dark">${niche.heroCta} →</a>` : ''}
+        ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost-w">☎ ${data.phone}</a>` : ''}
+      </div>
     </div>
   </div>
 </section>
 
 <section class="or-services" id="services">
   <div class="or-container">
-    <div data-animate="fade" style="text-align:center;margin-bottom:0">
-      <div class="or-divider">${niche.label}</div>
-      <h2 class="or-section-title">${niche.servicesLabel}<em>.</em></h2>
+    <div class="or-services__head" data-animate="fade">
+      <div>
+        <p class="or-section-eyebrow">${niche.label}</p>
+        <h2 class="or-section-title">${niche.servicesLabel}</h2>
+      </div>
+      <div class="or-price-list">
+        ${services.map((s, i) => `
+        <div class="or-price-item" data-animate="fade" data-animate-delay="${Math.min(i + 1, 5)}">
+          <span class="or-price-item__name">${s.name}${s.desc ? `<span class="or-price-item__desc"> — ${s.desc}</span>` : ''}</span>
+          ${s.price ? `<span class="or-price-item__price">${s.price}</span>` : ''}
+        </div>`).join('')}
+        ${data.bookingUrl ? `<div class="or-services__cta"><a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-solid">${niche.heroCta} →</a></div>` : ''}
+      </div>
     </div>
-    <div class="or-price-grid">
-      ${services.map((s, i) => `
-      <div class="or-price-item" data-animate="fade" data-animate-delay="${Math.min(i + 1, 5)}">
-        <div class="or-price-item__info">
-          <div class="or-price-item__name">${s.name}</div>
-          ${s.desc ? `<div class="or-price-item__desc">${s.desc}</div>` : ''}
-        </div>
-        ${s.price ? `<div class="or-price-item__price">${s.price}</div>` : ''}
-      </div>`).join('')}
-    </div>
-    ${data.bookingUrl ? `<div class="or-services__cta" data-animate="fade"><a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a></div>` : ''}
   </div>
 </section>
 
 <section class="or-about" id="about">
-  <div class="or-container">
-    <div class="or-about__inner">
-      <div class="or-about__img-wrap" data-animate="left">
-        ${aboutPhoto ? `<img src="${aboutPhoto}" alt="${data.businessName}" class="or-about__img">` : `<div class="or-about__img" style="background:var(--bg2);height:500px"></div>`}
-        <div class="or-about__badge">
-          <span class="or-about__badge-num">10+</span>
-          <span class="or-about__badge-text">Jahre Erfahrung</span>
-        </div>
-      </div>
-      <div class="or-about__text" data-animate="right">
-        <p class="or-about__label">${niche.aboutLabel}</p>
-        <h2 class="or-about__title">${data.businessName || niche.label}<em>.</em></h2>
-        <p class="or-about__copy">${data.about || niche.aboutDefault}</p>
-        ${data.address ? `<p class="or-about__addr">📍 ${data.address}</p>` : ''}
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-gold">${niche.heroCta} →</a>` : ''}
-          ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost">☎ Anrufen</a>` : ''}
-        </div>
+  <div class="or-about__inner">
+    <div class="or-about__img" data-animate="left">
+      ${aboutPhoto
+        ? `<img src="${aboutPhoto}" alt="${data.businessName}" class="or-about__photo">`
+        : `<div class="or-about__img-ph"></div>`}
+    </div>
+    <div class="or-about__text" data-animate="right">
+      <p class="or-about__label">${niche.aboutLabel}</p>
+      <h2 class="or-about__title">${data.businessName || niche.label}</h2>
+      <p class="or-about__copy">${data.about || niche.aboutDefault}</p>
+      ${data.address ? `<p class="or-about__addr">📍 ${data.address}</p>` : ''}
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="or-btn or-btn-dark">${niche.heroCta} →</a>` : ''}
+        ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost">☎ Anrufen</a>` : ''}
       </div>
     </div>
   </div>
@@ -707,9 +695,9 @@ ${buildServicesTicker(services, ac)}
 ${galleryPhotos.length > 0 ? `
 <section class="or-gallery" id="gallery">
   <div class="or-container">
-    <div data-animate="fade" style="text-align:center">
-      <div class="or-divider">Einblicke</div>
-      <h2 class="or-section-title">Galerie<em>.</em></h2>
+    <div data-animate="fade">
+      <p class="or-section-eyebrow">Einblicke</p>
+      <h2 class="or-section-title">Galerie</h2>
     </div>
     <div class="or-gallery__grid">
       ${galleryPhotos.map((src, i) => `
@@ -730,13 +718,13 @@ ${buildContactSection(data, niche)}
   <div class="or-container">
     <div class="or-footer__inner">
       <div>
-        <div class="or-footer__logo">${nameWords[0]}<em>${nameWords.length > 1 ? ' ' + nameWords.slice(1).join(' ') : ''}</em></div>
+        <div class="or-footer__logo">${data.businessName || niche.label}</div>
         <p class="or-footer__tag">${data.tagline || niche.heroTagline}</p>
       </div>
       <div class="or-footer__contact">
-        ${data.address ? `<div>📍 ${data.address}</div>` : ''}
-        ${data.phone ? `<div>☎ ${data.phone}</div>` : ''}
-        ${data.email ? `<div>✉ ${data.email}</div>` : ''}
+        ${data.address ? `<div>${data.address}</div>` : ''}
+        ${data.phone ? `<div>${data.phone}</div>` : ''}
+        ${data.email ? `<div>${data.email}</div>` : ''}
       </div>
     </div>
     <div class="or-footer__copy">© ${new Date().getFullYear()} ${data.businessName || niche.label}</div>
