@@ -82,6 +82,23 @@ ${head}
   .sg-nav__links a:hover { color: var(--c-text); }
   .sg-nav__cta { margin-left: 16px; padding: 10px 24px; font-size: 0.9rem; }
 
+  /* ── Termin-Buchen CTA (Frisör / Barber) ── */
+  @keyframes sg-book-glow {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 50%, transparent); }
+    55%       { box-shadow: 0 0 0 9px transparent; }
+  }
+  .sg-nav__book-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 22px; border-radius: var(--radius);
+    background: var(--c-accent); color: #000;
+    font-family: var(--f-body); font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    text-decoration: none; white-space: nowrap; flex-shrink: 0;
+    animation: sg-book-glow 2.8s ease-in-out infinite;
+  }
+  .sg-nav__book-btn:hover { opacity: 0.88; color: #000; }
+  @media (prefers-reduced-motion: reduce) { .sg-nav__book-btn { animation: none; } }
+
   /* ── Shared Services Grid ── */
   .sg-services { background: var(--c-surface); }
   .sg-services__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
@@ -227,6 +244,7 @@ export function svgIcon(name) {
 }
 
 export function buildNav(data, niche) {
+  const isHairNiche = ['friser', 'barber'].includes(niche.id);
   const logoHtml = data.logoDataUrl
     ? `<img src="${data.logoDataUrl}" alt="${data.businessName}">`
     : `<span>${data.businessName || niche.label}</span>`;
@@ -239,9 +257,14 @@ export function buildNav(data, niche) {
     ${data.showTeam ? `<li><a href="#team">${niche.teamLabel}</a></li>` : ''}
     <li><a href="#contact">Kontakt</a></li>
   </ul>
-  ${data.phone ? `<a class="btn btn-primary sg-nav__cta" href="tel:${data.phone}">${svgIcon('phone')} Anrufen</a>`
-    : data.bookingUrl ? `<a class="btn btn-primary sg-nav__cta" href="${data.bookingUrl}" target="_blank">Termin buchen</a>`
-    : ''}
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px">
+    ${data.phone ? `<a class="btn btn-outline sg-nav__cta" href="tel:${data.phone}" style="padding:8px 16px;font-size:0.8rem">${svgIcon('phone')} ${data.phone}</a>` : ''}
+    ${isHairNiche
+      ? `<a class="sg-nav__book-btn" href="#buchen">Termin buchen</a>`
+      : data.bookingUrl
+        ? `<a class="btn btn-primary sg-nav__cta" href="${data.bookingUrl}" target="_blank">Termin buchen</a>`
+        : ''}
+  </div>
 </nav>`;
 }
 

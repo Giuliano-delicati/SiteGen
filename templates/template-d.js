@@ -66,6 +66,19 @@ export function generate(data, niche, colors, fonts) {
   .os-nav__links { display: flex; gap: 40px; list-style: none; }
   .os-nav__links a { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; font-family: var(--ff-body); }
   .os-nav__links a:hover { color: var(--brass); }
+  /* ── Termin-CTA in Nav ── */
+  .os-nav__links a[href="#buchen"] {
+    background: var(--brass); color: var(--dark);
+    padding: 8px 20px; border-radius: 2px;
+    font-family: var(--ff-body); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    animation: navBookGlow 2.8s ease-in-out infinite;
+  }
+  .os-nav__links a[href="#buchen"]:hover { opacity: 0.88; }
+  @keyframes navBookGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(196,139,42,0.55); }
+    55%       { box-shadow: 0 0 0 8px rgba(196,139,42,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .os-nav__links a[href="#buchen"] { animation: none; } }
   .os-nav__cta {
     display: inline-flex; align-items: center; gap: 10px;
     font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
