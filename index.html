@@ -19,7 +19,7 @@
     <div class="toolbar__actions">
       <button class="btn-tool btn-tool-secondary" id="btn-reset" title="Alle Daten zurücksetzen">↺ Reset</button>
       <button class="btn-tool btn-tool-secondary" id="btn-fullscreen" title="Vorschau für Kunden (Fullscreen)">⛶ Kundenmodus</button>
-      <button class="btn-tool btn-tool-primary" id="btn-export">↓ Website exportieren</button>
+      <button class="btn-tool btn-tool-primary" id="btn-export">✉ In Auftrag geben</button>
     </div>
   </header>
 
@@ -521,7 +521,7 @@
 
         <div style="display:flex;flex-direction:column;gap:12px">
           <button class="btn-tool btn-tool-primary" id="btn-export-step" style="padding:14px 24px;font-size:1rem">
-            ↓ Website als HTML exportieren
+            ✉ In Auftrag geben
           </button>
           <button class="btn-tool btn-tool-secondary" id="btn-fullscreen-step" style="padding:14px 24px;font-size:1rem">
             ⛶ Vollbild-Vorschau für Kunden
@@ -536,7 +536,7 @@
         </div>
 
         <div class="info-box" style="margin-top:8px">
-          Die exportierte HTML-Datei ist vollständig eigenständig (alle Bilder eingebettet) und kann direkt per E-Mail verschickt oder auf jedem Webserver deployed werden.
+          Die fertige Website wird als HTML-Datei direkt an unser Team geschickt und innerhalb kurzer Zeit bearbeitet.
         </div>
 
         <div class="step-nav">
@@ -1438,15 +1438,39 @@ document.getElementById('btn-fullscreen-step').addEventListener('click', enterFu
 document.getElementById('btn-exit-fullscreen').addEventListener('click', exitFullscreen);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') exitFullscreen(); });
 
-// ── Export ────────────────────────────────────────
-function doExport() {
+// ── In Auftrag geben ──────────────────────────────
+const ORDER_ENDPOINT = 'https://fixwithfoxy.com/send-order.php';
+
+async function doOrder() {
   const name = document.getElementById('exportName').value || state.businessName || 'website';
-  downloadWebsite({ ...state, exportName: name });
-  showToast('Website erfolgreich exportiert!');
+  const btns = [document.getElementById('btn-export'), document.getElementById('btn-export-step')];
+
+  btns.forEach(b => { if (b) { b.disabled = true; b.textContent = '⏳ Wird gesendet…'; } });
+
+  try {
+    const html = generateWebsite({ ...state, exportName: name });
+    const res  = await fetch(ORDER_ENDPOINT, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ html, businessName: state.businessName || name, filename: name }),
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (res.ok && json.success) {
+      showToast('✓ Auftrag erfolgreich eingegangen!');
+      btns.forEach(b => { if (b) { b.disabled = false; b.innerHTML = '✓ Gesendet'; } });
+    } else {
+      throw new Error(json.error || `HTTP ${res.status}`);
+    }
+  } catch (err) {
+    showToast(`Fehler: ${err.message}`, 'error');
+    btns.forEach(b => { if (b) { b.disabled = false; b.innerHTML = '✉ In Auftrag geben'; } });
+  }
 }
 
-document.getElementById('btn-export').addEventListener('click', doExport);
-document.getElementById('btn-export-step').addEventListener('click', doExport);
+document.getElementById('btn-export').addEventListener('click', doOrder);
+document.getElementById('btn-export-step').addEventListener('click', doOrder);
 
 // ── Logo → Neustart ───────────────────────────────
 document.getElementById('toolbar-logo').addEventListener('click', () => {
