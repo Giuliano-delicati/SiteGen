@@ -32,7 +32,7 @@ ${head}
     --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   body {
     font-family: var(--f-body);
     background: var(--c-bg);
@@ -43,6 +43,8 @@ ${head}
   h1, h2, h3, h4 { font-family: var(--f-heading); line-height: 1.15; letter-spacing: -0.02em; }
   img { max-width: 100%; height: auto; display: block; }
   a { color: var(--c-accent); text-decoration: none; }
+  /* Prevent fixed nav from covering anchor targets */
+  section[id] { scroll-margin-top: 72px; }
 
   .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
   .section { padding: 80px 0; }
@@ -355,43 +357,59 @@ export function buildTeam(data, niche) {
   if (!isHairNiche && !data.showTeam) return '';
 
   return `
-<!-- TEAM SECTION — standalone CSS so it works in custom barber templates too -->
+<!-- TEAM SECTION -->
 <style>
-  .sg-team {
-    padding: 80px 0;
-    background: var(--c-surface, inherit);
-  }
-  .sg-team .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .sg-team { padding: 100px 0; background: var(--c-surface, inherit); }
+  .sg-team .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; text-align: center; }
   .sg-team__headline {
     font-family: var(--f-heading, var(--ff-serif, var(--ff-display, serif)));
     font-size: clamp(1.8rem, 3vw, 2.8rem);
-    font-weight: 700; margin-bottom: 48px;
+    font-weight: 700; margin-bottom: 56px;
     color: var(--c-text, inherit);
     letter-spacing: -0.02em;
   }
   .sg-team__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
   }
-  .sg-team__card { text-align: center; }
+  .sg-team__card {
+    text-align: center;
+    flex: 0 0 160px;
+    cursor: default;
+  }
   .sg-team__avatar {
-    width: 130px; height: 130px; border-radius: 50%;
+    width: 140px; height: 140px; border-radius: 50%;
     overflow: hidden; margin: 0 auto 18px;
     background: var(--c-border, #ddd);
     border: 3px solid var(--c-accent, #c9a84c);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    transition: box-shadow 0.45s ease;
+    position: relative;
   }
-  .sg-team__avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .sg-team__avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .sg-team__card:hover .sg-team__avatar img { transform: scale(1.13); }
+  .sg-team__card:hover .sg-team__avatar { box-shadow: 0 12px 40px rgba(0,0,0,0.22); }
+  @media (prefers-reduced-motion: reduce) {
+    .sg-team__avatar img { transition: none; }
+  }
   .sg-team__name {
     font-family: var(--f-heading, var(--ff-serif, serif));
-    font-size: 1.05rem; font-weight: 700;
-    color: var(--c-text, inherit);
+    font-size: 1rem; font-weight: 700;
+    color: var(--c-text, inherit); margin-bottom: 5px;
   }
   .sg-team__role {
-    font-size: 0.82rem; margin-top: 5px;
+    font-size: 0.78rem;
     color: var(--c-accent, #c9a84c);
-    letter-spacing: 0.06em; text-transform: uppercase;
+    letter-spacing: 0.07em; text-transform: uppercase;
+  }
+  @media (max-width: 600px) {
+    .sg-team__card { flex: 0 0 130px; }
+    .sg-team__avatar { width: 110px; height: 110px; }
   }
 </style>
 <section class="sg-team" id="team">
@@ -401,7 +419,9 @@ export function buildTeam(data, niche) {
       ${team.map((m, i) => `
       <div class="sg-team__card" data-animate data-animate-delay="${Math.min(i + 1, 5)}">
         <div class="sg-team__avatar">
-          ${m.photoUrl ? `<img src="${m.photoUrl}" alt="${m.name}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--c-accent,#c9a84c)">${m.name.charAt(0)}</div>`}
+          ${m.photoUrl
+            ? `<img src="${m.photoUrl}" alt="${m.name}" loading="lazy">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:700;color:var(--c-accent,#c9a84c)">${m.name.charAt(0)}</div>`}
         </div>
         <div class="sg-team__name">${m.name}</div>
         <div class="sg-team__role">${m.role}</div>

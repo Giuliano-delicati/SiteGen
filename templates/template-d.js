@@ -287,8 +287,6 @@ export function generate(data, niche, colors, fonts) {
   </ul>
 </nav>
 
-${isHair ? buildServicesTicker(services, ac) : ''}
-
 <section class="ex-hero" id="hero">
   ${heroPhoto
     ? `<div class="ex-hero__bg" style="background-image:url('${heroPhoto}')"></div><div class="ex-hero__overlay"></div>`
@@ -303,6 +301,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
     </div>
   </div>
 </section>
+${isHair ? buildServicesTicker(services, ac) : ''}
 
 <section class="ex-services" id="services">
   <div class="ex-container">

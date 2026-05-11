@@ -162,7 +162,6 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#contact">Kontakt</a></li>
   </ul>
 </nav>
-${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
 
 <section class="or-hero" id="hero">
   ${heroPhoto
@@ -180,6 +179,7 @@ ${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
     </div>
   </div>
 </section>
+${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
 
 <section class="or-services" id="services">
   <div class="or-container">

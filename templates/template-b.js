@@ -144,7 +144,6 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#contact">Kontakt</a></li>
   </ul>
 </nav>
-${isHair ? buildServicesTicker(services, ac) : ''}
 
 <section class="vp2-hero" id="hero">
   <div class="vp2-hero__left" data-animate>
@@ -161,6 +160,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
     ${data.tagline ? `<div class="vp2-hero__badge"><div class="vp2-hero__badge-text">★★★★★</div><div class="vp2-hero__badge-sub">Top<br>Salon</div></div>` : ''}
   </div>
 </section>
+${isHair ? buildServicesTicker(services, ac) : ''}
 
 <section class="vp2-services sec" id="services">
   <div class="con">

@@ -140,7 +140,6 @@ export function generate(data, niche, colors, fonts) {
     <li><a href="#contact">Kontakt</a></li>
   </ul>
 </nav>
-${isHair ? buildServicesTicker(services, ac) : ''}
 
 <section class="ns-hero" id="hero">
   <div class="ns-hero__bg">${heroPhoto ? `<img src="${heroPhoto}" alt="${data.businessName || niche.label}">` : `<div style="width:100%;height:100%;background:#111"></div>`}</div>
@@ -155,6 +154,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
     </div>
   </div>
 </section>
+${isHair ? buildServicesTicker(services, ac) : ''}
 
 <section class="ns-services sec" id="services">
   <div class="con">
