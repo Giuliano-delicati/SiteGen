@@ -934,6 +934,47 @@ html, body {
   color: var(--tool-accent);
 }
 
+/* ── Gallery Pick Grid (Step 5 — Website images) ─── */
+.gallery-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.gallery-pick-item {
+  aspect-ratio: 1;
+  border-radius: var(--tool-radius);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+  background: var(--tool-bg);
+}
+
+.gallery-pick-item:hover { border-color: rgba(255,255,255,0.3); }
+.gallery-pick-item.selected { border-color: var(--tool-accent); }
+
+.gallery-pick-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+.gallery-pick-item__overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: #fff;
+  opacity: 0; transition: opacity 0.15s;
+}
+
+.gallery-pick-item:hover .gallery-pick-item__overlay { opacity: 1; }
+.gallery-pick-item.selected .gallery-pick-item__overlay {
+  opacity: 1;
+  background: rgba(232,200,74,0.35);
+  color: var(--tool-accent);
+}
+
 /* ── Auto-fill flash animation ───────────────────── */
 @keyframes autofillFlash {
   0%   { border-color: #4ade80; box-shadow: 0 0 0 2px rgba(74,222,128,0.18); }

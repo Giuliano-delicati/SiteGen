@@ -337,7 +337,29 @@
       <div class="form-step" data-step="3">
         <div class="step-header">
           <h2>Leistungen / Angebot</h2>
-          <p>Die wichtigsten Angebote des Kunden. Name, Beschreibung und optionaler Preis.</p>
+          <p>Automatisch aus Website laden oder manuell eintragen.</p>
+        </div>
+
+        <!-- Preisliste-Referenz (wenn hochgeladen) -->
+        <div id="pricelist-ref-panel" style="display:none;flex-direction:row;gap:12px;align-items:flex-start;padding:12px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:var(--tool-radius)">
+          <img id="pricelist-ref-img" src="" alt="Preisliste" style="width:90px;height:70px;object-fit:contain;border-radius:6px;border:1px solid var(--tool-border);flex-shrink:0">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.82rem;font-weight:600;margin-bottom:3px">📋 Preisliste als Referenz</div>
+            <div style="font-size:0.75rem;color:var(--tool-text-muted);line-height:1.5">Trage die Preise unten ein oder lade sie automatisch von der Website.</div>
+          </div>
+        </div>
+
+        <!-- Leistungen aus Website laden -->
+        <div class="field">
+          <label>Leistungen automatisch laden</label>
+          <div class="scan-row">
+            <input type="url" id="servicesUrl" placeholder="https://kundenwebsite.de">
+            <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-services" style="gap:6px">
+              <span class="spinner" id="spin-svc" style="display:none;width:12px;height:12px;border-width:2px"></span>
+              <span id="icon-svc">⚡ Laden</span>
+            </button>
+          </div>
+          <div class="scan-status" id="services-scan-status"></div>
         </div>
 
         <div class="services-list" id="services-list">
@@ -356,22 +378,43 @@
       <div class="form-step" data-step="4">
         <div class="step-header">
           <h2>Galerie & Fotos</h2>
-          <p>Das erste Bild wird als Hero-Hintergrund verwendet. Bis zu 10 Fotos möglich.</p>
+          <p>Von Website laden, selbst hochladen oder Pixabay-Fotos nutzen.</p>
         </div>
 
+        <!-- Von Website laden -->
+        <div class="field">
+          <label>Fotos von Website laden</label>
+          <div class="scan-row">
+            <input type="url" id="galleryUrl" placeholder="https://kundenwebsite.de">
+            <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-gallery" style="gap:6px">
+              <span class="spinner" id="spin-gal" style="display:none;width:12px;height:12px;border-width:2px"></span>
+              <span id="icon-gal">⚡ Laden</span>
+            </button>
+          </div>
+          <div class="scan-status" id="gallery-scan-status"></div>
+          <!-- Gefundene Bilder zum Auswählen -->
+          <div id="gallery-pick-wrap" style="display:none;margin-top:10px">
+            <div style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px">Bilder anklicken zum Hinzufügen:</div>
+            <div class="gallery-pick-grid" id="gallery-pick-grid"></div>
+          </div>
+        </div>
+
+        <!-- Eigene Fotos hochladen -->
         <label class="upload-area" id="photo-upload-area">
           <div class="upload-area__icon">🖼</div>
-          <div class="upload-area__text">Fotos hochladen</div>
-          <div class="upload-area__sub">JPG, PNG — bis zu 10 Bilder</div>
+          <div class="upload-area__text">Eigene Fotos hochladen</div>
+          <div class="upload-area__sub">JPG, PNG — bis zu 10 Bilder, erstes = Hero</div>
           <input type="file" id="photoUpload" accept="image/*" multiple>
         </label>
 
+        <!-- Pixabay -->
         <button class="btn-tool btn-tool-ghost" id="btn-demo-photos" style="width:100%;justify-content:center;gap:8px">
           <span id="demo-photos-icon">🌄</span>
           <span id="demo-photos-label">Demo-Fotos von Pixabay laden</span>
         </button>
         <div id="demo-photos-status" style="font-size:0.75rem;color:var(--tool-text-muted);text-align:center;display:none"></div>
 
+        <!-- Ausgewählte Fotos -->
         <div class="photo-grid" id="photo-grid"></div>
 
         <div class="step-nav">
@@ -516,7 +559,7 @@
 <script type="module">
 import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';
 import { generateWebsite, downloadWebsite } from './generator.js';
-import { extractColorsFromLogo, extractFromUrl, extractContactFromUrl } from './brand-extractor.js';
+import { extractColorsFromLogo, extractFromUrl, extractContactFromUrl, extractServicesFromUrl, extractImagesFromUrl } from './brand-extractor.js';
 import { fetchNichePhotos, saveApiKey, loadApiKey } from './pixabay-loader.js';
 
 // ── State ────────────────────────────────────────
@@ -530,6 +573,7 @@ const state = {
   email: '',
   address: '',
   bookingUrl: '',
+  websiteUrl: '',
   logoDataUrl: null,
   pricelistDataUrl: null,
   primaryColor: '#1a1a1a',
@@ -581,6 +625,27 @@ window.goStep = function(idx) {
     el.classList.toggle('done', i < idx);
   });
   document.getElementById('form-panel').scrollTop = 0;
+
+  // Step 4: Leistungen — URL vorausfüllen + Preisliste anzeigen
+  if (idx === 3) {
+    const svcUrl = document.getElementById('servicesUrl');
+    if (svcUrl && !svcUrl.value && state.websiteUrl) svcUrl.value = state.websiteUrl;
+    const panel = document.getElementById('pricelist-ref-panel');
+    if (panel) {
+      if (state.pricelistDataUrl) {
+        document.getElementById('pricelist-ref-img').src = state.pricelistDataUrl;
+        panel.style.display = 'flex';
+      } else {
+        panel.style.display = 'none';
+      }
+    }
+  }
+
+  // Step 5: Galerie — URL vorausfüllen
+  if (idx === 4) {
+    const galUrl = document.getElementById('galleryUrl');
+    if (galUrl && !galUrl.value && state.websiteUrl) galUrl.value = state.websiteUrl;
+  }
 };
 
 // ── Niche selection ─────────────────────────────
@@ -820,6 +885,7 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
 
   // Ensure protocol
   const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
+  state.websiteUrl = url;
 
   const btn    = document.getElementById('btn-scan-biz');
   const icon   = document.getElementById('scan-biz-icon');
@@ -952,12 +1018,123 @@ document.getElementById('btn-scan-instagram').addEventListener('click', async ()
 
 // ── Scan: Website ────────────────────────────────
 document.getElementById('btn-scan-website').addEventListener('click', async () => {
-  const url = document.getElementById('brandWebsite').value.trim();
-  if (!url) { showToast('⚠ Website-URL eingeben'); return; }
+  const rawUrl = document.getElementById('brandWebsite').value.trim();
+  if (!rawUrl) { showToast('⚠ Website-URL eingeben'); return; }
+  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
+  state.websiteUrl = url;
   const btn = document.getElementById('btn-scan-website');
   btn.disabled = true;
   await runBrandScan(url, document.getElementById('spin-web'), document.getElementById('icon-web'));
   btn.disabled = false;
+});
+
+// ── Leistungen aus Website laden (Step 4) ────────
+document.getElementById('btn-load-services').addEventListener('click', async () => {
+  const rawUrl = document.getElementById('servicesUrl').value.trim();
+  if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
+  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
+  state.websiteUrl = url;
+
+  const btn    = document.getElementById('btn-load-services');
+  const spin   = document.getElementById('spin-svc');
+  const icon   = document.getElementById('icon-svc');
+  const status = document.getElementById('services-scan-status');
+  btn.disabled = true;
+  spin.style.display = 'inline-block';
+  icon.style.display = 'none';
+  status.innerHTML = `<span style="color:var(--tool-text-muted);font-size:0.78rem">Scanne Leistungen…</span>`;
+
+  try {
+    const { services, error } = await extractServicesFromUrl(url);
+    if (error) {
+      status.innerHTML = `<span class="scan-badge warn">⚠ ${error}</span>`;
+      return;
+    }
+    if (services.length) {
+      // Merge: only add services not already in the list
+      const existing = new Set(state.services.map(s => s.name.toLowerCase()));
+      const newOnes = services.filter(s => !existing.has(s.name.toLowerCase()));
+      state.services.push(...newOnes);
+      if (!state.services.length) state.services = services;
+      renderServicesList();
+      triggerPreview();
+      status.innerHTML = `<span class="scan-badge">✓ ${services.length} Leistungen gefunden</span>`;
+      showToast(`✓ ${services.length} Leistungen geladen`);
+    } else {
+      status.innerHTML = `<span class="scan-badge warn">ℹ Keine Leistungen erkannt — Preise manuell eintragen</span>`;
+    }
+  } catch (err) {
+    status.innerHTML = `<span class="scan-badge warn">✗ ${err.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+    icon.style.display = 'inline';
+  }
+});
+
+// ── Galerie-Fotos von Website laden (Step 5) ─────
+document.getElementById('btn-load-gallery').addEventListener('click', async () => {
+  const rawUrl = document.getElementById('galleryUrl').value.trim();
+  if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
+  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
+  state.websiteUrl = url;
+
+  const btn    = document.getElementById('btn-load-gallery');
+  const spin   = document.getElementById('spin-gal');
+  const icon   = document.getElementById('icon-gal');
+  const status = document.getElementById('gallery-scan-status');
+  const wrap   = document.getElementById('gallery-pick-wrap');
+  const grid   = document.getElementById('gallery-pick-grid');
+  btn.disabled = true;
+  spin.style.display = 'inline-block';
+  icon.style.display = 'none';
+  status.innerHTML = `<span style="color:var(--tool-text-muted);font-size:0.78rem">Suche Bilder…</span>`;
+  wrap.style.display = 'none';
+
+  try {
+    const { images, error } = await extractImagesFromUrl(url);
+    if (error) {
+      status.innerHTML = `<span class="scan-badge warn">⚠ ${error}</span>`;
+      return;
+    }
+    if (!images.length) {
+      status.innerHTML = `<span class="scan-badge warn">ℹ Keine Bilder gefunden</span>`;
+      return;
+    }
+
+    status.innerHTML = `<span class="scan-badge">✓ ${images.length} Bilder gefunden — anklicken zum Hinzufügen</span>`;
+    grid.innerHTML = images.map((src, i) => `
+      <div class="gallery-pick-item" data-src="${src}" data-idx="${i}" title="Hinzufügen">
+        <img src="${src}" alt="Foto ${i + 1}" loading="lazy" onerror="this.closest('.gallery-pick-item').style.display='none'">
+        <div class="gallery-pick-item__overlay">＋</div>
+      </div>`).join('');
+    wrap.style.display = 'block';
+
+    grid.querySelectorAll('.gallery-pick-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (state.photos.length >= 10) { showToast('⚠ Maximal 10 Fotos'); return; }
+        const src = item.dataset.src;
+        if (state.photos.includes(src)) {
+          // Deselect
+          state.photos = state.photos.filter(p => p !== src);
+          item.classList.remove('selected');
+          item.querySelector('.gallery-pick-item__overlay').textContent = '＋';
+        } else {
+          state.photos.push(src);
+          item.classList.add('selected');
+          item.querySelector('.gallery-pick-item__overlay').textContent = '✓';
+        }
+        renderPhotoGrid();
+        triggerPreview();
+      });
+    });
+  } catch (err) {
+    status.innerHTML = `<span class="scan-badge warn">✗ ${err.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+    icon.style.display = 'inline';
+  }
 });
 
 // ── Photos ───────────────────────────────────────

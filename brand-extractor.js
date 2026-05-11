@@ -172,6 +172,136 @@ function parseHtmlForContact(html) {
   return result;
 }
 
+// --- Mode 4: URL → services list ---
+export async function extractServicesFromUrl(url) {
+  const html = await fetchViaProxy(url);
+  if (!html) return { services: [], error: 'Website nicht erreichbar' };
+  return { services: parseHtmlForServices(html) };
+}
+
+function parseHtmlForServices(html) {
+  const services = [];
+  const seen = new Set();
+
+  // 1. Schema.org JSON-LD (Offer / hasOfferCatalog)
+  for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const data = JSON.parse(m[1]);
+      const nodes = [data, ...(Array.isArray(data['@graph']) ? data['@graph'] : [])].flat();
+      for (const node of nodes) {
+        const offerItems = [
+          ...(node.hasOfferCatalog?.itemListElement || []),
+          ...(Array.isArray(node.offers) ? node.offers : node.offers ? [node.offers] : []),
+        ];
+        for (const o of offerItems) {
+          if (!o.name) continue;
+          const name = String(o.name).trim();
+          const price = o.price != null ? `${String(o.price).replace('.', ',')} ${o.priceCurrency || '€'}` : '';
+          if (name.length > 1 && name.length < 70 && !seen.has(name)) {
+            services.push({ name, price, desc: String(o.description || '').trim().slice(0, 80) });
+            seen.add(name);
+          }
+        }
+      }
+    } catch {}
+  }
+  if (services.length >= 3) return services.slice(0, 8);
+
+  // 2. Table rows  <tr><td>Name</td><td>25 €</td></tr>
+  for (const row of html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)) {
+    const cells = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)]
+      .map(c => c[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
+    if (cells.length < 2) continue;
+    const name = cells[0];
+    const priceCell = cells.find(c => /\d+[,.]?\d*\s*€/.test(c) || /€\s*\d/.test(c)) || '';
+    const pm = priceCell.match(/(\d+(?:[,.]\d{1,2})?)\s*€/) || priceCell.match(/€\s*(\d+(?:[,.]\d{1,2})?)/);
+    if (pm && name.length > 2 && name.length < 70 && !seen.has(name)) {
+      services.push({ name, price: pm[1].replace('.', ',') + ' €', desc: '' });
+      seen.add(name);
+    }
+  }
+  if (services.length >= 3) return services.slice(0, 8);
+
+  // 3. Plain text lines: "Service Name .... 25 €"
+  const text = html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, '\n')
+    .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
+
+  for (const raw of text.split('\n')) {
+    const l = raw.trim();
+    if (l.length < 4 || l.length > 100) continue;
+    // "Name ...... 25 €"
+    const m1 = l.match(/^(.{3,55}?)\s{1,20}(?:ab\s+)?(\d{1,3}(?:[,.]\d{2})?)\s*€\s*$/);
+    // "25 € Name"
+    const m2 = l.match(/^(\d{1,3}(?:[,.]\d{2})?)\s*€\s+(.{3,55})$/);
+    const m = m1 || m2;
+    if (!m) continue;
+    const name = (m1 ? m[1] : m[2]).trim();
+    const price = (m1 ? m[2] : m[1]).replace('.', ',') + ' €';
+    if (name.length > 2 && !/^\d+$/.test(name) && !seen.has(name)) {
+      services.push({ name, price, desc: '' });
+      seen.add(name);
+    }
+  }
+
+  return services.slice(0, 8);
+}
+
+// --- Mode 5: URL → image URLs ---
+export async function extractImagesFromUrl(url) {
+  const html = await fetchViaProxy(url);
+  if (!html) return { images: [], error: 'Website nicht erreichbar' };
+  return { images: parseHtmlForImages(html, url) };
+}
+
+function isSkippableImg(src) {
+  if (!src || src.startsWith('data:')) return true;
+  const l = src.toLowerCase();
+  return l.endsWith('.svg') || l.endsWith('.gif') || l.endsWith('.ico') || l.endsWith('.webp') === false && false
+    || /icon|logo|sprite|pixel|track|analyt|1x1|spacer|blank|load|spin|arrow|close|menu|button|badge|star|flag/i.test(l);
+}
+
+function resolveImgUrl(src, base) {
+  try {
+    if (!src || src.startsWith('data:')) return null;
+    if (src.startsWith('//')) return 'https:' + src;
+    if (/^https?:\/\//.test(src)) return src;
+    return new URL(src, base).href;
+  } catch { return null; }
+}
+
+function parseHtmlForImages(html, baseUrl) {
+  const urls = [];
+  const seen = new Set();
+  const add = (src) => {
+    const u = resolveImgUrl(src, baseUrl);
+    if (u && !isSkippableImg(u) && !seen.has(u) && urls.length < 24) {
+      urls.push(u); seen.add(u);
+    }
+  };
+
+  // og:image first — usually the best photo
+  const og = html.match(/property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
+    || html.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+  if (og) add(og[1]);
+
+  // <img src="...">
+  for (const m of html.matchAll(/<img[^>]+src=["']([^"'>\s]+)["']/gi)) add(m[1]);
+
+  // srcset="url 1x, url2 2x" — take first per set
+  for (const m of html.matchAll(/srcset=["']([^"']+)["']/gi)) {
+    const first = m[1].trim().split(',')[0].trim().split(/\s+/)[0];
+    if (first) add(first);
+  }
+
+  // background-image: url(...)
+  for (const m of html.matchAll(/url\(['"]?(https?:\/\/[^'")\s]+)['"]?\)/gi)) add(m[1]);
+
+  return urls;
+}
+
 function parseHtmlForColors(html) {
   const colors = [];
   const fonts = [];
