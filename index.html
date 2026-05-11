@@ -449,7 +449,8 @@
     <!-- ── Preview Pane ──────────────────────── -->
     <div class="preview-pane" id="preview-pane">
       <div class="preview-toolbar">
-        <span class="preview-toolbar__label">Vorschau</span>
+        <button id="btn-exit-fullscreen" class="btn-tool btn-exit-fs" style="display:none" title="Kundenmodus beenden">✕ Schließen</button>
+        <span class="preview-toolbar__label preview-toolbar__label--fs-hide">Vorschau</span>
         <div class="preview-toolbar__spacer"></div>
         <div class="preview-device-toggle">
           <button class="preview-device-btn active" data-device="desktop" title="Desktop">🖥</button>
@@ -469,10 +470,6 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Fullscreen exit button (shown only in fullscreen) -->
-<button id="btn-exit-fullscreen" style="display:none;position:fixed;top:16px;right:16px;z-index:1001;background:rgba(0,0,0,0.7);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px 14px;font-size:0.85rem;font-weight:600;cursor:pointer;backdrop-filter:blur(8px)">
-  ✕ Vorschau schließen
-</button>
 
 <script type="module">
 import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';

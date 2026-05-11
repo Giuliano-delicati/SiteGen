@@ -662,6 +662,30 @@ html, body {
 
 .preview-toolbar__spacer { flex: 1; }
 
+/* Exit-Button in Toolbar (sichtbar nur im Kundenmodus) */
+.btn-exit-fs {
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--tool-border);
+  color: var(--tool-text);
+  border: 1px solid var(--tool-border);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-exit-fs:hover {
+  background: #e63535;
+  color: #fff;
+  border-color: #e63535;
+}
+
+/* Im Kundenmodus: Label ausblenden, mehr Platz für Device-Buttons */
+.preview-pane.fullscreen .preview-toolbar__label--fs-hide {
+  display: none;
+}
+
 .preview-frame-wrap {
   flex: 1;
   overflow: hidden;
