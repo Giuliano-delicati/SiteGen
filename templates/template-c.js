@@ -122,8 +122,8 @@ export function generate(data, niche, colors, fonts) {
   .or-gallery__grid .or-gal-item:first-child { grid-column:span 2; grid-row:span 2; }
   .or-gal-item { overflow:hidden; aspect-ratio:1; }
   .or-gal-item:first-child { aspect-ratio:auto; }
-  .or-gal-item img { width:100%; height:100%; object-fit:cover; filter:grayscale(20%); transition:transform 0.6s ease,filter 0.5s; }
-  .or-gal-item:hover img { transform:scale(1.05); filter:grayscale(0%); }
+  .or-gal-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),filter 0.5s; will-change:transform; }
+  .or-gal-item:hover img { transform:scale(1.08); filter:brightness(1.06); }
 
   /* FOOTER */
   .or-footer { background:#0e0e0e; padding:72px 0 40px; }
@@ -133,6 +133,20 @@ export function generate(data, niche, colors, fonts) {
   .or-footer__contact { font-size:0.82rem; color:rgba(248,248,246,0.45); line-height:2.2; }
   .or-footer__copy { font-size:0.7rem; color:rgba(248,248,246,0.18); border-top:1px solid rgba(248,248,246,0.08); padding-top:24px; }
   @media (max-width:768px) { .or-footer__inner { grid-template-columns:1fr; } }
+
+  /* PHOTO BREAK */
+  .or-photo-break { position:relative; height:65vh; min-height:320px; background-size:cover; background-position:center; background-attachment:fixed; display:flex; align-items:flex-end; padding:0 56px 56px; overflow:hidden; }
+  .or-photo-break::before { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(14,14,14,0.75) 0%,transparent 60%); z-index:1; }
+  .or-photo-break__caption { position:relative; z-index:2; color:#f8f8f6; }
+  .or-photo-break__eyebrow { display:block; font-family:var(--ff-san); font-size:0.62rem; font-weight:500; letter-spacing:0.3em; text-transform:uppercase; color:rgba(248,248,246,0.5); margin-bottom:10px; }
+  .or-photo-break__text { font-family:var(--ff-ser); font-size:clamp(1.6rem,3vw,2.8rem); font-weight:400; font-style:italic; max-width:640px; line-height:1.2; }
+  @media (max-width:768px) { .or-photo-break { background-attachment:scroll; height:55vw; padding:0 20px 32px; } }
+
+  /* SCROLL INDICATOR */
+  .or-hero__scroll { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); z-index:3; width:1px; height:52px; overflow:hidden; opacity:0.4; }
+  .or-hero__scroll::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.9); animation:orScroll 2s ease-in-out infinite; }
+  @keyframes orScroll { 0%,100% { transform:translateY(-100%); } 50% { transform:translateY(100%); } }
+  @media (prefers-reduced-motion:reduce) { .or-hero__scroll { display:none; } }
 
   /* BOOKING WIDGET VARS — uses niche accent color */
   .bk-section { --c-bg:#f8f8f6; --c-surface:#ffffff; --c-text:#0e0e0e; --c-accent:${ac}; --c-border:rgba(14,14,14,0.12); --c-text-muted:rgba(14,14,14,0.45); --f-heading:'DM Serif Display',Georgia,serif; --f-body:'DM Sans',system-ui,sans-serif; }
@@ -149,7 +163,8 @@ export function generate(data, niche, colors, fonts) {
   @media (prefers-reduced-motion:reduce) { [data-animate] { opacity:1; transform:none; transition:none; } }
 </style>`;
 
-  const bookingHref = data.bookingUrl || '#buchen';
+  const bookingHref   = data.bookingUrl || '#buchen';
+  const bookingTarget = data.bookingUrl ? ' target="_blank" rel="noopener noreferrer"' : '';
 
   const body = `
 <nav class="or-nav" id="or-nav">
@@ -173,11 +188,12 @@ export function generate(data, niche, colors, fonts) {
       <h1 class="or-hero__title">${data.businessName || niche.label}</h1>
       <p class="or-hero__sub">${data.tagline || niche.heroTagline}</p>
       <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <a href="${bookingHref}" class="or-btn or-btn-dark">${niche.heroCta} →</a>
+        <a href="${bookingHref}"${bookingTarget} class="or-btn or-btn-dark">${niche.heroCta} →</a>
         ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost-w">☎ ${data.phone}</a>` : ''}
       </div>
     </div>
   </div>
+  <div class="or-hero__scroll" aria-hidden="true"></div>
 </section>
 ${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
 
@@ -194,7 +210,7 @@ ${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
           <span class="or-price-item__name">${s.name}${s.desc ? `<span class="or-price-item__desc"> — ${s.desc}</span>` : ''}</span>
           ${s.price ? `<span class="or-price-item__price">${s.price}</span>` : ''}
         </div>`).join('')}
-        <div class="or-services__cta" data-animate="fade"><a href="${bookingHref}" class="or-btn or-btn-solid">${niche.heroCta} →</a></div>
+        <div class="or-services__cta" data-animate="fade"><a href="${bookingHref}"${bookingTarget} class="or-btn or-btn-solid">${niche.heroCta} →</a></div>
       </div>
     </div>
   </div>
@@ -213,7 +229,7 @@ ${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
       <p class="or-about__copy">${data.about || niche.aboutDefault}</p>
       ${data.address ? `<p class="or-about__addr">📍 ${data.address}</p>` : ''}
       <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <a href="${bookingHref}" class="or-btn or-btn-dark">${niche.heroCta} →</a>
+        <a href="${bookingHref}"${bookingTarget} class="or-btn or-btn-dark">${niche.heroCta} →</a>
         ${data.phone ? `<a href="tel:${data.phone}" class="or-btn or-btn-ghost">☎ Anrufen</a>` : ''}
       </div>
     </div>
@@ -221,6 +237,12 @@ ${isHair ? buildServicesTicker(services, '#0e0e0e') : ''}
 </section>
 
 ${galleryPhotos.length > 0 ? `
+<div class="or-photo-break" style="background-image:url('${galleryPhotos[0]}')">
+  <div class="or-photo-break__caption" data-animate="fade">
+    <span class="or-photo-break__eyebrow">${niche.label}</span>
+    <p class="or-photo-break__text">${data.tagline || niche.heroTagline}</p>
+  </div>
+</div>
 <section class="or-gallery" id="gallery">
   <div class="or-container">
     <div data-animate="fade">

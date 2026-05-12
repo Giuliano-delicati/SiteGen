@@ -347,3 +347,239 @@ function parseHtmlForColors(html) {
     fonts: fonts.slice(0, 3),
   };
 }
+
+// ─────────────────────────────────────────────────────────
+// ── CENTRAL URL ANALYZER ─────────────────────────────────
+// ─────────────────────────────────────────────────────────
+
+function detectUrlType(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    if (host === 'instagram.com' || host.endsWith('.instagram.com')) return 'instagram';
+    if (host === 'facebook.com'  || host.endsWith('.facebook.com'))  return 'facebook';
+    if (host === 'tiktok.com'    || host.endsWith('.tiktok.com'))    return 'tiktok';
+  } catch {}
+  return 'website';
+}
+
+const GENERIC_NAMES_RE = /^(home(?:page)?|startseite|welcome|willkommen|untitled|instagram|facebook|twitter|tiktok|youtube|pinterest|linkedin)$/i;
+// Phrases that appear in login-wall or error pages — never real business names
+const LOGIN_PHRASES_RE = /^(log\s*in|create\s*(an?\s*)?account|sign\s*up|page\s*not\s*found|join\s*(instagram|facebook)|error\s*\d*|not\s*found|404)/i;
+
+/** Convert an Instagram handle to a readable business name.
+ *  larimar_studios → Larimar Studios  |  hair.by.mina → Hair By Mina
+ */
+export function handleToName(handle) {
+  const clean = String(handle).replace(/^@/, '').replace(/[/?#].*$/, '').trim();
+  if (!clean) return '';
+  return clean
+    .split(/[_.\-]+/)
+    .filter(w => w.length > 0)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function extractBestName(html, url) {
+  // Returns the first non-generic, non-login segment from a title string.
+  // Tries prefix first (typical for EN sites), then suffix (typical for DE: "Startseite | Brand").
+  function bestSegment(raw) {
+    const parts = raw.split(/\s*[|–\-—·•:]\s*/);
+    for (const candidate of [parts[0], parts[parts.length - 1]]) {
+      const n = candidate.trim();
+      if (n.length > 1 && !GENERIC_NAMES_RE.test(n) && !LOGIN_PHRASES_RE.test(n)) return n;
+    }
+    return null;
+  }
+
+  // 1. og:site_name — explicit brand name, most reliable
+  const ogSite = html.match(/property=["']og:site_name["'][^>]*content=["']([^"']{2,80})["']/i)
+    || html.match(/content=["']([^"']{2,80})["'][^>]*property=["']og:site_name["']/i);
+  if (ogSite) {
+    const n = ogSite[1].trim();
+    if (n.length > 1 && !GENERIC_NAMES_RE.test(n) && !LOGIN_PHRASES_RE.test(n)) return n;
+  }
+
+  // 2. og:title — try prefix, then suffix
+  const ogTitle = html.match(/property=["']og:title["'][^>]*content=["']([^"']{2,120})["']/i)
+    || html.match(/content=["']([^"']{2,120})["'][^>]*property=["']og:title["']/i);
+  if (ogTitle) {
+    const n = bestSegment(ogTitle[1]);
+    if (n) return n;
+  }
+
+  // 3. <title> — try prefix, then suffix
+  const titleM = html.match(/<title[^>]*>([^<]{2,120})<\/title>/i);
+  if (titleM) {
+    const n = bestSegment(titleM[1]);
+    if (n) return n;
+  }
+
+  // 4. Domain name as last resort
+  try {
+    const domain = new URL(url).hostname.replace(/^www\./, '').split('.')[0];
+    return domain.charAt(0).toUpperCase() + domain.slice(1);
+  } catch { return null; }
+}
+
+function extractLogoFromHtml(html, baseUrl) {
+  // 1. <img> with "logo" anywhere in its attributes
+  for (const m of html.matchAll(/<img([^>]+)>/gi)) {
+    const attrs = m[1];
+    if (!/logo/i.test(attrs)) continue;
+    const srcM = attrs.match(/src=["']([^"'>\s]+)["']/i);
+    if (!srcM) continue;
+    const resolved = resolveImgUrl(srcM[1], baseUrl);
+    if (resolved && !/\.svg$/i.test(resolved)) return resolved;
+  }
+  // 2. apple-touch-icon — high-quality square icon, usually the brand mark
+  const apple = html.match(/<link[^>]*rel=["'][^"']*apple-touch-icon[^"']*["'][^>]*href=["']([^"']+)["']/i)
+    || html.match(/<link[^>]*href=["']([^"']+)["'][^>]*rel=["'][^"']*apple-touch-icon[^"']*["']/i);
+  if (apple) { const r = resolveImgUrl(apple[1], baseUrl); if (r) return r; }
+  return null;
+}
+
+function extractHoursFromHtml(html) {
+  const DE = {
+    Mo:'Mo', Tu:'Di', We:'Mi', Th:'Do', Fr:'Fr', Sa:'Sa', Su:'So',
+    Monday:'Mo', Tuesday:'Di', Wednesday:'Mi', Thursday:'Do', Friday:'Fr', Saturday:'Sa', Sunday:'So',
+  };
+  for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const data = JSON.parse(m[1]);
+      const nodes = [data, ...(Array.isArray(data['@graph']) ? data['@graph'] : [])].flat();
+      for (const node of nodes) {
+        if (node.openingHours) {
+          const hrs = Array.isArray(node.openingHours) ? node.openingHours : [node.openingHours];
+          return hrs.map(h =>
+            h.replace(/^(\w+)-(\w+)\s/, (_, d1, d2) => `${DE[d1]||d1}–${DE[d2]||d2}: `)
+             .replace(/^(\w+)\s/, (_, d) => `${DE[d]||d}: `)
+             .replace(/-/g, '–')
+          ).join('\n');
+        }
+        if (node.openingHoursSpecification) {
+          const specs = Array.isArray(node.openingHoursSpecification)
+            ? node.openingHoursSpecification : [node.openingHoursSpecification];
+          const lines = specs.map(s => {
+            const days = (Array.isArray(s.dayOfWeek) ? s.dayOfWeek : [s.dayOfWeek||''])
+              .map(d => DE[d.replace('https://schema.org/', '')] || d).join(', ');
+            const t = [s.opens, s.closes].filter(Boolean).join('–');
+            return `${days}: ${t}`.trim();
+          }).filter(l => l.length > 3);
+          if (lines.length) return lines.join('\n');
+        }
+      }
+    } catch {}
+  }
+  return null;
+}
+
+async function analyzeInstagram(url, result) {
+  const m = url.match(/instagram\.com\/([^/?#@]+)/i);
+  if (!m) { result.error = 'Handle nicht erkennbar'; return result; }
+
+  const handle = m[1].replace(/^@/, '').toLowerCase().replace(/\/$/, '');
+  result.socialUrl    = `https://www.instagram.com/${handle}/`;
+  result.businessName = handleToName(handle);
+  result.found.push('Name (aus Handle)');
+
+  try {
+    const html = await fetchViaProxy(url);
+    if (html && html.includes('<html')) {
+      // og:title format: "Real Name (@handle) • Instagram photos and videos"
+      const ogTitle = html.match(/property=["']og:title["'][^>]*content=["']([^"']+)["']/i)
+        || html.match(/content=["']([^"']+)["'][^>]*property=["']og:title["']/i);
+      if (ogTitle) {
+        const realName = ogTitle[1].trim().match(/^(.+?)\s*(?:\(@[\w.]+\)|•|\|)/);
+        if (realName) {
+          const n = realName[1].trim();
+          if (n.length > 2 && !GENERIC_NAMES_RE.test(n) && !LOGIN_PHRASES_RE.test(n)) {
+            result.businessName = n;
+            result.found[0] = 'Name (aus Profil)';
+          }
+        }
+      }
+
+      // Bio — skip follower/following stats and login-page descriptions
+      const ogDesc = html.match(/property=["']og:description["'][^>]*content=["']([^"']{5,400})["']/i)
+        || html.match(/content=["']([^"']{5,400})["'][^>]*property=["']og:description["']/i);
+      if (ogDesc) {
+        const d = ogDesc[1].trim();
+        const isLoginDesc = /\b(sign up|join|create.{0,10}account|log.?in to)\b/i.test(d);
+        if (!isLoginDesc) {
+          const bioOnly = d.match(/Posts\s*[-–•]\s*(.+)$/)?.[1]?.trim()
+            || (!/\d[\d,]*\s+Follower/i.test(d) ? d : null);
+          if (bioOnly?.length > 5) { result.description = bioOnly; result.found.push('Bio'); }
+        }
+      }
+
+      // Profile image (og:image)
+      const ogImg = html.match(/property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
+        || html.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+      if (ogImg?.[1]) { result.logoUrl = ogImg[1]; result.found.push('Profilbild'); }
+
+      const colorResult = parseHtmlForColors(html);
+      if (colorResult.colors.length) {
+        result.colors = colorResult.colors;
+        result.found.push(`${colorResult.colors.length} Farben`);
+      }
+    }
+  } catch { /* Instagram blocked — handle-derived name is sufficient */ }
+
+  return result;
+}
+
+async function analyzeWebsite(url, result) {
+  const html = await fetchViaProxy(url);
+  if (!html) { result.error = 'Website nicht erreichbar (CORS-Proxy)'; return result; }
+
+  const name = extractBestName(html, url);
+  if (name) { result.businessName = name; result.found.push('Name'); }
+
+  const contact = parseHtmlForContact(html);
+  if (contact.phone)       { result.phone       = contact.phone;       result.found.push('Telefon'); }
+  if (contact.email)       { result.email       = contact.email;       result.found.push('E-Mail'); }
+  if (contact.address)     { result.address     = contact.address;     result.found.push('Adresse'); }
+  if (contact.description) { result.description = contact.description; }
+
+  const hours = extractHoursFromHtml(html);
+  if (hours) { result.hours = hours; result.found.push('Öffnungszeiten'); }
+
+  const logoUrl = extractLogoFromHtml(html, url);
+  if (logoUrl) { result.logoUrl = logoUrl; result.found.push('Logo'); }
+
+  const colorResult = parseHtmlForColors(html);
+  if (colorResult.colors.length) {
+    result.colors = colorResult.colors;
+    result.found.push(`${colorResult.colors.length} Farben`);
+  }
+
+  result.images = parseHtmlForImages(html, url);
+  if (result.images.length) result.found.push(`${result.images.length} Bilder`);
+
+  return result;
+}
+
+/** Analyzes a URL (Instagram or regular website) and returns structured brand data.
+ *  @returns {{ type, businessName, phone, email, address, description, hours,
+ *              colors[], images[], logoUrl, socialUrl, found[], error }}
+ */
+export async function analyzeSourceUrl(url) {
+  const raw = String(url).trim();
+
+  // Detect @handle input — also catches https://@handle (index.html prepends https://)
+  const atHandle = raw.match(/^(?:https?:\/\/)?@([\w.]+)\/?$/);
+  const normalized = atHandle
+    ? `https://www.instagram.com/${atHandle[1]}/`
+    : /^https?:\/\//.test(raw) ? raw : 'https://' + raw;
+
+  const type = detectUrlType(normalized);
+  const result = {
+    type,
+    businessName: null, phone: null, email: null, address: null,
+    description:  null, hours: null, colors: [],  images:  [],
+    logoUrl:      null, socialUrl: null, found: [], error: null,
+  };
+  return type === 'instagram'
+    ? analyzeInstagram(normalized, result)
+    : analyzeWebsite(normalized, result);
+}

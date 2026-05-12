@@ -29,20 +29,35 @@
       <!-- steps injected by JS -->
     </nav>
     <div class="sidebar__footer">
-      <div style="margin-bottom:10px">
-        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tool-text-muted);margin-bottom:6px">Pixabay API-Key</div>
-        <div style="display:flex;gap:6px">
-          <input type="password" id="pixabay-key" placeholder="Key eingeben…"
-            style="flex:1;padding:7px 10px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:6px;color:var(--tool-text);font-size:0.78rem;outline:none;font-family:inherit">
-          <button id="btn-save-key" class="btn-tool btn-tool-secondary" style="padding:6px 10px;font-size:0.78rem">✓</button>
+      <details class="adv-settings">
+        <summary>Einstellungen</summary>
+        <div class="adv-settings__body">
+
+          <!-- Pixabay API-Key -->
+          <div>
+            <div class="adv-field__label">Pixabay API-Key</div>
+            <div style="display:flex;gap:6px">
+              <input type="password" id="pixabay-key" placeholder="Key eingeben…"
+                style="flex:1;padding:6px 9px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:6px;color:var(--tool-text);font-size:0.76rem;outline:none;font-family:inherit">
+              <button id="btn-save-key" class="btn-tool btn-tool-secondary" style="padding:5px 9px;font-size:0.76rem">✓</button>
+            </div>
+            <div class="adv-field__hint">
+              Für mehr Bildauswahl — kostenlos: <a href="https://pixabay.com/api/docs/" target="_blank" style="color:var(--tool-accent);text-decoration:none">pixabay.com/api</a>
+            </div>
+          </div>
+
+          <!-- Formspree ID -->
+          <div>
+            <div class="adv-field__label">Kontaktformular-ID</div>
+            <input type="text" id="formspreeId" placeholder="z.B. abcd1234"
+              style="width:100%;box-sizing:border-box;padding:6px 9px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:6px;color:var(--tool-text);font-size:0.76rem;outline:none;font-family:inherit">
+            <div class="adv-field__hint">
+              Formspree-Konto: <a href="https://formspree.io" target="_blank" style="color:var(--tool-accent);text-decoration:none">formspree.io</a>
+            </div>
+          </div>
+
         </div>
-        <div style="font-size:0.68rem;color:var(--tool-text-muted);margin-top:5px;line-height:1.5">
-          Kostenlos: <a href="https://pixabay.com/api/docs/" target="_blank" style="color:var(--tool-accent);text-decoration:none">pixabay.com/api</a>
-        </div>
-      </div>
-      <div style="font-size:0.72rem;color:var(--tool-text-muted);line-height:1.6;border-top:1px solid var(--tool-border);padding-top:10px">
-        Tipp: Fülle Schritt 1–3 für eine beeindruckende Live-Vorschau.
-      </div>
+      </details>
     </div>
   </aside>
 
@@ -56,14 +71,9 @@
       <!-- Step 1: Kunde                           -->
       <!-- ═══════════════════════════════════════ -->
       <div class="form-step active" data-step="0">
-        <div class="step-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
-          <div>
-            <h2>Kunde</h2>
-            <p>Branche, Name und Kontakt — direkt beim Kunden ausfüllen.</p>
-          </div>
-          <button class="btn-tool btn-tool-secondary" id="btn-autofill" style="flex-shrink:0;white-space:nowrap;margin-top:4px" title="Demo-Daten einfügen">
-            ✦ Demo
-          </button>
+        <div class="step-header">
+          <h2>Kunde</h2>
+          <p>Branche, Name und Kontakt — direkt beim Kunden ausfüllen.</p>
         </div>
 
         <!-- Branche -->
@@ -126,9 +136,18 @@
         <input type="hidden" id="about">
         <input type="hidden" id="website">
 
+        <!-- Schnell-Demo -->
+        <div class="quick-demo-card">
+          <div style="flex:1;min-width:0">
+            <div class="quick-demo-card__title">⚡ Schnell-Demo erstellen</div>
+            <div class="quick-demo-card__sub">Befüllt Leistungen, Bilder &amp; Texte für <strong id="quick-demo-niche">Frisör</strong> — sofort präsentationsreif</div>
+          </div>
+          <button class="btn-tool btn-tool-primary" id="btn-quick-demo" style="white-space:nowrap;flex-shrink:0">Demo →</button>
+        </div>
+
         <div class="step-nav">
           <span></span>
-          <button class="btn-tool btn-tool-primary" onclick="goStep(1)">Weiter →</button>
+          <button class="btn-tool btn-tool-secondary" onclick="goStep(1)">Manuell ausfüllen →</button>
         </div>
       </div>
 
@@ -205,10 +224,10 @@
           </div>
         </div>
 
-        <!-- Demo-Fotos Pixabay -->
+        <!-- Demo-Bilder -->
         <button class="btn-tool btn-tool-ghost" id="btn-demo-photos" style="width:100%;justify-content:center;gap:8px">
           <span id="demo-photos-icon">🌄</span>
-          <span id="demo-photos-label">Demo-Fotos von Pixabay laden</span>
+          <span id="demo-photos-label">Demo-Bilder laden</span>
         </button>
         <div id="demo-photos-status" style="font-size:0.75rem;color:var(--tool-text-muted);text-align:center;display:none"></div>
 
@@ -227,38 +246,40 @@
       <div class="form-step" data-step="2">
         <div class="step-header">
           <h2>Angebot</h2>
-          <p>Leistungen, Preise und Öffnungszeiten.</p>
+          <p>Preise anpassen und Öffnungszeiten eintragen.</p>
         </div>
 
-        <!-- Preisliste-Referenz (wenn hochgeladen) -->
-        <div id="pricelist-ref-panel" style="display:none;flex-direction:row;gap:12px;align-items:flex-start;padding:12px;background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:var(--tool-radius)">
-          <img id="pricelist-ref-img" src="" alt="Preisliste" style="width:90px;height:70px;object-fit:contain;border-radius:6px;border:1px solid var(--tool-border);flex-shrink:0">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:0.82rem;font-weight:600;margin-bottom:3px">📋 Preisliste als Referenz</div>
-            <div style="font-size:0.75rem;color:var(--tool-text-muted);line-height:1.5">Trage die Preise unten ein.</div>
+        <!-- Preisliste-Referenz (sichtbar wenn hochgeladen) -->
+        <div id="pricelist-ref-panel" style="display:none">
+          <div class="pricelist-ref-card" id="pricelist-ref-card">
+            <img id="pricelist-ref-img" src="" alt="Preisliste">
+            <div style="flex:1;min-width:0">
+              <div class="pricelist-ref-card__title">📋 Preisliste hochgeladen</div>
+              <div class="pricelist-ref-card__sub">Tippen zum Vergrößern · Preise unten anpassen</div>
+            </div>
+            <span style="color:var(--tool-text-muted);font-size:1rem;flex-shrink:0">↗</span>
           </div>
         </div>
 
-        <!-- Leistungen von Website laden -->
+        <!-- Leistungen -->
         <div class="field">
-          <label>Leistungen automatisch laden</label>
-          <div id="source-chip-services" style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px"></div>
-          <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-services" style="gap:6px">
-            <span class="spinner" id="spin-svc" style="display:none;width:12px;height:12px;border-width:2px"></span>
-            <span id="icon-svc">⚡ Leistungen laden</span>
-          </button>
+          <div class="field-header">
+            <label>Leistungen</label>
+            <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-services" style="gap:5px">
+              <span class="spinner" id="spin-svc" style="display:none;width:10px;height:10px;border-width:2px"></span>
+              <span id="icon-svc">⚡ Von Website laden</span>
+            </button>
+          </div>
+          <div id="source-chip-services" style="font-size:0.72rem;color:var(--tool-text-muted);margin-bottom:6px"></div>
           <div class="scan-status" id="services-scan-status"></div>
+          <div class="services-list" id="services-list"></div>
+          <button class="btn-tool btn-tool-ghost" id="btn-add-service" style="width:100%;justify-content:center;margin-top:6px">+ Leistung hinzufügen</button>
         </div>
 
-        <!-- Leistungen-Liste -->
-        <div class="services-list" id="services-list"></div>
-        <button class="btn-tool btn-tool-ghost" id="btn-add-service" style="margin-top:4px">+ Leistung hinzufügen</button>
-
         <!-- Öffnungszeiten -->
-        <div class="field" style="margin-top:12px">
+        <div class="field">
           <label>Öffnungszeiten</label>
           <textarea id="hours" rows="5" placeholder="Mo–Fr: 09:00–18:00&#10;Sa: 09:00–15:00&#10;So: Geschlossen"></textarea>
-          <div style="font-size:0.75rem;color:var(--tool-text-muted);margin-top:4px">Jede Zeile: Tag: Uhrzeit</div>
         </div>
 
         <div class="step-nav">
@@ -388,12 +409,12 @@
       </div>
 
       <!-- ═══════════════════════════════════════ -->
-      <!-- Step 5: Vorführen & Speichern          -->
+      <!-- Step 5: Abschluss                      -->
       <!-- ═══════════════════════════════════════ -->
       <div class="form-step" data-step="4">
         <div class="step-header">
-          <h2>Vorführen & Speichern</h2>
-          <p>Demo zeigen, Projekt sichern und in Auftrag geben.</p>
+          <h2>Abschluss</h2>
+          <p>Demo zeigen, Lead erfassen und in Auftrag geben.</p>
         </div>
 
         <!-- Kundenmodus -->
@@ -401,39 +422,64 @@
           ⛶ Kundenmodus starten
         </button>
 
-        <div class="section-divider" style="margin:16px 0"></div>
+        <!-- Vertriebsübergabe -->
+        <div class="section-heading">Vertriebsübergabe</div>
 
-        <!-- Projektverwaltung -->
         <div class="field">
-          <label>Projekte</label>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <button class="btn-tool btn-tool-secondary" id="btn-save-project" style="flex:1;justify-content:center">
-              💾 Speichern
-            </button>
-            <button class="btn-tool btn-tool-secondary" id="btn-import-project" style="flex:1;justify-content:center" title="Projekt aus JSON-Datei importieren">
-              📂 Importieren
-            </button>
+          <label>Interesse des Kunden</label>
+          <div class="interest-selector" id="interest-selector">
+            <button class="interest-btn" data-value="niedrig">↓ Niedrig</button>
+            <button class="interest-btn active" data-value="mittel">→ Mittel</button>
+            <button class="interest-btn" data-value="hoch">↑ Hoch</button>
           </div>
-          <input type="file" id="project-file-input" accept=".json,application/json" style="display:none">
-          <div id="project-list"></div>
-          <div id="project-status" style="font-size:0.72rem;color:var(--tool-text-muted);margin-top:6px;min-height:1.2em"></div>
         </div>
 
-        <div class="section-divider" style="margin:16px 0"></div>
+        <div class="field">
+          <label>Vertriebsnotizen <span style="font-weight:400;color:var(--tool-text-muted)">(optional)</span></label>
+          <textarea id="salesNotes" rows="3" placeholder="z.B. Kunde möchte Galerie erweitern, Budget ~300 €, Kontakt lieber per WhatsApp…"></textarea>
+        </div>
 
-        <!-- In Auftrag geben + HTML Export -->
+        <div class="field-row">
+          <div class="field">
+            <label>Kontaktperson <span style="font-weight:400;color:var(--tool-text-muted)">(optional)</span></label>
+            <input type="text" id="salesContact" placeholder="z.B. Herr Özdemir">
+          </div>
+          <div class="field">
+            <label>Rückruf <span style="font-weight:400;color:var(--tool-text-muted)">(optional)</span></label>
+            <input type="date" id="salesCallback">
+          </div>
+        </div>
+
+        <!-- In Auftrag geben -->
+        <div class="section-heading">Auftrag senden</div>
+
         <div style="display:flex;flex-direction:column;gap:8px">
           <button class="btn-tool btn-tool-primary" id="btn-export-step" style="padding:14px 24px;font-size:1rem;justify-content:center">
             ✉ In Auftrag geben
           </button>
-          <button class="btn-tool btn-tool-secondary" id="btn-export-html" style="padding:12px 24px;font-size:0.9rem;justify-content:center">
+          <button class="btn-tool btn-tool-secondary" id="btn-export-html" style="padding:11px 24px;font-size:0.88rem;justify-content:center">
             ↓ HTML exportieren
           </button>
         </div>
 
-        <div class="info-box" style="margin-top:12px">
-          Die fertige Website wird als HTML-Datei direkt an unser Team geschickt und innerhalb kurzer Zeit bearbeitet.
+        <div class="info-box" style="margin-top:10px">
+          Website-HTML + alle Kundendaten und Vertriebsnotizen werden an das Team gesendet.
         </div>
+
+        <!-- Projektverwaltung -->
+        <div class="section-heading">Projekte</div>
+
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="btn-tool btn-tool-secondary" id="btn-save-project" style="flex:1;justify-content:center">
+            💾 Speichern
+          </button>
+          <button class="btn-tool btn-tool-secondary" id="btn-import-project" style="flex:1;justify-content:center" title="Projekt aus JSON-Datei importieren">
+            📂 Importieren
+          </button>
+        </div>
+        <input type="file" id="project-file-input" accept=".json,application/json" style="display:none">
+        <div id="project-list"></div>
+        <div id="project-status" style="font-size:0.72rem;color:var(--tool-text-muted);margin-top:6px;min-height:1.2em"></div>
 
         <div class="step-nav">
           <button class="btn-tool btn-tool-secondary" onclick="goStep(3)">← Zurück</button>
@@ -446,18 +492,19 @@
     <!-- ── Preview Pane ──────────────────────── -->
     <div class="preview-pane" id="preview-pane">
       <div class="preview-toolbar">
-        <button id="btn-exit-fullscreen" class="btn-tool btn-exit-fs" style="display:none" title="Kundenmodus beenden">✕ Schließen</button>
-        <span class="preview-toolbar__label preview-toolbar__label--fs-hide">Vorschau</span>
+        <button id="btn-exit-fullscreen" class="btn-tool ks-exit-btn ks-only" title="Kundenmodus beenden">✕ Schließen</button>
+        <span class="preview-toolbar__label ks-hide">Vorschau</span>
         <div class="preview-toolbar__spacer"></div>
         <div class="preview-device-toggle">
-          <button class="preview-device-btn active" data-device="desktop" title="Desktop">🖥</button>
-          <button class="preview-device-btn" data-device="tablet" title="Tablet">📱</button>
-          <button class="preview-device-btn" data-device="mobile" title="Mobil">📱</button>
+          <button class="preview-device-btn active" data-device="desktop">Desktop</button>
+          <button class="preview-device-btn ks-hide" data-device="tablet">Tablet</button>
+          <button class="preview-device-btn" data-device="mobile">Mobil</button>
         </div>
-        <button class="btn-tool btn-tool-secondary" id="btn-refresh-preview" style="margin-left:8px;padding:5px 10px">↺</button>
+        <button class="btn-tool btn-tool-secondary ks-hide" id="btn-refresh-preview" style="margin-left:8px;padding:5px 10px">↺</button>
+        <button class="btn-tool ks-order-btn ks-only" id="btn-order-ks">✉ In Auftrag geben</button>
       </div>
       <div class="preview-frame-wrap" id="preview-frame-wrap">
-        <iframe id="preview-iframe" title="Website-Vorschau" sandbox="allow-scripts allow-popups allow-forms"></iframe>
+        <iframe id="preview-iframe" title="Website-Vorschau" sandbox="allow-scripts allow-forms"></iframe>
       </div>
     </div>
 
@@ -487,7 +534,7 @@
 <script type="module">
 import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';
 import { generateWebsite, downloadWebsite } from './generator.js';
-import { extractColorsFromLogo, extractFromUrl, extractContactFromUrl, extractServicesFromUrl, extractImagesFromUrl } from './brand-extractor.js';
+import { extractColorsFromLogo, extractFromUrl, extractContactFromUrl, extractServicesFromUrl, extractImagesFromUrl, analyzeSourceUrl } from './brand-extractor.js';
 import { fetchNichePhotos, saveApiKey, loadApiKey } from './pixabay-loader.js';
 
 // ── State ────────────────────────────────────────
@@ -514,6 +561,11 @@ const state = {
   showTeam: false,
   hours: '',
   website: '',
+  formspreeId: '',
+  salesNotes:    '',
+  salesInterest: 'mittel',
+  salesContact:  '',
+  salesCallback: '',
 };
 
 let currentStep = 0;
@@ -559,7 +611,7 @@ window.goStep = function(idx) {
     if (panel) {
       if (state.pricelistDataUrl) {
         document.getElementById('pricelist-ref-img').src = state.pricelistDataUrl;
-        panel.style.display = 'flex';
+        panel.style.display = 'block';
       } else {
         panel.style.display = 'none';
       }
@@ -597,6 +649,8 @@ document.getElementById('niche-grid').addEventListener('click', e => {
   state.niche = card.dataset.niche;
   const niche = NICHES[state.niche];
   document.getElementById('niche-badge').textContent = `${niche.icon} ${niche.label}`;
+  const qdNicheEl = document.getElementById('quick-demo-niche');
+  if (qdNicheEl) qdNicheEl.textContent = niche.label;
   // Update template labels based on niche
   const TEMPLATE_LABELS = {
     barber: ['A — Elegant', 'B — Maskulin', 'C — Verspielt', 'D — Oldschool'],
@@ -641,12 +695,16 @@ document.getElementById('template-grid').addEventListener('click', e => {
   triggerPreview();
 });
 
+// ── Tracks fields the user has actually typed into (not auto-filled/demo) ──
+const touchedFields = new Set();
+
 // ── Text inputs live binding ────────────────────
 function bindInput(id, key) {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('input', () => {
     state[key] = el.value;
+    touchedFields.add(id);
     triggerPreview();
   });
 }
@@ -659,6 +717,20 @@ bindInput('email', 'email');
 bindInput('address', 'address');
 bindInput('hours', 'hours');
 bindInput('website', 'website');
+bindInput('formspreeId', 'formspreeId');
+bindInput('salesNotes', 'salesNotes');
+bindInput('salesContact', 'salesContact');
+// salesCallback intentionally not bound via bindInput — date field has no effect on generated HTML
+document.getElementById('salesCallback').addEventListener('change', e => { state.salesCallback = e.target.value; });
+
+// ── Interest selector ─────────────────────────────
+document.getElementById('interest-selector').addEventListener('click', e => {
+  const btn = e.target.closest('.interest-btn');
+  if (!btn) return;
+  document.querySelectorAll('.interest-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.salesInterest = btn.dataset.value;
+});
 
 // ── sourceUrl: live-sync state + website + chips ──
 document.getElementById('sourceUrl').addEventListener('input', e => {
@@ -813,6 +885,11 @@ document.getElementById('pricelist-clear').addEventListener('click', (e) => {
   triggerPreview();
 });
 
+// ── Pricelist ref card: click to enlarge ─────────
+document.getElementById('pricelist-ref-card').addEventListener('click', () => {
+  if (state.pricelistDataUrl) window.open(state.pricelistDataUrl, '_blank');
+});
+
 // ── Step 1 URL / Instagram Scan ──────────────────
 document.getElementById('btn-scan-biz').addEventListener('click', async () => {
   const rawUrl = document.getElementById('sourceUrl').value.trim();
@@ -821,7 +898,6 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
   const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
   state.sourceUrl = url;
   state.website   = url;
-  // Sync hidden field
   const websiteEl = document.getElementById('website');
   if (websiteEl) { websiteEl.value = url; websiteEl.dispatchEvent(new Event('input')); }
   ['source-chip-gallery', 'source-chip-services', 'source-chip-colors'].forEach(updateSourceChip);
@@ -837,28 +913,33 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
   status.innerHTML = `<span style="color:var(--tool-text-muted);font-size:0.78rem">Scanne…</span>`;
 
   try {
-    const contact = await extractContactFromUrl(url);
+    const result = await analyzeSourceUrl(url);
 
-    if (contact.error) {
-      status.innerHTML = `<span class="scan-badge warn">⚠ ${contact.error}</span>`;
+    if (result.error && !result.businessName && !result.colors.length && !result.images.length) {
+      status.innerHTML = `<span class="scan-badge warn">⚠ ${result.error}</span>`;
       return;
     }
 
+    const found = [];
+
+    // ── Text fields ───────────────────────────────
     const FIELD_MAP = [
-      { key: 'name',        id: 'businessName', stateKey: 'businessName', label: 'Name' },
-      { key: 'description', id: 'about',        stateKey: 'about',        label: 'Beschreibung' },
-      { key: 'phone',       id: 'phone',        stateKey: 'phone',        label: 'Telefon' },
-      { key: 'email',       id: 'email',        stateKey: 'email',        label: 'E-Mail' },
-      { key: 'address',     id: 'address',      stateKey: 'address',      label: 'Adresse' },
+      { src: result.businessName, id: 'businessName', stateKey: 'businessName', label: 'Name' },
+      { src: result.description,  id: 'about',        stateKey: 'about',        label: 'Beschreibung' },
+      { src: result.phone,        id: 'phone',        stateKey: 'phone',        label: 'Telefon' },
+      { src: result.email,        id: 'email',        stateKey: 'email',        label: 'E-Mail' },
+      { src: result.address,      id: 'address',      stateKey: 'address',      label: 'Adresse' },
+      { src: result.hours,        id: 'hours',        stateKey: 'hours',        label: 'Öffnungszeiten' },
     ];
 
-    const found = [];
-    FIELD_MAP.forEach(({ key, id, stateKey, label }) => {
-      if (!contact[key]) return;
+    const skipped = [];
+    FIELD_MAP.forEach(({ src, id, stateKey, label }) => {
+      if (!src) return;
       const el = document.getElementById(id);
-      if (!el || el.value.trim()) return;
-      el.value = contact[key];
-      state[stateKey] = contact[key];
+      if (!el) return;
+      if (!isReplaceableFieldValue(id, el.value)) { skipped.push(label); return; }
+      el.value = src;
+      state[stateKey] = src;
       el.dispatchEvent(new Event('input'));
       el.classList.remove('field-autofilled');
       void el.offsetWidth;
@@ -867,14 +948,102 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
       found.push(label);
     });
 
-    if (found.length) {
-      status.innerHTML = found.map(f => `<span class="scan-badge">✓ ${f}</span>`).join('');
-      showToast(`✓ ${found.length} Felder automatisch ausgefüllt`);
-    } else {
-      status.innerHTML = `<span class="scan-badge warn">ℹ Keine neuen Infos gefunden — Felder bereits gefüllt oder Website blockiert</span>`;
+    // Tagline from short description if replaceable
+    if (result.description && result.description.length < 100) {
+      const tagEl = document.getElementById('tagline');
+      if (tagEl && isReplaceableFieldValue('tagline', tagEl.value)) {
+        tagEl.value = result.description;
+        state.tagline = result.description;
+        tagEl.dispatchEvent(new Event('input'));
+      }
     }
 
-    triggerPreview();
+    // ── Colors ────────────────────────────────────
+    if (result.colors.length) {
+      if (result.colors[0]) {
+        state.primaryColor = result.colors[0];
+        document.getElementById('primaryColor').value = result.colors[0];
+        document.getElementById('primaryHex').textContent = result.colors[0];
+      }
+      if (result.colors[1]) {
+        state.accentColor = result.colors[1];
+        document.getElementById('accentColor').value = result.colors[1];
+        document.getElementById('accentHex').textContent = result.colors[1];
+      }
+      renderColorSwatches(result.colors, 'url-swatches');
+      found.push(`${result.colors.length} Farben`);
+    }
+
+    // ── Logo ──────────────────────────────────────
+    if (result.logoUrl && !state.logoDataUrl) {
+      try {
+        const res  = await fetch(result.logoUrl);
+        const blob = await res.blob();
+        const dataUrl = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(blob);
+        });
+        state.logoDataUrl = dataUrl;
+        const zone = document.getElementById('logo-zone');
+        if (zone) {
+          zone.innerHTML = `<img src="${dataUrl}" alt="Logo">`;
+          zone.classList.add('has-image');
+          document.getElementById('logo-clear').classList.add('visible');
+        }
+        found.push('Logo');
+      } catch (_) { /* logo fetch failed silently */ }
+    }
+
+    // ── Images → gallery picker ───────────────────
+    if (result.images.length) {
+      const wrap = document.getElementById('gallery-pick-wrap');
+      const grid = document.getElementById('gallery-pick-grid');
+      const galStatus = document.getElementById('gallery-scan-status');
+      if (wrap && grid) {
+        grid.innerHTML = result.images.map((src, i) => `
+          <div class="gallery-pick-item" data-src="${src}" data-idx="${i}" title="Hinzufügen">
+            <img src="${src}" alt="Foto ${i + 1}" loading="lazy" onerror="this.closest('.gallery-pick-item').style.display='none'">
+            <div class="gallery-pick-item__overlay">＋</div>
+          </div>`).join('');
+        wrap.style.display = 'block';
+        grid.querySelectorAll('.gallery-pick-item').forEach(item => {
+          item.addEventListener('click', () => {
+            if (state.photos.length >= 10) { showToast('⚠ Maximal 10 Fotos'); return; }
+            const src = item.dataset.src;
+            if (state.photos.includes(src)) {
+              state.photos = state.photos.filter(p => p !== src);
+              item.classList.remove('selected');
+              item.querySelector('.gallery-pick-item__overlay').textContent = '＋';
+            } else {
+              state.photos.push(src);
+              item.classList.add('selected');
+              item.querySelector('.gallery-pick-item__overlay').textContent = '✓';
+            }
+            renderPhotoGrid();
+            triggerPreview();
+          });
+        });
+        if (galStatus) galStatus.innerHTML = `<span class="scan-badge">✓ ${result.images.length} Bilder — anklicken zum Hinzufügen</span>`;
+        found.push(`${result.images.length} Bilder`);
+      }
+    }
+
+    // ── Summary badge ─────────────────────────────
+    if (found.length) {
+      const skipNote = skipped.length ? ` <span style="opacity:.6">(${skipped.join(', ')} manuell geschützt)</span>` : '';
+      status.innerHTML = `<span class="scan-badge">Erkannt: ${found.join(' · ')}</span>${skipNote}`;
+      showToast(`✓ Scan: ${found.join(', ')}`);
+      triggerPreview();
+    } else if (skipped.length) {
+      status.innerHTML = `<span class="scan-badge warn">ℹ Felder bereits manuell befüllt — nichts überschrieben</span>`;
+    } else if (result.error) {
+      status.innerHTML = `<span class="scan-badge warn">⚠ Website blockiert oder nicht erreichbar</span>`;
+    } else {
+      status.innerHTML = `<span class="scan-badge warn">ℹ Keine auswertbaren Daten gefunden</span>`;
+    }
+
   } catch (err) {
     status.innerHTML = `<span class="scan-badge warn">✗ ${err.message}</span>`;
   } finally {
@@ -1108,25 +1277,39 @@ photoArea.addEventListener('drop', e => {
 function renderServicesList() {
   const list = document.getElementById('services-list');
   if (!list) return;
-  list.innerHTML = state.services.map((s, i) => `
-    <div class="service-row" data-index="${i}">
-      <input class="svc-name" type="text" placeholder="Leistungsname" value="${s.name || ''}">
-      <input class="svc-price" type="text" placeholder="Preis" value="${s.price || ''}" style="width:90px;text-align:right;color:var(--tool-accent)">
-      <button class="service-row__remove" data-index="${i}" title="Entfernen">✕</button>
-    </div>
-    <div style="padding:0 10px 4px;margin-top:-4px">
-      <input class="svc-desc" type="text" placeholder="Kurzbeschreibung (optional)" value="${s.desc || ''}"
-        style="width:100%;background:none;border:none;border-bottom:1px solid var(--tool-border);color:var(--tool-text-muted);font-size:0.8rem;padding:4px 0;outline:none;font-family:inherit">
-    </div>`).join('');
+  const esc = s => (s || '').replace(/"/g, '&quot;');
+  list.innerHTML = state.services.map((s, i) => {
+    const open = s._open || !!(s.desc || '').trim();
+    return `<div class="service-row${open ? ' open' : ''}" data-index="${i}">
+      <div class="svc-main">
+        <input class="svc-name"  type="text" placeholder="Leistungsname" value="${esc(s.name)}">
+        <input class="svc-price" type="text" placeholder="Preis"         value="${esc(s.price)}">
+        <button class="svc-desc-toggle" data-index="${i}" title="Beschreibung">···</button>
+        <button class="service-row__remove" data-index="${i}" title="Entfernen">✕</button>
+      </div>
+      <div class="svc-desc-panel">
+        <input class="svc-desc" type="text" placeholder="Kurzbeschreibung (optional)" value="${esc(s.desc)}">
+      </div>
+    </div>`;
+  }).join('');
 
   list.querySelectorAll('.svc-name').forEach((el, i) => {
-    el.addEventListener('input', () => { state.services[i].name = el.value; triggerPreview(); });
+    el.addEventListener('input', () => { state.services[i].name  = el.value; triggerPreview(); });
   });
   list.querySelectorAll('.svc-price').forEach((el, i) => {
     el.addEventListener('input', () => { state.services[i].price = el.value; triggerPreview(); });
   });
   list.querySelectorAll('.svc-desc').forEach((el, i) => {
-    el.addEventListener('input', () => { state.services[i].desc = el.value; triggerPreview(); });
+    el.addEventListener('input', () => { state.services[i].desc  = el.value; triggerPreview(); });
+  });
+  list.querySelectorAll('.svc-desc-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i   = Number(btn.dataset.index);
+      const row = btn.closest('.service-row');
+      const open = row.classList.toggle('open');
+      state.services[i]._open = open;
+      if (open) row.querySelector('.svc-desc')?.focus();
+    });
   });
   list.querySelectorAll('.service-row__remove').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1140,6 +1323,9 @@ function renderServicesList() {
 document.getElementById('btn-add-service').addEventListener('click', () => {
   state.services.push({ name: '', price: '', desc: '' });
   renderServicesList();
+  // Focus new row name
+  const rows = document.querySelectorAll('#services-list .svc-name');
+  rows[rows.length - 1]?.focus();
 });
 
 // ── Team (state only, no UI) ──────────────────────
@@ -1173,60 +1359,67 @@ pixabayKeyInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('btn-save-key').click();
 });
 
-// ── Demo-Fotos laden ─────────────────────────────
+// ── Demo-Bilder laden ────────────────────────────
 document.getElementById('btn-demo-photos').addEventListener('click', async () => {
-  if (!pixabayKey) {
-    showToast('⚠ Bitte erst Pixabay API-Key in der Sidebar eingeben');
-    return;
-  }
-
   const btn    = document.getElementById('btn-demo-photos');
   const label  = document.getElementById('demo-photos-label');
   const icon   = document.getElementById('demo-photos-icon');
   const status = document.getElementById('demo-photos-status');
 
   btn.disabled = true;
-  icon.textContent = '';
   icon.innerHTML = '<span class="spinner"></span>';
-  label.textContent = 'Lade Fotos…';
+  label.textContent = 'Lade Bilder…';
   status.style.display = 'block';
-  status.textContent = `Suche Bilder für „${NICHES[state.niche]?.label}"…`;
 
   try {
-    const urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
-    if (!urls.length) throw new Error('Keine Bilder gefunden');
+    let urls = [];
+    if (pixabayKey) {
+      status.textContent = `Suche Bilder für „${NICHES[state.niche]?.label}"…`;
+      urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
+    }
+    if (!urls.length) {
+      // Fallback: niche default photos
+      urls = [...(NICHES[state.niche]?.defaultPhotos || [])];
+    }
+    if (!urls.length) throw new Error('Keine Bilder verfügbar');
 
     const remaining = 10 - state.photos.length;
-    const toAdd = urls.slice(0, remaining);
+    const toAdd = urls.filter(u => !state.photos.includes(u)).slice(0, remaining);
     state.photos.push(...toAdd);
     renderPhotoGrid();
     triggerPreview();
 
-    status.textContent = `✓ ${toAdd.length} Demo-Foto${toAdd.length !== 1 ? 's' : ''} geladen (via Pixabay)`;
-    showToast(`${toAdd.length} Fotos geladen`);
+    status.textContent = `✓ ${toAdd.length} Demo-Bild${toAdd.length !== 1 ? 'er' : ''} geladen`;
+    showToast(`${toAdd.length} Bilder geladen`);
   } catch (err) {
-    status.textContent = `✗ ${err.message === 'Kein Pixabay API-Key angegeben' ? 'Kein API-Key' : 'Fehler beim Laden — API-Key korrekt?'}`;
-    showToast('✗ Fotos konnten nicht geladen werden');
+    status.textContent = `✗ ${err.message}`;
+    showToast('✗ Bilder konnten nicht geladen werden');
   } finally {
     btn.disabled = false;
     icon.innerHTML = '🌄';
-    label.textContent = 'Demo-Fotos von Pixabay laden';
+    label.textContent = 'Demo-Bilder laden';
   }
 });
 
-// Auto-fetch on niche change when no custom photos exist
+// Auto-load niche defaults when no photos exist (silent, no API needed)
 async function autoFetchIfEmpty() {
-  if (state.photos.length > 0 || !pixabayKey) return;
+  if (state.photos.length > 0) return;
   const status = document.getElementById('demo-photos-status');
-  status.style.display = 'block';
-  status.textContent = `Lade Demo-Fotos für ${NICHES[state.niche]?.label}…`;
   try {
-    const urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
+    let urls = [];
+    if (pixabayKey) {
+      status.style.display = 'block';
+      status.textContent = `Lade Demo-Bilder für ${NICHES[state.niche]?.label}…`;
+      urls = await fetchNichePhotos(state.niche, pixabayKey, 5);
+    }
+    if (!urls.length) {
+      urls = [...(NICHES[state.niche]?.defaultPhotos || [])];
+    }
     if (urls.length) {
       state.photos = urls;
       renderPhotoGrid();
       triggerPreview();
-      status.textContent = `✓ ${urls.length} Demo-Fotos geladen`;
+      status.style.display = 'none';
     } else {
       status.style.display = 'none';
     }
@@ -1255,40 +1448,37 @@ function updatePreview() {
 document.getElementById('btn-refresh-preview').addEventListener('click', updatePreview);
 
 // ── Device preview ────────────────────────────────
+function setDevice(name) {
+  const pane   = document.getElementById('preview-pane');
+  const wrap   = document.getElementById('preview-frame-wrap');
+  const iframe = document.getElementById('preview-iframe');
+  document.querySelectorAll('.preview-device-btn').forEach(b => b.classList.toggle('active', b.dataset.device === name));
+  pane.dataset.device = name;
+  if (name === 'desktop') {
+    iframe.style.cssText = 'width:100%;height:100%;border:none;background:#fff;';
+    wrap.style.background = '';
+  } else if (name === 'tablet') {
+    iframe.style.cssText = 'width:768px;height:100%;margin:16px auto;display:block;border:none;background:#fff;';
+    wrap.style.background = '#1a1a1a';
+  } else {
+    iframe.style.cssText = 'width:390px;height:100%;margin:0 auto;display:block;border:none;background:#fff;';
+    wrap.style.background = '#1a1a1a';
+  }
+}
+
 document.querySelectorAll('.preview-device-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.preview-device-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const wrap   = document.getElementById('preview-frame-wrap');
-    const iframe = document.getElementById('preview-iframe');
-    if (btn.dataset.device === 'desktop') {
-      iframe.style.width   = '100%';
-      iframe.style.margin  = '0';
-      wrap.style.background = '#000';
-    } else if (btn.dataset.device === 'tablet') {
-      iframe.style.width   = '768px';
-      iframe.style.margin  = '0 auto';
-      iframe.style.display = 'block';
-      wrap.style.background = '#333';
-    } else {
-      iframe.style.width   = '390px';
-      iframe.style.margin  = '0 auto';
-      iframe.style.display = 'block';
-      wrap.style.background = '#555';
-    }
-  });
+  btn.addEventListener('click', () => setDevice(btn.dataset.device));
 });
 
 // ── Fullscreen (Kundenmodus) ──────────────────────
 function enterFullscreen() {
-  const pane = document.getElementById('preview-pane');
-  pane.classList.add('fullscreen');
-  document.getElementById('btn-exit-fullscreen').style.display = 'block';
+  document.getElementById('preview-pane').classList.add('fullscreen');
+  setDevice('desktop');
 }
 
 function exitFullscreen() {
   document.getElementById('preview-pane').classList.remove('fullscreen');
-  document.getElementById('btn-exit-fullscreen').style.display = 'none';
+  setDevice('desktop');
 }
 
 document.getElementById('btn-fullscreen').addEventListener('click', enterFullscreen);
@@ -1301,16 +1491,35 @@ const ORDER_ENDPOINT = 'https://fixwithfoxy.com/send-order.php';
 
 async function doOrder() {
   const name = state.businessName || 'website';
-  const btns = [document.getElementById('btn-export'), document.getElementById('btn-export-step')];
+  const btns = [document.getElementById('btn-export'), document.getElementById('btn-export-step'), document.getElementById('btn-order-ks')];
 
   btns.forEach(b => { if (b) { b.disabled = true; b.textContent = '⏳ Wird gesendet…'; } });
 
   try {
-    const html = generateWebsite({ ...state, exportName: name });
-    const res  = await fetch(ORDER_ENDPOINT, {
+    const html     = generateWebsite({ ...state, exportName: name });
+    const filename = name.toLowerCase().replace(/\s+/g, '-');
+
+    const lead = {
+      businessName:  state.businessName  || '',
+      niche:         NICHES[state.niche]?.label || state.niche,
+      phone:         state.phone         || '',
+      email:         state.email         || '',
+      address:       state.address       || '',
+      sourceUrl:     state.sourceUrl     || '',
+      template:      (state.template || 'a').toUpperCase(),
+      primaryColor:  state.primaryColor  || '',
+      accentColor:   state.accentColor   || '',
+      salesContact:  state.salesContact  || '',
+      salesInterest: state.salesInterest || 'mittel',
+      salesCallback: state.salesCallback || '',
+      salesNotes:    state.salesNotes    || '',
+      sentAt:        new Date().toLocaleString('de-DE'),
+    };
+
+    const res = await fetch(ORDER_ENDPOINT, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ html, businessName: state.businessName || name, filename: name }),
+      body:    JSON.stringify({ html, businessName: state.businessName || name, filename, lead }),
     });
 
     const json = await res.json().catch(() => ({}));
@@ -1318,6 +1527,7 @@ async function doOrder() {
     if (res.ok && json.success) {
       showToast('✓ Auftrag erfolgreich eingegangen!');
       btns.forEach(b => { if (b) { b.disabled = false; b.innerHTML = '✓ Gesendet'; } });
+      setTimeout(() => btns.forEach(b => { if (b) b.innerHTML = '✉ In Auftrag geben'; }), 4000);
     } else {
       throw new Error(json.error || `HTTP ${res.status}`);
     }
@@ -1329,6 +1539,7 @@ async function doOrder() {
 
 document.getElementById('btn-export').addEventListener('click', doOrder);
 document.getElementById('btn-export-step').addEventListener('click', doOrder);
+document.getElementById('btn-order-ks').addEventListener('click', doOrder);
 
 // ── HTML exportieren ──────────────────────────────
 function doExportHtml() {
@@ -1503,15 +1714,34 @@ function markDirty() {
 // ── Projekt laden ─────────────────────────────────
 function syncFormToState() {
   // Text inputs
-  ['businessName', 'tagline', 'about', 'phone', 'email', 'address', 'hours', 'website'].forEach(id => {
+  ['businessName', 'tagline', 'about', 'phone', 'email', 'address', 'hours', 'website',
+   'formspreeId', 'salesNotes', 'salesContact', 'salesCallback'].forEach(id => {
     const el = document.getElementById(id);
     if (el && state[id] !== undefined) el.value = state[id] || '';
+  });
+
+  // Interest selector
+  document.querySelectorAll('.interest-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === (state.salesInterest || 'mittel'));
   });
 
   // Niche badge + selection
   const niche = NICHES[state.niche] || NICHES['friser'];
   document.querySelectorAll('.niche-card').forEach(c => c.classList.toggle('selected', c.dataset.niche === state.niche));
   document.getElementById('niche-badge').textContent = `${niche.icon} ${niche.label}`;
+  const qdNicheEl = document.getElementById('quick-demo-niche');
+  if (qdNicheEl) qdNicheEl.textContent = niche.label;
+  const SYNC_TEMPLATE_LABELS = {
+    barber: ['A — Elegant', 'B — Maskulin', 'C — Verspielt', 'D — Oldschool'],
+    friser: ['A — New Style', 'B — Verspielt', 'C — Ordinär', 'D — Extravagant'],
+    default: ['A — Minimal', 'B — Bold', 'C — Editorial', 'D — Warm'],
+  };
+  const tLabels = SYNC_TEMPLATE_LABELS[state.niche] || SYNC_TEMPLATE_LABELS.default;
+  document.querySelectorAll('.template-card__label').forEach((el, i) => { el.textContent = tLabels[i] || el.textContent; });
+  document.querySelectorAll('.template-card__thumb').forEach(thumb => {
+    thumb.style.setProperty('--tmpl-primary', niche.primaryColor);
+    thumb.style.setProperty('--tmpl-accent', niche.accentColor);
+  });
 
   // Colors
   document.getElementById('primaryColor').value    = state.primaryColor || '#1a1a1a';
@@ -1544,7 +1774,7 @@ function syncFormToState() {
 
   // Scan URL
   const scanInput = document.getElementById('sourceUrl');
-  if (scanInput && state.sourceUrl) scanInput.value = state.sourceUrl;
+  if (scanInput) scanInput.value = state.sourceUrl || '';
 }
 
 function loadProjectFromData(data) {
@@ -1587,16 +1817,86 @@ document.getElementById('project-file-input').addEventListener('change', e => {
 // ── Logo → Neustart ───────────────────────────────
 document.getElementById('toolbar-logo').addEventListener('click', () => {
   if (!confirm('Neu starten? Alle Eingaben gehen verloren.')) return;
-  location.reload();
+  resetApp();
 });
 
 // ── Reset ─────────────────────────────────────────
 document.getElementById('btn-reset').addEventListener('click', () => {
   if (!confirm('Alle Eingaben zurücksetzen?')) return;
-  location.reload();
+  resetApp();
 });
 
-// ── Auto-fill Demo-Daten ───────────────────────────
+function resetApp() {
+  // ── Reset state to initial values ────────────
+  const niche = NICHES['friser'];
+  Object.assign(state, {
+    niche: 'friser', template: 'a',
+    businessName: '', tagline: '', about: '',
+    phone: '', email: '', address: '', bookingUrl: '', sourceUrl: '',
+    logoDataUrl: null, pricelistDataUrl: null,
+    primaryColor: niche.primaryColor, accentColor: niche.accentColor,
+    darkMode: niche.defaultDark, fontCombo: '', photos: [],
+    services: niche.servicesDefault.map(s => ({ ...s })),
+    team: [], showTeam: false, hours: '', website: '', formspreeId: '',
+    salesNotes: '', salesInterest: 'mittel', salesContact: '', salesCallback: '',
+  });
+
+  touchedFields.clear();
+  currentProjectId = null;
+  localStorage.removeItem(CURRENT_KEY);
+
+  // ── Clear text fields ─────────────────────────
+  ['businessName','tagline','about','phone','email','address','hours',
+   'bookingUrl','sourceUrl','website','formspreeId',
+   'salesNotes','salesContact','salesCallback'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const cbEl = document.getElementById('salesCallback');
+  if (cbEl) cbEl.value = '';
+
+  // ── Clear logo ────────────────────────────────
+  const logoZone = document.getElementById('logo-zone');
+  if (logoZone) {
+    logoZone.innerHTML = `<div class="upload-slot__placeholder" id="logo-placeholder">
+      <span class="upload-slot__placeholder-icon">🏷</span>
+      <span>Logo hochladen</span>
+      <span style="font-size:0.68rem;opacity:0.6">PNG · SVG · JPG</span>
+    </div>`;
+    logoZone.classList.remove('has-image');
+  }
+  document.getElementById('logo-clear')?.classList.remove('visible');
+
+  // ── Clear pricelist ───────────────────────────
+  const priceZone = document.getElementById('pricelist-zone');
+  if (priceZone) {
+    priceZone.innerHTML = `<div class="upload-slot__placeholder" id="pricelist-placeholder">
+      <span class="upload-slot__placeholder-icon">📋</span>
+      <span>Preisliste hochladen</span>
+      <span style="font-size:0.68rem;opacity:0.6">Foto · Scan · Screenshot</span>
+    </div>`;
+    priceZone.classList.remove('has-image');
+  }
+  document.getElementById('pricelist-clear')?.classList.remove('visible');
+
+  // ── Clear scan status / gallery picker ────────
+  const scanStatus = document.getElementById('scan-biz-status');
+  if (scanStatus) scanStatus.innerHTML = '';
+  const galleryWrap = document.getElementById('gallery-pick-wrap');
+  if (galleryWrap) galleryWrap.style.display = 'none';
+
+  // ── Re-render everything ──────────────────────
+  syncFormToState();
+  renderServicesList();
+  renderTeamGrid();
+  renderPhotoGrid();
+  goStep(0);
+  triggerPreview();
+  setProjectStatus('Neues Projekt');
+  showToast('↺ Zurückgesetzt');
+}
+
+// ── Schnell-Demo ──────────────────────────────────
 const DEMO_DATA = {
   friser: {
     businessName: 'Salon Belle Époque',
@@ -1606,7 +1906,6 @@ const DEMO_DATA = {
     email: 'hallo@salon-belle-epoque.de',
     address: 'Kurfürstendamm 42, 10707 Berlin',
     hours: 'Mo–Fr: 09:00–19:00\nSa: 09:00–16:00\nSo: Geschlossen',
-    website: 'https://instagram.com/salon.belle.epoque',
   },
   barber: {
     businessName: "King's Barber Shop",
@@ -1616,7 +1915,6 @@ const DEMO_DATA = {
     email: 'info@kings-barbershop.de',
     address: 'Torstraße 17, 10119 Berlin',
     hours: 'Di–Fr: 10:00–20:00\nSa: 09:00–17:00\nSo–Mo: Geschlossen',
-    website: 'https://instagram.com/kingsbarbershop',
   },
   fastfood: {
     businessName: 'Burger Brothers',
@@ -1626,7 +1924,6 @@ const DEMO_DATA = {
     email: 'info@burger-brothers.de',
     address: 'Sendlinger Str. 8, 80331 München',
     hours: 'Mo–Sa: 11:00–22:00\nSo: 12:00–21:00',
-    website: 'https://instagram.com/burger.brothers',
   },
   cafe: {
     businessName: 'Café Morgenrot',
@@ -1636,7 +1933,6 @@ const DEMO_DATA = {
     email: 'hallo@cafe-morgenrot.de',
     address: 'Eppendorfer Baum 44, 20249 Hamburg',
     hours: 'Mo–Fr: 07:30–18:00\nSa–So: 09:00–17:00',
-    website: 'https://instagram.com/cafe.morgenrot',
   },
   handwerk: {
     businessName: 'Müller Handwerksservice',
@@ -1646,7 +1942,6 @@ const DEMO_DATA = {
     email: 'info@mueller-handwerk.de',
     address: 'Industriestraße 12, 70376 Stuttgart',
     hours: 'Mo–Fr: 07:00–17:00\nSa: 07:00–13:00\nSo: Geschlossen',
-    website: 'https://instagram.com/mueller_handwerk',
   },
   beauty: {
     businessName: 'Studio Bloom',
@@ -1656,33 +1951,65 @@ const DEMO_DATA = {
     email: 'info@studio-bloom.de',
     address: 'Ehrenstraße 7, 50672 Köln',
     hours: 'Mo–Fr: 10:00–20:00\nSa: 09:00–17:00\nSo: Geschlossen',
-    website: 'https://instagram.com/studio.bloom',
   },
 };
 
-document.getElementById('btn-autofill').addEventListener('click', () => {
-  const demo = DEMO_DATA[state.niche];
-  if (!demo) return;
-  const FIELD_MAP = {
-    businessName: 'businessName', tagline: 'tagline', about: 'about',
-    phone: 'phone', email: 'email', address: 'address',
-    hours: 'hours',
-  };
-  let filled = 0;
-  Object.entries(FIELD_MAP).forEach(([key, id]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const isEmpty = !el.value.trim();
-    if (isEmpty && demo[key]) {
-      el.value = demo[key];
-      el.dispatchEvent(new Event('input'));
-      if (key in state) state[key] = demo[key];
-      filled++;
+// ── Returns true when a field value is safe to overwrite with scan data ───────
+// False when the user has manually typed something real into the field.
+function isReplaceableFieldValue(fieldId, value) {
+  if (!value || !value.trim()) return true;              // empty → always ok
+  if (touchedFields.has(fieldId)) return false;          // user typed here → protect
+
+  const v = value.trim();
+
+  // Check against every demo value in DEMO_DATA
+  for (const demo of Object.values(DEMO_DATA)) {
+    for (const dv of Object.values(demo)) {
+      if (typeof dv === 'string' && dv.trim() === v) return true;
     }
+  }
+
+  // Check against current niche defaults (heroTagline, aboutDefault, servicesLabel…)
+  const niche = NICHES[state.niche] || NICHES.friser;
+  const nicheDefaults = [niche.heroTagline, niche.aboutDefault, niche.heroSubline, niche.label].filter(Boolean);
+  if (nicheDefaults.some(d => d.trim() === v)) return true;
+
+  return false;
+}
+
+function applyQuickDemo() {
+  const niche = NICHES[state.niche] || NICHES.friser;
+  const demo  = DEMO_DATA[state.niche] || DEMO_DATA.friser;
+  const keep  = (cur, fallback) => cur?.trim() ? cur : (fallback || '');
+
+  Object.assign(state, {
+    businessName: keep(state.businessName, demo.businessName),
+    tagline:      demo.tagline || niche.heroTagline || '',
+    about:        demo.about   || niche.aboutDefault || '',
+    phone:        keep(state.phone,   demo.phone),
+    email:        keep(state.email,   demo.email),
+    address:      keep(state.address, demo.address),
+    hours:        demo.hours || '',
+    primaryColor: niche.primaryColor,
+    accentColor:  niche.accentColor,
+    darkMode:     niche.defaultDark,
+    photos:       (niche.defaultPhotos || []).slice(),
+    services:     (niche.servicesDefault || []).map(s => ({ ...s })),
+    team:         (niche.teamDefault || []).map(t => ({ ...t })),
+    showTeam:     !!(niche.teamDefault?.length),
   });
-  showToast(filled > 0 ? `✦ ${filled} Felder automatisch ausgefüllt` : 'Alle Felder bereits ausgefüllt');
+
+  touchedFields.clear(); // demo data is not user input — keep fields replaceable
+  syncFormToState();
+  renderServicesList();
+  renderTeamGrid();
+  renderPhotoGrid();
   triggerPreview();
-});
+  goStep(4);
+  showToast(`⚡ ${niche.label}-Demo bereit — Kundenmodus starten!`);
+}
+
+document.getElementById('btn-quick-demo').addEventListener('click', applyQuickDemo);
 
 // ── Toast ─────────────────────────────────────────
 function showToast(msg) {
@@ -1695,19 +2022,38 @@ function showToast(msg) {
 // ── Init ──────────────────────────────────────────
 initStepper();
 
-// Restore last project from localStorage
-(function restoreLastProject() {
+// Offer to restore last project — never auto-load silently.
+(function offerLastProject() {
   const savedId = localStorage.getItem(CURRENT_KEY);
   if (!savedId) return;
   const project = getProjects().find(p => p.id === savedId);
-  if (!project) return;
-  Object.keys(state).forEach(k => { if (k in project.state) state[k] = project.state[k]; });
-  currentProjectId = savedId;
-  syncFormToState();
-  renderServicesList();
-  renderTeamGrid();
-  renderPhotoGrid();
-  setProjectStatus(`Wiederhergestellt: ${project.name}`);
+  if (!project) { localStorage.removeItem(CURRENT_KEY); return; }
+
+  const statusEl = document.getElementById('project-status');
+  if (!statusEl) return;
+  const ts = new Date(project.updatedAt).toLocaleString('de-DE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  statusEl.innerHTML =
+    `Letztes Projekt: <strong>${project.name}</strong> (${ts})
+     <button id="btn-restore-last" style="margin-left:8px;background:none;border:1px solid var(--tool-border);border-radius:4px;color:var(--tool-text);padding:2px 8px;cursor:pointer;font-size:0.72rem">Laden</button>
+     <button id="btn-dismiss-restore" style="margin-left:4px;background:none;border:none;color:var(--tool-text-muted);cursor:pointer;font-size:0.78rem">✕</button>`;
+
+  document.getElementById('btn-restore-last').addEventListener('click', () => {
+    Object.keys(state).forEach(k => { if (k in project.state) state[k] = project.state[k]; });
+    touchedFields.clear();
+    currentProjectId = savedId;
+    syncFormToState();
+    renderServicesList();
+    renderTeamGrid();
+    renderPhotoGrid();
+    triggerPreview();
+    setProjectStatus(`Geladen: ${project.name}`);
+    showToast(`✓ Projekt "${project.name}" wiederhergestellt`);
+  });
+
+  document.getElementById('btn-dismiss-restore').addEventListener('click', () => {
+    statusEl.textContent = '';
+    localStorage.removeItem(CURRENT_KEY);
+  });
 })();
 
 if (!state.services.length) {

@@ -73,6 +73,10 @@ export function generate(data, niche, colors, fonts) {
   .ns-hero__title { font-family:var(--fh); font-size:clamp(3rem,7.5vw,8rem); font-weight:700; line-height:0.92; letter-spacing:-0.04em; max-width:820px; margin-bottom:28px; }
   .ns-hero__sub { font-size:1.1rem; color:var(--muted); max-width:440px; margin-bottom:40px; }
   .ns-hero__btns { display:flex; gap:14px; flex-wrap:wrap; }
+  .ns-hero__scroll { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); width:1px; height:52px; overflow:hidden; opacity:0.45; }
+  .ns-hero__scroll::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.9); animation:nsScroll 2s ease-in-out infinite; }
+  @keyframes nsScroll { 0%,100% { transform:translateY(-100%); } 50% { transform:translateY(100%); } }
+  @media (prefers-reduced-motion:reduce) { .ns-hero__scroll { display:none; } }
 
   /* SERVICES */
   .ns-svc-list { border-top:1px solid var(--bd); }
@@ -95,7 +99,7 @@ export function generate(data, niche, colors, fonts) {
   .ns-about__p { color:var(--muted); line-height:1.8; margin-bottom:32px; }
 
   /* GALLERY */
-  .ns-gal { display:grid; grid-template-columns:repeat(4,1fr); height:440px; }
+  .ns-gal { display:grid; grid-template-columns:repeat(4,1fr); height:520px; }
   .ns-gal__item { overflow:hidden; }
   .ns-gal__item:first-child { grid-column:1/3; }
   .ns-gal__item img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s ease,filter 0.5s; filter:brightness(0.78); }
@@ -127,7 +131,8 @@ export function generate(data, niche, colors, fonts) {
   }
 </style>`;
 
-  const bookingHref = data.bookingUrl || '#buchen';
+  const bookingHref   = data.bookingUrl || '#buchen';
+  const bookingTarget = data.bookingUrl ? ' target="_blank" rel="noopener noreferrer"' : '';
 
   const body = `
 <nav class="ns-nav" id="ns-nav">
@@ -149,10 +154,11 @@ export function generate(data, niche, colors, fonts) {
     <h1 class="ns-hero__title">${data.businessName || niche.label}</h1>
     <p class="ns-hero__sub">${data.tagline || niche.heroTagline}</p>
     <div class="ns-hero__btns">
-      <a href="${bookingHref}" class="btn btn-primary">${niche.heroCta} →</a>
+      <a href="${bookingHref}"${bookingTarget} class="btn btn-primary">${niche.heroCta} →</a>
       ${data.phone ? `<a href="tel:${data.phone}" class="btn btn-outline">☎ ${data.phone}</a>` : ''}
     </div>
   </div>
+  <div class="ns-hero__scroll" aria-hidden="true"></div>
 </section>
 ${isHair ? buildServicesTicker(services, ac) : ''}
 
@@ -160,7 +166,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
   <div class="con">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;gap:24px;flex-wrap:wrap">
       <h2 style="font-family:var(--fh);font-size:clamp(2rem,4vw,3rem);letter-spacing:-0.02em" data-animate>${niche.servicesLabel}</h2>
-      <a href="${bookingHref}" class="btn btn-outline" data-animate data-animate-delay="1" style="flex-shrink:0">${niche.heroCta} →</a>
+      <a href="${bookingHref}"${bookingTarget} class="btn btn-outline" data-animate data-animate-delay="1" style="flex-shrink:0">${niche.heroCta} →</a>
     </div>
     <div class="ns-svc-list">
       ${services.map((s, i) => `
@@ -183,7 +189,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
     <p class="ns-about__p">${data.about || niche.aboutDefault}</p>
     ${data.address ? `<p style="font-size:0.85rem;color:var(--muted);margin-bottom:28px">📍 ${data.address}</p>` : ''}
     <div style="display:flex;gap:14px;flex-wrap:wrap">
-      <a href="${bookingHref}" class="btn btn-primary">${niche.heroCta} →</a>
+      <a href="${bookingHref}"${bookingTarget} class="btn btn-primary">${niche.heroCta} →</a>
       ${data.phone ? `<a href="tel:${data.phone}" class="btn btn-outline">☎ Anrufen</a>` : ''}
     </div>
   </div>
@@ -193,7 +199,7 @@ ${galleryPhotos.length > 0 ? `
 <section id="gallery">
   <div class="ns-gal">
     ${[heroPhoto, ...galleryPhotos].filter(Boolean).slice(0,4).map((src, i) => `
-    <div class="ns-gal__item"><img src="${src}" alt="Galerie ${i+1}" loading="lazy"></div>`).join('')}
+    <div class="ns-gal__item" data-animate="scale" data-animate-delay="${Math.min(i + 1, 4)}"><img src="${src}" alt="Galerie ${i+1}" loading="lazy"></div>`).join('')}
   </div>
 </section>` : ''}
 

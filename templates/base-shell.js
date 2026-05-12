@@ -116,12 +116,20 @@ ${head}
 
   /* ── Shared Gallery ── */
   .sg-gallery__grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
     border-radius: var(--radius-lg); overflow: hidden;
   }
-  .sg-gallery__item { aspect-ratio: 1; overflow: hidden; background: var(--c-surface); cursor: zoom-in; }
-  .sg-gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-  .sg-gallery__item:hover img { transform: scale(1.07); }
+  .sg-gallery__item {
+    aspect-ratio: 1; overflow: hidden; background: var(--c-surface);
+    cursor: zoom-in; position: relative;
+  }
+  .sg-gallery__item img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: brightness(0.9);
+    transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s;
+    will-change: transform;
+  }
+  .sg-gallery__item:hover img { transform: scale(1.08); filter: brightness(1.04); }
   .sg-gallery__item:first-child { grid-column: 1 / 3; aspect-ratio: 2; }
 
   /* ── Shared Team ── */
@@ -182,12 +190,12 @@ ${head}
   [data-animate] {
     opacity: 0;
     transform: translateY(32px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
   [data-animate="fade"]  { transform: none; }
   [data-animate="left"]  { transform: translateX(-40px); }
   [data-animate="right"] { transform: translateX(40px); }
-  [data-animate="scale"] { transform: scale(0.92); }
+  [data-animate="scale"] { transform: scale(1.04); }
   [data-animate].visible { opacity: 1; transform: none; }
   [data-animate-delay="1"] { transition-delay: 0.1s; }
   [data-animate-delay="2"] { transition-delay: 0.2s; }
@@ -264,7 +272,7 @@ export function buildNav(data, niche) {
     ${isHairNiche
       ? `<a class="sg-nav__book-btn" href="#buchen">Termin buchen</a>`
       : data.bookingUrl
-        ? `<a class="btn btn-primary sg-nav__cta" href="${data.bookingUrl}" target="_blank">Termin buchen</a>`
+        ? `<a class="btn btn-primary sg-nav__cta" href="${data.bookingUrl}" target="_blank" rel="noopener noreferrer">Termin buchen</a>`
         : ''}
   </div>
 </nav>`;
@@ -315,7 +323,7 @@ export function buildExtrasSection(data, niche) {
     <h2 data-animate>${niche.extrasCta}</h2>
     <p data-animate>${data.tagline || niche.heroSubline}</p>
     <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap" data-animate>
-      ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="btn btn-primary">Termin buchen ${svgIcon('arrow')}</a>` : ''}
+      ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Termin buchen ${svgIcon('arrow')}</a>` : `<a href="#buchen" class="btn btn-primary">Termin buchen ${svgIcon('arrow')}</a>`}
       ${data.phone ? `<a href="tel:${data.phone}" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.3)">Direkt anrufen ${svgIcon('phone')}</a>` : ''}
     </div>
     ${data.hours ? `<div class="sg-hours" data-animate>
@@ -342,8 +350,8 @@ export function buildGallery(photos, niche) {
   <div class="container">
     <h2 class="section-title" data-animate>Galerie</h2>
     <p class="section-subtitle" data-animate>Einblicke in unsere Arbeit</p>
-    <div class="sg-gallery__grid" data-animate>
-      ${photos.slice(0, 9).map((src, i) => `<div class="sg-gallery__item"><img src="${src}" alt="Galerie ${i+1}" loading="lazy"></div>`).join('')}
+    <div class="sg-gallery__grid">
+      ${photos.slice(0, 9).map((src, i) => `<div class="sg-gallery__item" data-animate="scale" data-animate-delay="${Math.min(i + 1, 5)}"><img src="${src}" alt="Galerie ${i+1}" loading="lazy"></div>`).join('')}
     </div>
   </div>
 </section>`;

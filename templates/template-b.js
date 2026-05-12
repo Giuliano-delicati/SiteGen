@@ -130,7 +130,8 @@ export function generate(data, niche, colors, fonts) {
   }
 </style>`;
 
-  const bookingHref = data.bookingUrl || '#buchen';
+  const bookingHref   = data.bookingUrl || '#buchen';
+  const bookingTarget = data.bookingUrl ? ' target="_blank" rel="noopener noreferrer"' : '';
   const words = (data.businessName || niche.label).split(' ');
 
   const body = `
@@ -151,7 +152,7 @@ export function generate(data, niche, colors, fonts) {
     <h1 class="vp2-hero__title">${words[0]}${words.length > 1 ? `<br><em>${words.slice(1).join(' ')}</em>` : ''}</h1>
     <p class="vp2-hero__sub">${data.tagline || niche.heroTagline}</p>
     <div class="vp2-hero__btns">
-      <a href="${bookingHref}" class="btn btn-primary">${niche.heroCta} ✦</a>
+      <a href="${bookingHref}"${bookingTarget} class="btn btn-primary">${niche.heroCta} ✦</a>
       ${data.phone ? `<a href="tel:${data.phone}" class="btn btn-outline">☎ ${data.phone}</a>` : ''}
     </div>
   </div>
@@ -196,7 +197,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
         <p class="vp2-about__p">${data.about || niche.aboutDefault}</p>
         ${data.address ? `<p style="font-size:0.85rem;color:var(--muted);margin-bottom:28px">📍 ${data.address}</p>` : ''}
         <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <a href="${bookingHref}" class="btn btn-primary">${niche.heroCta} ✦</a>
+          <a href="${bookingHref}"${bookingTarget} class="btn btn-primary">${niche.heroCta} ✦</a>
           ${data.phone ? `<a href="tel:${data.phone}" class="btn btn-outline">☎ Anrufen</a>` : ''}
         </div>
       </div>

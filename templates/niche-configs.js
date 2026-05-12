@@ -39,9 +39,10 @@ export const NICHES = {
     aboutLabel: 'Über uns',
     aboutDefault: 'Dein Haar liegt uns am Herzen. Mit viel Erfahrung, hochwertigen Produkten und einem Gespür für aktuelle Trends bringen wir deine Wunschfrisur zum Leben.',
     teamDefault: [
-      { name: 'Sophie Müller', role: 'Senior Stylistin', photoUrl: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop&crop=faces' },
-      { name: 'Anna Weber', role: 'Color-Expertin', photoUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces' },
-      { name: 'Lisa Koch', role: 'Styling & Beratung', photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Sophie Müller',  role: 'Senior Stylistin',   photoUrl: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Anna Weber',     role: 'Color-Expertin',     photoUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Lisa Koch',      role: 'Styling & Beratung', photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Jana Bauer',     role: 'Haarpflege & Pflege',photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces' },
     ],
   },
 
@@ -85,9 +86,10 @@ export const NICHES = {
     aboutLabel: 'Über uns',
     aboutDefault: 'Wir stehen für erstklassige Handwerkskunst und individuelle Beratung. Jeder Besuch ist ein Erlebnis — von der ersten Beratung bis zum perfekten Finish.',
     teamDefault: [
-      { name: 'Marco Rossi', role: 'Head Barber', photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces' },
-      { name: 'Kai Fischer', role: 'Bart-Spezialist', photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces' },
-      { name: 'Tom Klein', role: 'Classic Cuts', photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Marco Rossi',  role: 'Head Barber',     photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Kai Fischer',  role: 'Bart-Spezialist', photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Tom Klein',    role: 'Classic Cuts',    photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Nico Bräuning',role: 'Fade Specialist', photoUrl: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=400&h=400&fit=crop&crop=faces' },
     ],
   },
 
@@ -237,6 +239,12 @@ export const NICHES = {
     teamLabel: 'Unsere Expertinnen',
     aboutLabel: 'Willkommen bei uns',
     aboutDefault: 'Ein Ort, an dem du abschalten und dich um dich selbst kümmern kannst. Wir bieten professionelle Beauty-Treatments mit hochwertigen Produkten und einem Lächeln.',
+    teamDefault: [
+      { name: 'Elena Richter',  role: 'Beauty Expertin',    photoUrl: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Laura Schmidt',  role: 'Kosmetikerin',       photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Mia Hoffmann',   role: 'Nail Art',           photoUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=faces' },
+      { name: 'Clara Vogel',    role: 'Masseurin & Wellness',photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=faces' },
+    ],
   },
 };
 

@@ -296,7 +296,7 @@ export function generate(data, niche, colors, fonts) {
     <h1 class="ex-hero__title">${heroTitleHtml}</h1>
     <p class="ex-hero__sub">${data.tagline || niche.heroTagline}</p>
     <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
-      <a href="${data.bookingUrl || '#buchen'}" ${data.bookingUrl ? 'target="_blank"' : ''} class="ex-btn ex-btn-accent">${niche.heroCta || 'Termin buchen'}</a>
+      <a href="${data.bookingUrl || '#buchen'}" ${data.bookingUrl ? 'target="_blank" rel="noopener noreferrer"' : ''} class="ex-btn ex-btn-accent">${niche.heroCta || 'Termin buchen'}</a>
       ${data.phone ? `<a href="tel:${data.phone}" class="ex-btn ex-btn-ghost">${data.phone}</a>` : ''}
     </div>
   </div>
@@ -320,7 +320,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
         ${s.price ? `<span class="ex-svc-price">${s.price}</span>` : ''}
       </div>`).join('')}
     </div>
-    ${data.bookingUrl ? `<div class="ex-services__cta" data-animate="fade"><a href="${data.bookingUrl}" target="_blank" class="ex-btn ex-btn-line">${niche.heroCta || 'Termin buchen'} →</a></div>` : ''}
+    ${data.bookingUrl ? `<div class="ex-services__cta" data-animate="fade"><a href="${data.bookingUrl}" target="_blank" rel="noopener noreferrer" class="ex-btn ex-btn-line">${niche.heroCta || 'Termin buchen'} →</a></div>` : ''}
   </div>
 </section>
 
@@ -340,7 +340,7 @@ ${isHair ? buildServicesTicker(services, ac) : ''}
         <p class="ex-about__copy">${data.about || niche.aboutDefault}</p>
         ${data.address ? `<p class="ex-about__addr">📍 ${data.address}</p>` : ''}
         <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-top:8px">
-          ${data.bookingUrl ? `<a href="${data.bookingUrl}" target="_blank" class="ex-btn ex-btn-accent">${niche.heroCta || 'Termin buchen'}</a>` : ''}
+          <a href="${data.bookingUrl || '#buchen'}" ${data.bookingUrl ? 'target="_blank" rel="noopener noreferrer"' : ''} class="ex-btn ex-btn-accent">${niche.heroCta || 'Termin buchen'}</a>
           ${data.phone ? `<a href="tel:${data.phone}" class="ex-btn ex-btn-ghost">Anrufen</a>` : ''}
         </div>
       </div>
