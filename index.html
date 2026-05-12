@@ -95,7 +95,7 @@
         <div class="field">
           <label>Website oder Instagram</label>
           <div class="scan-row">
-            <input type="url" id="scanUrlBiz" placeholder="https://instagram.com/name  oder  https://kundenwebsite.de">
+            <input type="url" id="sourceUrl" placeholder="https://instagram.com/name  oder  https://kundenwebsite.de">
             <button class="btn-tool btn-tool-secondary" id="btn-scan-biz" style="white-space:nowrap;gap:6px">
               <span class="spinner" id="scan-biz-spinner" style="display:none;width:13px;height:13px;border-width:2px"></span>
               <span id="scan-biz-icon">⚡</span> Infos laden
@@ -125,7 +125,6 @@
         <input type="hidden" id="tagline">
         <input type="hidden" id="about">
         <input type="hidden" id="website">
-        <input type="hidden" id="formspreeId">
 
         <div class="step-nav">
           <span></span>
@@ -194,13 +193,11 @@
         <!-- Fotos von Website laden -->
         <div class="field" style="margin-top:8px">
           <label>Fotos von Website laden</label>
-          <div class="scan-row">
-            <input type="url" id="galleryUrl" placeholder="https://kundenwebsite.de">
-            <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-gallery" style="gap:6px">
-              <span class="spinner" id="spin-gal" style="display:none;width:12px;height:12px;border-width:2px"></span>
-              <span id="icon-gal">⚡ Laden</span>
-            </button>
-          </div>
+          <div id="source-chip-gallery" style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px"></div>
+          <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-gallery" style="gap:6px">
+            <span class="spinner" id="spin-gal" style="display:none;width:12px;height:12px;border-width:2px"></span>
+            <span id="icon-gal">⚡ Fotos laden</span>
+          </button>
           <div class="scan-status" id="gallery-scan-status"></div>
           <div id="gallery-pick-wrap" style="display:none;margin-top:10px">
             <div style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px">Bilder anklicken zum Hinzufügen:</div>
@@ -245,13 +242,11 @@
         <!-- Leistungen von Website laden -->
         <div class="field">
           <label>Leistungen automatisch laden</label>
-          <div class="scan-row">
-            <input type="url" id="servicesUrl" placeholder="https://kundenwebsite.de">
-            <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-services" style="gap:6px">
-              <span class="spinner" id="spin-svc" style="display:none;width:12px;height:12px;border-width:2px"></span>
-              <span id="icon-svc">⚡ Laden</span>
-            </button>
-          </div>
+          <div id="source-chip-services" style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px"></div>
+          <button class="btn-tool btn-tool-secondary btn-sm" id="btn-load-services" style="gap:6px">
+            <span class="spinner" id="spin-svc" style="display:none;width:12px;height:12px;border-width:2px"></span>
+            <span id="icon-svc">⚡ Leistungen laden</span>
+          </button>
           <div class="scan-status" id="services-scan-status"></div>
         </div>
 
@@ -355,16 +350,11 @@
         <!-- Farben von Website laden -->
         <div class="field">
           <label>Farben von Website laden</label>
-          <div class="brand-sources">
-            <div class="brand-source-row">
-              <span class="brand-source-icon">🌐</span>
-              <input type="url" id="brandWebsite" placeholder="https://kundenwebsite.de" autocomplete="off">
-              <button class="btn-tool btn-tool-secondary btn-sm" id="btn-scan-website">
-                <span class="spinner" id="spin-web" style="display:none;width:12px;height:12px;border-width:2px"></span>
-                <span id="icon-web">Farben laden</span>
-              </button>
-            </div>
-          </div>
+          <div id="source-chip-colors" style="font-size:0.75rem;color:var(--tool-text-muted);margin-bottom:6px"></div>
+          <button class="btn-tool btn-tool-secondary btn-sm" id="btn-scan-website" style="gap:6px">
+            <span class="spinner" id="spin-web" style="display:none;width:12px;height:12px;border-width:2px"></span>
+            <span id="icon-web">⚡ Farben laden</span>
+          </button>
           <div class="scan-status" id="brand-scan-status"></div>
         </div>
 
@@ -494,7 +484,7 @@ const state = {
   email: '',
   address: '',
   bookingUrl: '',
-  websiteUrl: '',
+  sourceUrl: '',
   logoDataUrl: null,
   pricelistDataUrl: null,
   primaryColor: '#1a1a1a',
@@ -507,7 +497,6 @@ const state = {
   showTeam: false,
   hours: '',
   website: '',
-  formspreeId: '',
 };
 
 let currentStep = 0;
@@ -543,16 +532,12 @@ window.goStep = function(idx) {
   });
   document.getElementById('form-panel').scrollTop = 0;
 
-  // Assets: Galerie-URL vorausfüllen
-  if (idx === 1) {
-    const galUrl = document.getElementById('galleryUrl');
-    if (galUrl && !galUrl.value && state.websiteUrl) galUrl.value = state.websiteUrl;
-  }
+  // Assets: Source-Chip aktualisieren
+  if (idx === 1) updateSourceChip('source-chip-gallery');
 
-  // Angebot: Leistungen-URL vorausfüllen + Preisliste anzeigen
+  // Angebot: Source-Chip + Preisliste anzeigen
   if (idx === 2) {
-    const svcUrl = document.getElementById('servicesUrl');
-    if (svcUrl && !svcUrl.value && state.websiteUrl) svcUrl.value = state.websiteUrl;
+    updateSourceChip('source-chip-services');
     const panel = document.getElementById('pricelist-ref-panel');
     if (panel) {
       if (state.pricelistDataUrl) {
@@ -564,12 +549,27 @@ window.goStep = function(idx) {
     }
   }
 
-  // Look: Brand-URL vorausfüllen
-  if (idx === 3) {
-    const brandUrl = document.getElementById('brandWebsite');
-    if (brandUrl && !brandUrl.value && state.websiteUrl) brandUrl.value = state.websiteUrl;
-  }
+  // Look: Source-Chip aktualisieren
+  if (idx === 3) updateSourceChip('source-chip-colors');
 };
+
+function updateSourceChip(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (state.sourceUrl) {
+    try {
+      const url = /^https?:\/\//.test(state.sourceUrl) ? state.sourceUrl : 'https://' + state.sourceUrl;
+      const host = new URL(url).hostname.replace(/^www\./, '');
+      el.textContent = `Quelle: ${host}`;
+      el.style.color = 'var(--tool-accent)';
+    } catch {
+      el.textContent = `Quelle: ${state.sourceUrl}`;
+    }
+  } else {
+    el.textContent = '⚠ Keine Quelle — URL in Schritt 1 eingeben';
+    el.style.color = 'var(--tool-text-muted)';
+  }
+}
 
 // ── Niche selection ─────────────────────────────
 document.getElementById('niche-grid').addEventListener('click', e => {
@@ -642,7 +642,6 @@ bindInput('email', 'email');
 bindInput('address', 'address');
 bindInput('hours', 'hours');
 bindInput('website', 'website');
-bindInput('formspreeId', 'formspreeId');
 
 // ── Color pickers ────────────────────────────────
 document.getElementById('primaryColor').addEventListener('input', e => {
@@ -785,12 +784,12 @@ document.getElementById('pricelist-clear').addEventListener('click', (e) => {
 
 // ── Step 1 URL / Instagram Scan ──────────────────
 document.getElementById('btn-scan-biz').addEventListener('click', async () => {
-  const rawUrl = document.getElementById('scanUrlBiz').value.trim();
+  const rawUrl = document.getElementById('sourceUrl').value.trim();
   if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
 
   const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
-  state.websiteUrl = url;
-  state.website = url;
+  state.sourceUrl = url;
+  state.website   = url;
   // Sync hidden field
   const websiteEl = document.getElementById('website');
   if (websiteEl) { websiteEl.value = url; websiteEl.dispatchEvent(new Event('input')); }
@@ -914,10 +913,8 @@ async function runBrandScan(url, spinEl, iconEl) {
 
 // ── Scan: Website (Look step) ─────────────────────
 document.getElementById('btn-scan-website').addEventListener('click', async () => {
-  const rawUrl = document.getElementById('brandWebsite').value.trim();
-  if (!rawUrl) { showToast('⚠ Website-URL eingeben'); return; }
-  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
-  state.websiteUrl = url;
+  if (!state.sourceUrl) { showToast('⚠ Bitte URL in Schritt 1 eingeben'); return; }
+  const url = /^https?:\/\//.test(state.sourceUrl) ? state.sourceUrl : 'https://' + state.sourceUrl;
   const btn = document.getElementById('btn-scan-website');
   btn.disabled = true;
   await runBrandScan(url, document.getElementById('spin-web'), document.getElementById('icon-web'));
@@ -926,10 +923,8 @@ document.getElementById('btn-scan-website').addEventListener('click', async () =
 
 // ── Leistungen aus Website laden ─────────────────
 document.getElementById('btn-load-services').addEventListener('click', async () => {
-  const rawUrl = document.getElementById('servicesUrl').value.trim();
-  if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
-  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
-  state.websiteUrl = url;
+  if (!state.sourceUrl) { showToast('⚠ Bitte URL in Schritt 1 eingeben'); return; }
+  const url = /^https?:\/\//.test(state.sourceUrl) ? state.sourceUrl : 'https://' + state.sourceUrl;
 
   const btn    = document.getElementById('btn-load-services');
   const spin   = document.getElementById('spin-svc');
@@ -969,10 +964,8 @@ document.getElementById('btn-load-services').addEventListener('click', async () 
 
 // ── Galerie-Fotos von Website laden ──────────────
 document.getElementById('btn-load-gallery').addEventListener('click', async () => {
-  const rawUrl = document.getElementById('galleryUrl').value.trim();
-  if (!rawUrl) { showToast('⚠ Bitte URL eingeben'); return; }
-  const url = /^https?:\/\//.test(rawUrl) ? rawUrl : 'https://' + rawUrl;
-  state.websiteUrl = url;
+  if (!state.sourceUrl) { showToast('⚠ Bitte URL in Schritt 1 eingeben'); return; }
+  const url = /^https?:\/\//.test(state.sourceUrl) ? state.sourceUrl : 'https://' + state.sourceUrl;
 
   const btn    = document.getElementById('btn-load-gallery');
   const spin   = document.getElementById('spin-gal');
@@ -1335,7 +1328,7 @@ function saveProject() {
 // ── Projekt laden ─────────────────────────────────
 function syncFormToState() {
   // Text inputs
-  ['businessName', 'tagline', 'about', 'phone', 'email', 'address', 'hours', 'website', 'formspreeId'].forEach(id => {
+  ['businessName', 'tagline', 'about', 'phone', 'email', 'address', 'hours', 'website'].forEach(id => {
     const el = document.getElementById(id);
     if (el && state[id] !== undefined) el.value = state[id] || '';
   });
@@ -1375,8 +1368,8 @@ function syncFormToState() {
   }
 
   // Scan URL
-  const scanInput = document.getElementById('scanUrlBiz');
-  if (scanInput && state.websiteUrl) scanInput.value = state.websiteUrl;
+  const scanInput = document.getElementById('sourceUrl');
+  if (scanInput && state.sourceUrl) scanInput.value = state.sourceUrl;
 }
 
 function loadProjectFromData(data) {
