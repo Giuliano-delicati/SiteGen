@@ -136,7 +136,7 @@ export function generate(data, niche, colors, fonts) {
 
   const body = `
 <nav class="ns-nav" id="ns-nav">
-  <a href="#" class="ns-nav__logo">${data.businessName || niche.label}</a>
+  <a href="#hero" class="ns-nav__logo">${data.businessName || niche.label}</a>
   <ul class="ns-nav__links">
     <li><a href="#services">Leistungen</a></li>
     <li><a href="#about">Über uns</a></li>

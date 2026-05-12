@@ -136,7 +136,7 @@ export function generate(data, niche, colors, fonts) {
 
   const body = `
 <nav class="vp2-nav" id="vp2-nav">
-  <a href="#" class="vp2-nav__logo">${words[0]}${words.length > 1 ? ` <em style="color:var(--ac)">${words.slice(1).join(' ')}</em>` : ''}</a>
+  <a href="#hero" class="vp2-nav__logo">${words[0]}${words.length > 1 ? ` <em style="color:var(--ac)">${words.slice(1).join(' ')}</em>` : ''}</a>
   <ul class="vp2-nav__links">
     <li><a href="#services">Leistungen</a></li>
     <li><a href="#about">Über uns</a></li>

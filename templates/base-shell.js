@@ -8,6 +8,7 @@ export function buildShell({ head, body, colors, fonts, dark }) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_blank">
 ${head}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -260,7 +261,7 @@ export function buildNav(data, niche) {
     : `<span>${data.businessName || niche.label}</span>`;
   return `
 <nav class="sg-nav">
-  <a class="sg-nav__logo" href="#">${logoHtml}</a>
+  <a class="sg-nav__logo" href="#hero">${logoHtml}</a>
   <ul class="sg-nav__links">
     <li><a href="#about">${niche.aboutLabel}</a></li>
     <li><a href="#services">${niche.servicesLabel}</a></li>
@@ -886,7 +887,20 @@ export function buildBookingWidget(data, niche) {
   renderCal();
   updateSummary();
 
-  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+  // Intercept ALL internal hash-link clicks — prevent srcdoc-iframe navigation to parent URL.
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || !href.startsWith('#')) return;
+    e.preventDefault();
+    if (href === '#') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const target = document.getElementById(href.slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, true); // capture phase — fires before any bubbling handler
 })();
 </script>`;
 }
