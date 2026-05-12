@@ -403,19 +403,20 @@
 
         <div class="section-divider" style="margin:16px 0"></div>
 
-        <!-- Projekt speichern / laden -->
+        <!-- Projektverwaltung -->
         <div class="field">
-          <label>Projekt</label>
-          <div style="display:flex;gap:8px">
+          <label>Projekte</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
             <button class="btn-tool btn-tool-secondary" id="btn-save-project" style="flex:1;justify-content:center">
               💾 Speichern
             </button>
-            <button class="btn-tool btn-tool-secondary" id="btn-load-project" style="flex:1;justify-content:center">
-              📂 Laden
+            <button class="btn-tool btn-tool-secondary" id="btn-import-project" style="flex:1;justify-content:center" title="Projekt aus JSON-Datei importieren">
+              📂 Importieren
             </button>
           </div>
           <input type="file" id="project-file-input" accept=".json,application/json" style="display:none">
-          <div id="project-status" style="font-size:0.75rem;color:var(--tool-text-muted);margin-top:6px;min-height:1.2em"></div>
+          <div id="project-list"></div>
+          <div id="project-status" style="font-size:0.72rem;color:var(--tool-text-muted);margin-top:6px;min-height:1.2em"></div>
         </div>
 
         <div class="section-divider" style="margin:16px 0"></div>
@@ -466,6 +467,22 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+
+<style>
+.project-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--tool-radius);
+  border: 1px solid var(--tool-border); background: var(--tool-bg);
+  transition: border-color .15s;
+}
+.project-item--active { border-color: var(--tool-accent); }
+.project-item__info   { flex: 1; min-width: 0; }
+.project-item__name   { font-size: .82rem; font-weight: 600; color: var(--tool-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-item__meta   { font-size: .7rem; color: var(--tool-text-muted); margin-top: 2px; }
+.project-badge        { font-size: .65rem; background: var(--tool-accent); color: #000; padding: 1px 5px; border-radius: 3px; font-weight: 700; vertical-align: middle; margin-left: 4px; }
+.project-item__actions{ display: flex; gap: 4px; flex-shrink: 0; }
+.btn-icon             { padding: 4px 7px !important; font-size: .8rem; min-width: unset; }
+</style>
 
 <script type="module">
 import { NICHES, FONT_COMBOS } from './templates/niche-configs.js';
@@ -1222,6 +1239,7 @@ async function autoFetchIfEmpty() {
 function triggerPreview() {
   clearTimeout(previewDebounce);
   previewDebounce = setTimeout(updatePreview, 350);
+  markDirty();
 }
 
 function updatePreview() {
@@ -1321,23 +1339,165 @@ function doExportHtml() {
 
 document.getElementById('btn-export-html').addEventListener('click', doExportHtml);
 
-// ── Projekt speichern ─────────────────────────────
-function saveProject() {
-  const projectData = JSON.stringify(state, null, 2);
-  try { localStorage.setItem('sitegen_project', projectData); } catch (_) {}
+// ══════════════════════════════════════════════════
+// Projektverwaltung
+// ══════════════════════════════════════════════════
+const PROJECTS_KEY = 'sitegen_projects';
+const CURRENT_KEY  = 'sitegen_current_project';
 
-  const blob = new Blob([projectData], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  const name = (state.businessName || 'projekt').toLowerCase().replace(/\s+/g, '-');
-  a.href     = url;
-  a.download = `${name}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
+let currentProjectId = null;
+let autoSaveTimer    = null;
+let isDirty          = false;
 
-  showToast('✓ Projekt gespeichert');
-  document.getElementById('project-status').textContent =
-    `Gespeichert: ${new Date().toLocaleTimeString('de-DE')}`;
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function genProjectName() {
+  const name = state.businessName?.trim() || 'Neues Projekt';
+  const d    = new Date();
+  const date = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+  return `${name} — ${date}`;
+}
+
+function getProjects() {
+  try { return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }
+  catch { return []; }
+}
+
+function setProjects(list) {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(list));
+}
+
+function estimateBytes(obj) {
+  return new Blob([JSON.stringify(obj)]).size;
+}
+
+function saveProject(customName) {
+  const existing = getProjects().find(p => p.id === currentProjectId);
+  const id       = currentProjectId || genId();
+  const name     = customName || existing?.name || genProjectName();
+
+  const snap = {
+    id,
+    name,
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    state: { ...state },
+  };
+
+  const sizeMB = (estimateBytes(snap) / 1024 / 1024).toFixed(1);
+
+  const persist = (data) => {
+    const list = getProjects().filter(p => p.id !== id);
+    list.unshift(data);
+    try {
+      setProjects(list);
+      localStorage.setItem(CURRENT_KEY, id);
+      currentProjectId = id;
+      isDirty = false;
+      renderProjectList();
+      setProjectStatus(`Gespeichert ${new Date().toLocaleTimeString('de-DE')} · ${sizeMB} MB`);
+      return true;
+    } catch (e) {
+      return e.name === 'QuotaExceededError' ? false : (() => { throw e; })();
+    }
+  };
+
+  if (persist(snap)) {
+    showToast(`✓ "${name}" gespeichert`);
+    return;
+  }
+
+  // Retry without binary assets
+  const stripped = { ...snap, state: { ...state, logoDataUrl: null, pricelistDataUrl: null, photos: [] } };
+  const trimMB   = (estimateBytes(stripped) / 1024 / 1024).toFixed(1);
+  if (persist(stripped)) {
+    showToast(`⚠ Ohne Bilder gespeichert (${trimMB} MB) — Speicher war voll`);
+    return;
+  }
+
+  showToast('✗ Speicher voll — bitte ältere Projekte löschen');
+}
+
+function loadProject(id) {
+  const project = getProjects().find(p => p.id === id);
+  if (!project) { showToast('✗ Projekt nicht gefunden'); return; }
+  currentProjectId = id;
+  localStorage.setItem(CURRENT_KEY, id);
+  loadProjectFromData(project.state);
+  setProjectStatus(`Geladen: ${project.name}`);
+  renderProjectList();
+}
+
+function duplicateProject(id) {
+  const project = getProjects().find(p => p.id === id);
+  if (!project) return;
+  const copy = { ...project, id: genId(), name: project.name + ' (Kopie)',
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  const list  = getProjects();
+  list.splice(list.findIndex(p => p.id === id) + 1, 0, copy);
+  try {
+    setProjects(list);
+    showToast(`✓ "${copy.name}" dupliziert`);
+    renderProjectList();
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') showToast('✗ Speicher voll — Duplikat nicht möglich');
+  }
+}
+
+function deleteProject(id) {
+  const project = getProjects().find(p => p.id === id);
+  if (!project || !confirm(`Projekt "${project.name}" wirklich löschen?`)) return;
+  setProjects(getProjects().filter(p => p.id !== id));
+  if (currentProjectId === id) { currentProjectId = null; localStorage.removeItem(CURRENT_KEY); }
+  showToast('Projekt gelöscht');
+  renderProjectList();
+}
+
+function setProjectStatus(msg) {
+  const el = document.getElementById('project-status');
+  if (el) el.textContent = msg;
+}
+
+function renderProjectList() {
+  const container = document.getElementById('project-list');
+  if (!container) return;
+  const projects = getProjects();
+  if (!projects.length) {
+    container.innerHTML = '<div style="font-size:.78rem;color:var(--tool-text-muted);text-align:center;padding:10px 0">Noch keine Projekte gespeichert.</div>';
+    return;
+  }
+  container.innerHTML = projects.map(p => {
+    const active = p.id === currentProjectId;
+    const ts = new Date(p.updatedAt).toLocaleString('de-DE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    return `<div class="project-item${active ? ' project-item--active' : ''}" data-id="${p.id}">
+      <div class="project-item__info">
+        <div class="project-item__name">${p.name}${active ? '<span class="project-badge">aktiv</span>' : ''}</div>
+        <div class="project-item__meta">${ts}</div>
+      </div>
+      <div class="project-item__actions">
+        <button class="btn-tool btn-tool-ghost btn-icon" data-action="load"      data-id="${p.id}" title="Laden">↑</button>
+        <button class="btn-tool btn-tool-ghost btn-icon" data-action="duplicate" data-id="${p.id}" title="Duplizieren">⧉</button>
+        <button class="btn-tool btn-tool-ghost btn-icon" data-action="delete"    data-id="${p.id}" title="Löschen" style="color:#e05c5c">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const { action, id } = btn.dataset;
+      if (action === 'load')      loadProject(id);
+      if (action === 'duplicate') duplicateProject(id);
+      if (action === 'delete')    deleteProject(id);
+    });
+  });
+}
+
+function markDirty() {
+  isDirty = true;
+  clearTimeout(autoSaveTimer);
+  if (!currentProjectId) return;
+  autoSaveTimer = setTimeout(() => { if (isDirty) saveProject(); }, 3000);
 }
 
 // ── Projekt laden ─────────────────────────────────
@@ -1395,13 +1555,11 @@ function loadProjectFromData(data) {
   syncFormToState();
   triggerPreview();
   showToast('✓ Projekt geladen');
-  document.getElementById('project-status').textContent =
-    `Geladen: ${state.businessName || 'Unbekannt'}`;
 }
 
-document.getElementById('btn-save-project').addEventListener('click', saveProject);
+document.getElementById('btn-save-project').addEventListener('click', () => saveProject());
 
-document.getElementById('btn-load-project').addEventListener('click', () => {
+document.getElementById('btn-import-project').addEventListener('click', () => {
   document.getElementById('project-file-input').click();
 });
 
@@ -1411,7 +1569,13 @@ document.getElementById('project-file-input').addEventListener('change', e => {
   const reader = new FileReader();
   reader.onload = ev => {
     try {
-      loadProjectFromData(JSON.parse(ev.target.result));
+      const data = JSON.parse(ev.target.result);
+      // Support both raw state export and project-object format
+      const stateData = data.state || data;
+      loadProjectFromData(stateData);
+      // Save as new project
+      currentProjectId = null;
+      saveProject(data.name || genProjectName());
     } catch {
       showToast('✗ Ungültige Projektdatei');
     }
@@ -1531,10 +1695,28 @@ function showToast(msg) {
 // ── Init ──────────────────────────────────────────
 initStepper();
 
-const defaultNiche = NICHES['friser'];
-state.services = defaultNiche.servicesDefault.map(s => ({ ...s }));
-renderServicesList();
-renderTeamGrid();
+// Restore last project from localStorage
+(function restoreLastProject() {
+  const savedId = localStorage.getItem(CURRENT_KEY);
+  if (!savedId) return;
+  const project = getProjects().find(p => p.id === savedId);
+  if (!project) return;
+  Object.keys(state).forEach(k => { if (k in project.state) state[k] = project.state[k]; });
+  currentProjectId = savedId;
+  syncFormToState();
+  renderServicesList();
+  renderTeamGrid();
+  renderPhotoGrid();
+  setProjectStatus(`Wiederhergestellt: ${project.name}`);
+})();
+
+if (!state.services.length) {
+  const defaultNiche = NICHES[state.niche] || NICHES['friser'];
+  state.services = defaultNiche.servicesDefault.map(s => ({ ...s }));
+  renderServicesList();
+}
+
+renderProjectList();
 
 document.getElementById('primaryHex').textContent = state.primaryColor;
 document.getElementById('accentHex').textContent  = state.accentColor;
