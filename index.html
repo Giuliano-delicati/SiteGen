@@ -643,6 +643,20 @@ bindInput('address', 'address');
 bindInput('hours', 'hours');
 bindInput('website', 'website');
 
+// ── sourceUrl: live-sync state + website + chips ──
+document.getElementById('sourceUrl').addEventListener('input', e => {
+  const raw = e.target.value.trim();
+  state.sourceUrl = raw;
+  if (raw) {
+    const normalized = /^https?:\/\//.test(raw) ? raw : 'https://' + raw;
+    state.website = normalized;
+    const websiteEl = document.getElementById('website');
+    if (websiteEl) websiteEl.value = normalized;
+  }
+  ['source-chip-gallery', 'source-chip-services', 'source-chip-colors'].forEach(updateSourceChip);
+  triggerPreview();
+});
+
 // ── Color pickers ────────────────────────────────
 document.getElementById('primaryColor').addEventListener('input', e => {
   state.primaryColor = e.target.value;
@@ -793,6 +807,7 @@ document.getElementById('btn-scan-biz').addEventListener('click', async () => {
   // Sync hidden field
   const websiteEl = document.getElementById('website');
   if (websiteEl) { websiteEl.value = url; websiteEl.dispatchEvent(new Event('input')); }
+  ['source-chip-gallery', 'source-chip-services', 'source-chip-colors'].forEach(updateSourceChip);
 
   const btn     = document.getElementById('btn-scan-biz');
   const icon    = document.getElementById('scan-biz-icon');
